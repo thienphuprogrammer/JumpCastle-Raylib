@@ -20,6 +20,7 @@ FetchContent_MakeAvailable(raylib)
 add_library(
   jumpcastle_core STATIC
   src/collision.cpp
+  src/player.cpp
   src/tilemap.cpp
 )
 target_include_directories(jumpcastle_core PUBLIC include)
@@ -59,6 +60,7 @@ if(JUMPCASTLE_BUILD_TESTS)
   add_executable(
     jumpcastle_tests
     tests/collision_test.cpp
+    tests/player_test.cpp
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
