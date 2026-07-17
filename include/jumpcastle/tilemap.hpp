@@ -8,8 +8,12 @@
 namespace jumpcastle {
 
 enum class Tile : char {
-    empty = ' ',
+    empty = '.',
     solid = '#',
+    spike = '^',
+    spawn = 'S',
+    checkpoint = 'C',
+    exit = 'E',
 };
 
 class Tilemap {
@@ -17,11 +21,17 @@ public:
     using Row = std::array<Tile, config::tilemap_width>;
     using Grid = std::array<Row, config::tilemap_height>;
 
+    constexpr Tilemap() noexcept {
+        for (auto& row : grid_) {
+            row.fill(Tile::empty);
+        }
+    }
     constexpr explicit Tilemap(Grid grid) noexcept : grid_{grid} {}
 
     [[nodiscard]] Tile tile_at(int x, int y) const noexcept;
     [[nodiscard]] bool solid_at(int x, int y) const noexcept;
     [[nodiscard]] bool solid_for_render_at(int x, int y) const noexcept;
+    [[nodiscard]] const Grid& grid() const noexcept { return grid_; }
 
 private:
     Grid grid_{};
