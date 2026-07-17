@@ -23,6 +23,14 @@ Game::Game() {
     try {
         const auto asset_directory =
             std::filesystem::path{GetApplicationDirectory()} / "assets";
+        levels_.emplace(LevelRepository::load(asset_directory / "levels"));
+        const Vector2 spawn = levels_->campaign_spawn();
+        restart_campaign(campaign_, spawn, 0);
+        reset_player(player_, spawn);
+        active_room_ = levels_->select(player_.position.y);
+        if (!active_room_) {
+            throw std::runtime_error("Campaign spawn is outside the room stack");
+        }
         renderer_.emplace(asset_directory);
     } catch (...) {
         CloseWindow();
@@ -53,26 +61,22 @@ void Game::update(const float delta) {
         debug_enabled_ = !debug_enabled_;
     }
 
-    active_screen_ = select_screen(player_.position.y);
-    const Tilemap& tilemap = *active_screen_.tilemap;
-    update_player(
-        player_,
-        tilemap,
-        active_screen_.vertical_offset,
-        sample_input(),
-        delta);
-    resolve_tilemap_collision(
-        tilemap,
-        active_screen_.vertical_offset,
-        player_.position,
-        player_.velocity,
-        config::player_half_size);
-
-    const int width = std::max(GetScreenWidth(), config::view_width);
-    const int height = std::max(GetScreenHeight(), config::view_height);
-    if (width != GetScreenWidth() || height != GetScreenHeight()) {
-        SetWindowSize(width, height);
+    if (campaign_.complete) {
+        if (IsKeyPressed(KEY_ENTER)) {
+            const Vector2 spawn = levels_->campaign_spawn();
+            restart_campaign(campaign_, spawn, 0);
+            reset_player(player_, spawn);
+            respawn_animation_time_ = 0.0F;
+        }
+    } else {
+        const CampaignEvent event = simulate_step(
+            player_, campaign_, *levels_, sample_input(), delta);
+        if (event == CampaignEvent::respawned) {
+            respawn_animation_time_ = 0.45F;
+        }
     }
+
+    respawn_animation_time_ = std::max(0.0F, respawn_animation_time_ - delta);
 
     if (debug_enabled_) {
         if (IsKeyPressed(KEY_PAGE_UP)) {
@@ -82,19 +86,31 @@ void Game::update(const float delta) {
             player_.position.y += static_cast<float>(config::tilemap_height);
         }
     }
+
+    active_room_ = levels_->select(player_.position.y);
+    if (!active_room_) {
+        respawn_player(campaign_, player_);
+        respawn_animation_time_ = 0.45F;
+        active_room_ = levels_->select(player_.position.y);
+    }
+
+    const int width = std::max(GetScreenWidth(), config::view_width);
+    const int height = std::max(GetScreenHeight(), config::view_height);
+    if (width != GetScreenWidth() || height != GetScreenHeight()) {
+        SetWindowSize(width, height);
+    }
 }
 
 void Game::run() {
     while (!WindowShouldClose()) {
         const float delta = std::clamp(GetFrameTime(), 0.0001F, 0.1F);
         update(delta);
-
         renderer_->draw(
-            *active_screen_.tilemap,
-            active_screen_.vertical_offset,
+            *active_room_,
             player_,
-            debug_enabled_,
-            active_screen_.index);
+            campaign_,
+            respawn_animation_time_,
+            debug_enabled_);
     }
 }
 

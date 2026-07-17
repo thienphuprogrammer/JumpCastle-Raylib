@@ -1,7 +1,9 @@
 #pragma once
 
-#include "jumpcastle/player.hpp"
+#include "jumpcastle/assets.hpp"
+#include "jumpcastle/campaign.hpp"
 
+#include <array>
 #include <filesystem>
 
 namespace jumpcastle {
@@ -43,15 +45,16 @@ public:
     explicit Renderer(const std::filesystem::path& asset_directory);
 
     void draw(
-        const Tilemap& tilemap,
-        float screen_offset_y,
+        const RoomSelection& room,
         const PlayerState& player,
-        bool debug_enabled,
-        std::size_t screen_index) const;
+        const CampaignState& campaign,
+        float respawn_animation_time,
+        bool debug_enabled) const;
 
 private:
+    AssetCatalog catalog_;
     TextureResource player_texture_;
-    TextureResource tilemap_texture_;
+    std::array<TextureResource, 3> biome_textures_;
     RenderTargetResource pixelart_target_;
 };
 

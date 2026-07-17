@@ -23,8 +23,17 @@ FetchContent_Declare(
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.12.0
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 add_library(
   jumpcastle_core STATIC
+  src/assets.cpp
   src/campaign.cpp
   src/collision.cpp
   src/level.cpp
@@ -35,7 +44,7 @@ add_library(
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
-target_link_libraries(jumpcastle_core PUBLIC raylib)
+target_link_libraries(jumpcastle_core PUBLIC raylib PRIVATE nlohmann_json::nlohmann_json)
 
 add_executable(
   jumpcastle
@@ -83,6 +92,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/campaign_test.cpp
     tests/campaign_reachability_test.cpp
     tests/assets_test.cpp
+    tests/assets_manifest_test.cpp
     tests/level_test.cpp
     tests/player_test.cpp
     tests/resource_traits_test.cpp
@@ -112,10 +122,16 @@ endif()
 
 add_custom_command(
   TARGET jumpcastle POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-          ${PROJECT_SOURCE_DIR}/assets
+  COMMAND ${CMAKE_COMMAND} -E make_directory
           $<TARGET_FILE_DIR:jumpcastle>/assets
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${PROJECT_SOURCE_DIR}/assets/generated
+          $<TARGET_FILE_DIR:jumpcastle>/assets/generated
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${PROJECT_SOURCE_DIR}/assets/levels
+          $<TARGET_FILE_DIR:jumpcastle>/assets/levels
 )
 
 install(TARGETS jumpcastle RUNTIME DESTINATION bin)
-install(DIRECTORY assets/ DESTINATION bin/assets)
+install(DIRECTORY assets/generated/ DESTINATION bin/assets/generated)
+install(DIRECTORY assets/levels/ DESTINATION bin/assets/levels)

@@ -105,6 +105,25 @@ def nonempty_sheet_cells(
     raise RuntimeError(f"sheet has fewer than {count} non-empty cells")
 
 
+def repeated_sheet_cell(
+    image: Image.Image,
+    source_tile: int,
+    index: int,
+    count: int,
+) -> list[Image.Image]:
+    columns = image.width // source_tile
+    rows = image.height // source_tile
+    if index < 0 or index >= columns * rows:
+        raise RuntimeError(f"terrain cell {index} is outside its source sheet")
+    x = (index % columns) * source_tile
+    y = (index // columns) * source_tile
+    cell = image.crop((x, y, x + source_tile, y + source_tile))
+    if cell.getbbox() is None:
+        raise RuntimeError(f"terrain cell {index} is empty")
+    normalized = cell.resize((TILE, TILE), Image.Resampling.NEAREST)
+    return [normalized.copy() for _ in range(count)]
+
+
 def first_frame(image: Image.Image, frame_width: int, frame_height: int) -> Image.Image:
     if image.width < frame_width or image.height < frame_height:
         raise RuntimeError("animation sheet is smaller than its declared frame")
@@ -168,11 +187,9 @@ def build_biome_atlas(
 
 
 def pixel_adventure_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
-    terrain = sheet_cells(
-        open_rgba(archive, "Free/Terrain/Terrain (16x16).png"),
-        16,
-        TERRAIN_COLUMNS * TERRAIN_ROWS,
-    )
+    terrain_sheet = open_rgba(archive, "Free/Terrain/Terrain (16x16).png")
+    terrain = repeated_sheet_cell(
+        terrain_sheet, 16, 29, TERRAIN_COLUMNS * TERRAIN_ROWS)
     specials = [
         open_rgba(archive, "Free/Traps/Spikes/Idle.png"),
         first_frame(open_rgba(
@@ -186,11 +203,9 @@ def pixel_adventure_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, o
 
 
 def kenney_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
-    terrain = [
-        open_rgba(archive, f"Tiles/tile_{index:04d}.png").resize(
-            (TILE, TILE), Image.Resampling.NEAREST)
-        for index in range(TERRAIN_COLUMNS * TERRAIN_ROWS)
-    ]
+    base = open_rgba(archive, "Tiles/tile_0005.png").resize(
+        (TILE, TILE), Image.Resampling.NEAREST)
+    terrain = [base.copy() for _ in range(TERRAIN_COLUMNS * TERRAIN_ROWS)]
     specials = [
         open_rgba(archive, "Tiles/tile_0035.png"),
         open_rgba(archive, "Tiles/Characters/tile_0000.png"),
@@ -204,8 +219,8 @@ def kings_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
     terrain_sheet = open_rgba(archive, "Sprites/14-TileSets/Terrain (32x32).png")
     decoration_sheet = open_rgba(
         archive, "Sprites/14-TileSets/Decorations (32x32).png")
-    terrain = nonempty_sheet_cells(
-        terrain_sheet, 32, TERRAIN_COLUMNS * TERRAIN_ROWS)
+    terrain = repeated_sheet_cell(
+        terrain_sheet, 32, 162, TERRAIN_COLUMNS * TERRAIN_ROWS)
     decorations = nonempty_sheet_cells(decoration_sheet, 32, 4)
     return build_biome_atlas(
         terrain,

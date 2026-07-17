@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jumpcastle/renderer.hpp"
+#include "jumpcastle/simulation.hpp"
 
 #include <optional>
 
@@ -21,8 +22,11 @@ private:
     void update(float delta);
 
     PlayerState player_{};
+    CampaignState campaign_{};
     bool debug_enabled_{};
-    ScreenSelection active_screen_{select_screen(player_.position.y)};
+    float respawn_animation_time_{};
+    std::optional<LevelRepository> levels_;
+    std::optional<RoomSelection> active_room_;
     std::optional<Renderer> renderer_;
 };
 
