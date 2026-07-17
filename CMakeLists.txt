@@ -25,9 +25,11 @@ FetchContent_MakeAvailable(raylib)
 
 add_library(
   jumpcastle_core STATIC
+  src/campaign.cpp
   src/collision.cpp
   src/level.cpp
   src/player.cpp
+  src/simulation.cpp
   src/tilemap.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
@@ -73,9 +75,11 @@ if(JUMPCASTLE_BUILD_TESTS)
   add_executable(
     jumpcastle_tests
     tests/collision_test.cpp
+    tests/campaign_test.cpp
     tests/level_test.cpp
     tests/player_test.cpp
     tests/resource_traits_test.cpp
+    tests/simulation_test.cpp
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
