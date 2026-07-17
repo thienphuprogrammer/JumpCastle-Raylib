@@ -8,6 +8,7 @@ build/
 cmake-build-*/
 out/
 intermediate/
+assets/sources/downloads/
 
 *.exe
 *.pdb
