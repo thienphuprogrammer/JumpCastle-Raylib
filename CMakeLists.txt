@@ -26,7 +26,12 @@ add_library(
 target_include_directories(jumpcastle_core PUBLIC include)
 target_link_libraries(jumpcastle_core PUBLIC raylib)
 
-add_executable(jumpcastle src/main.cpp)
+add_executable(
+  jumpcastle
+  src/game.cpp
+  src/main.cpp
+  src/renderer.cpp
+)
 target_link_libraries(jumpcastle PRIVATE jumpcastle_core raylib)
 
 function(jumpcastle_enable_warnings target)
@@ -61,6 +66,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     jumpcastle_tests
     tests/collision_test.cpp
     tests/player_test.cpp
+    tests/resource_traits_test.cpp
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
