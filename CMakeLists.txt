@@ -17,9 +17,9 @@ FetchContent_Declare(
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
-add_library(jumpcastle_core INTERFACE)
-target_include_directories(jumpcastle_core INTERFACE include)
-target_link_libraries(jumpcastle_core INTERFACE raylib)
+add_library(jumpcastle_core STATIC src/tilemap.cpp)
+target_include_directories(jumpcastle_core PUBLIC include)
+target_link_libraries(jumpcastle_core PUBLIC raylib)
 
 add_executable(jumpcastle src/main.cpp)
 target_link_libraries(jumpcastle PRIVATE jumpcastle_core raylib)
@@ -33,6 +33,7 @@ function(jumpcastle_enable_warnings target)
 endfunction()
 
 jumpcastle_enable_warnings(jumpcastle)
+jumpcastle_enable_warnings(jumpcastle_core)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(JUMPCASTLE_BUILD_TESTS_DEFAULT ON)
@@ -51,7 +52,10 @@ if(JUMPCASTLE_BUILD_TESTS)
   )
   FetchContent_MakeAvailable(Catch2)
 
-  add_executable(jumpcastle_tests tests/smoke_test.cpp)
+  add_executable(
+    jumpcastle_tests
+    tests/tilemap_test.cpp
+  )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
   jumpcastle_enable_warnings(jumpcastle_tests)
 
