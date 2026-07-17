@@ -21,6 +21,11 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
       - name: Install Linux graphics dependencies
         if: runner.os == 'Linux'
         run: >-
@@ -46,3 +51,18 @@ jobs:
 
       - name: Test
         run: ctest --test-dir build/cmake -C Release --output-on-failure
+
+      - name: Verify generated CC0 assets
+        run: python tools/verify_assets.py assets/generated/manifest.json
+
+      - name: Prove campaign route
+        shell: bash
+        run: |
+          solver="build/cmake/jumpcastle_level_solver"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            solver="build/cmake/Release/jumpcastle_level_solver.exe"
+          fi
+          "$solver" \
+            --levels assets/levels \
+            --campaign \
+            --trace build/campaign-route.json
