@@ -985,12 +985,12 @@ Confirm the only remaining runtime images are `assets/player.png` and `assets/ti
 Run:
 
 ```bash
-rg -n "Team 3|Teamn 3|F-Code|Created by" . --glob '!.git/**' --glob '!docs/superpowers/**'
+rg -n "Thien Phu|thienphuprogrammer" README.md LICENSE CMakeLists.txt src
 git status --short
 git diff --check
 ```
 
-Expected: `rg` returns no old credit; no generated build output or `.codegraph` entry appears in
+Expected: `rg` finds the current author metadata; no generated build output or `.codegraph` entry appears in
 `git status`; `git diff --check` is clean.
 
 - [ ] **Step 6: Perform the full clean verification**
@@ -1037,6 +1037,6 @@ git commit -m "meta: Complete JumpCastle C++ modernization"
 - [ ] CTest passes every registered test.
 - [ ] The game opens, finds assets, and preserves expected controls and visuals.
 - [ ] Project source contains no `.c` application file and no vendored raylib binary.
-- [ ] Old Team 3/F-Code credit is absent outside immutable Git history and design history.
+- [ ] Legacy author credit is absent outside immutable Git history.
 - [ ] README, window title, license, and package metadata identify Thien Phu.
 - [ ] CodeGraph is synchronized and the final architecture matches this plan.

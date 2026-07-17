@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(JumpCastle VERSION 1.0.0 LANGUAGES CXX)
+project(
+  JumpCastle
+  VERSION 1.0.0
+  DESCRIPTION "A pixel-art charge-jumping platformer built with C++20 and raylib"
+  HOMEPAGE_URL "https://github.com/thienphuprogrammer/JumpCastle-Raylib"
+  LANGUAGES CXX
+)
 
 include(FetchContent)
 
@@ -23,6 +29,7 @@ add_library(
   src/player.cpp
   src/tilemap.cpp
 )
+add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
 target_link_libraries(jumpcastle_core PUBLIC raylib)
 

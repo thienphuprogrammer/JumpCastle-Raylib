@@ -12,7 +12,7 @@ testability, documentation, and repository hygiene.
 - Use `JumpCastle` as the product and CMake project name.
 - Use `Thien Phu (@thienphuprogrammer)` for source headers, documentation, package metadata,
   and the game window title where an author is displayed.
-- Replace the existing Team 3/F-Code credit in the working tree. Git history remains intact.
+- Replace the existing legacy credit in the working tree. Git history remains intact.
 - Distribute the modernized project under the MIT License with copyright assigned to Thien Phu.
 
 ## Supported Toolchain
@@ -208,6 +208,5 @@ The modernization is complete when:
 4. CI defines successful Windows, macOS, and Linux verification.
 5. The executable locates assets without platform-specific path parsing.
 6. The original controls, visuals, level data, and charge-jump behavior remain recognizable.
-7. No Team 3/F-Code credit remains in the working tree.
+7. No legacy author credit remains in the working tree.
 8. Documentation and license identify Thien Phu (`@thienphuprogrammer`) as the project author.
-
