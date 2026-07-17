@@ -81,6 +81,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     jumpcastle_tests
     tests/collision_test.cpp
     tests/campaign_test.cpp
+    tests/campaign_reachability_test.cpp
     tests/level_test.cpp
     tests/player_test.cpp
     tests/resource_traits_test.cpp
@@ -89,6 +90,10 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
+  target_compile_definitions(
+    jumpcastle_tests PRIVATE
+    JUMPCASTLE_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+  )
   jumpcastle_enable_warnings(jumpcastle_tests)
 
   list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)

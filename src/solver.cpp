@@ -45,7 +45,12 @@ std::vector<Surface> extract_surfaces(
                    !room.tilemap.solid_at(x + 1, y - 1)) {
                 ++x;
             }
-            surfaces.push_back({room_filter, y, start, x, offset + static_cast<float>(y)});
+            const bool boundary_cap = start == x &&
+                (start == 0 || start == config::tilemap_width - 1);
+            if (!boundary_cap) {
+                surfaces.push_back({
+                    room_filter, y, start, x, offset + static_cast<float>(y)});
+            }
             ++x;
         }
     }
@@ -208,6 +213,15 @@ SolverResult solve_surfaces(
                     const auto transition = simulate_jump(
                         level, config_value, surfaces, source_index, x, direction, charge);
                     if (!transition || visited[transition->destination]) continue;
+                    if (!tolerant_jump(
+                            level,
+                            config_value,
+                            surfaces,
+                            source_index,
+                            transition->destination,
+                            transition->jump)) {
+                        continue;
+                    }
                     visited[transition->destination] = true;
                     parent[transition->destination] = source_index;
                     parent_jump[transition->destination] = transition->jump;
