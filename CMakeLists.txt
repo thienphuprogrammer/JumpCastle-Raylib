@@ -17,7 +17,11 @@ FetchContent_Declare(
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
-add_library(jumpcastle_core STATIC src/tilemap.cpp)
+add_library(
+  jumpcastle_core STATIC
+  src/collision.cpp
+  src/tilemap.cpp
+)
 target_include_directories(jumpcastle_core PUBLIC include)
 target_link_libraries(jumpcastle_core PUBLIC raylib)
 
@@ -54,6 +58,7 @@ if(JUMPCASTLE_BUILD_TESTS)
 
   add_executable(
     jumpcastle_tests
+    tests/collision_test.cpp
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
