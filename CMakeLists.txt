@@ -30,6 +30,7 @@ add_library(
   src/level.cpp
   src/player.cpp
   src/simulation.cpp
+  src/solver.cpp
   src/tilemap.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
@@ -54,6 +55,10 @@ endfunction()
 
 jumpcastle_enable_warnings(jumpcastle)
 jumpcastle_enable_warnings(jumpcastle_core)
+
+add_executable(jumpcastle_level_solver src/solver_main.cpp)
+target_link_libraries(jumpcastle_level_solver PRIVATE jumpcastle_core)
+jumpcastle_enable_warnings(jumpcastle_level_solver)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(JUMPCASTLE_BUILD_TESTS_DEFAULT ON)
@@ -80,6 +85,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/player_test.cpp
     tests/resource_traits_test.cpp
     tests/simulation_test.cpp
+    tests/solver_test.cpp
     tests/tilemap_test.cpp
   )
   target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
