@@ -82,6 +82,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/collision_test.cpp
     tests/campaign_test.cpp
     tests/campaign_reachability_test.cpp
+    tests/assets_test.cpp
     tests/level_test.cpp
     tests/player_test.cpp
     tests/resource_traits_test.cpp
@@ -99,6 +100,14 @@ if(JUMPCASTLE_BUILD_TESTS)
   list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
   include(Catch)
   catch_discover_tests(jumpcastle_tests)
+
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(
+    NAME asset_manifest
+    COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tools/verify_assets.py
+            ${PROJECT_SOURCE_DIR}/assets/generated/manifest.json
+  )
 endif()
 
 add_custom_command(
