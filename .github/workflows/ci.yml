@@ -58,6 +58,15 @@ jobs:
       - name: Test
         run: ctest --test-dir build/cmake -C Release --output-on-failure
 
+      - name: Smoke render biomes
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y xvfb
+          xvfb-run -a build/cmake/jumpcastle --smoke-screens build/runtime-smoke
+          test -s build/runtime-smoke/courtyard.png
+          test -s build/runtime-smoke/frosted-keep.png
+          test -s build/runtime-smoke/crown-spire.png
+
       - name: Verify generated CC0 assets
         run: python tools/verify_assets.py assets/generated/manifest.json
 
