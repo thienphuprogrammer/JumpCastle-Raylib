@@ -41,12 +41,6 @@ void simulate_ground_movement(
 
 void integrate_player(PlayerState& player, float delta) noexcept;
 
-void step_player(
-    PlayerState& player,
-    const WorldMap& world,
-    PlayerInput input,
-    float fixed_delta) noexcept;
-
 [[nodiscard]] ResolveResult step_player(
     PlayerState& player,
     const CollisionWorld& world,

@@ -131,38 +131,6 @@ bool advance_before_resolution(
 
 }  // namespace
 
-void step_player(
-    PlayerState& player,
-    const WorldMap& world,
-    const PlayerInput input,
-    const float fixed_delta) noexcept {
-    if (advance_before_resolution(player, input, fixed_delta)) {
-        return;
-    }
-
-    const Vec2 previous_position = player.position;
-    player.position = player.position + player.velocity * fixed_delta;
-    resolve_world_collision(world, previous_position, player);
-
-    if (player.mode == PlayerMode::grounded) {
-        const bool supported = collides_with_world(
-            world,
-            {player.position.x,
-             player.position.y + config::player_half_size.y + 0.10F},
-            {config::player_half_size.x, 0.02F});
-        if (supported && player.velocity.y >= 0.0F) {
-            player.mode = PlayerMode::grounded;
-            player.on_ground = true;
-            player.velocity.y = 0.0F;
-        } else {
-            // No ground beneath the feet (walked off an edge): drop to airborne
-            // so gravity applies next tick instead of freezing mid-air.
-            player.mode = PlayerMode::airborne;
-            player.on_ground = false;
-        }
-    }
-}
-
 ResolveResult step_player(
     PlayerState& player,
     const CollisionWorld& world,
