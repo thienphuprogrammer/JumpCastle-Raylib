@@ -130,10 +130,12 @@ ResolveResult CollisionWorld::resolve(const Vec2 previous_position, PlayerState&
                     // (restitution 0 makes the formula the plain slide).
                     const bool is_wall =
                         std::abs(mtv.normal.x) > std::abs(mtv.normal.y);
-                    const float restitution =
-                        (is_wall && player.mode == PlayerMode::airborne)
-                            ? config::wall_bounce
-                            : 0.0F;
+                    float restitution = 0.0F;
+                    if (is_wall && player.mode == PlayerMode::airborne) {
+                        const float impact_speed = -velocity_along_normal;
+                        restitution =
+                            config::wall_bounce_restitution(impact_speed);
+                    }
                     player.velocity = player.velocity -
                         mtv.normal * (velocity_along_normal * (1.0F + restitution));
                 }

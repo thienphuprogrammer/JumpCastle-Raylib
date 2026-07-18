@@ -34,12 +34,14 @@ bool resolve_world_x(
             if (direction > 0.0F) {
                 player.position.x = static_cast<float>(x) - config::player_half_size.x;
                 if (player.velocity.x > 0.0F) {
-                    player.velocity.x = -player.velocity.x * config::horizontal_bounce;
+                    player.velocity.x = -player.velocity.x *
+                        config::wall_bounce_restitution(std::abs(player.velocity.x));
                 }
             } else {
                 player.position.x = static_cast<float>(x + 1) + config::player_half_size.x;
                 if (player.velocity.x < 0.0F) {
-                    player.velocity.x = -player.velocity.x * config::horizontal_bounce;
+                    player.velocity.x = -player.velocity.x *
+                        config::wall_bounce_restitution(std::abs(player.velocity.x));
                 }
             }
             return true;

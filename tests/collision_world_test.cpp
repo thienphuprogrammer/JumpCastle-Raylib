@@ -84,7 +84,8 @@ TEST_CASE("airborne player rebounds off a vertical wall like Jump King") {
 
     // Horizontal velocity reverses and keeps 0.8x its magnitude; the downward
     // fall (y) is untouched, so the player loses horizontal control mid-air.
-    REQUIRE(player.velocity.x == Approx(-5.0F * config::wall_bounce).margin(1e-3));
+    REQUIRE(player.velocity.x ==
+            Approx(-5.0F * config::wall_bounce_restitution(5.0F)).margin(1e-3));
     REQUIRE(player.velocity.y == Approx(3.0F).margin(1e-3));
     REQUIRE(player.position.x + config::player_half_size.x == Approx(10.0F).margin(1e-2));
 }

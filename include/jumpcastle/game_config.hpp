@@ -21,12 +21,6 @@ inline constexpr float maximum_charge_seconds = 0.85F;
 inline constexpr float gravity = 30.0F;
 inline constexpr float movement_acceleration = 200.0F;
 inline constexpr float jump_strength = 15.0F;
-inline constexpr float horizontal_bounce = 0.6F;
-// Jump King-style wall rebound: fraction of horizontal speed retained (and
-// reversed) when an airborne player strikes a vertical wall in the polygon
-// collision path. Floors and ceilings do not bounce.
-inline constexpr float wall_bounce = 0.8F;
-
 // Charge-proportional (impact-scaled) wall rebound. The restitution fraction
 // ramps with impact speed between the anchors below, clamped to
 // [wall_bounce_min, wall_bounce_max]. The <= 1.0 ceiling keeps the wall from
