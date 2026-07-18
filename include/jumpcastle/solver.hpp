@@ -16,11 +16,19 @@ enum class JumpDirection {
 };
 
 struct SolverConfig {
-    std::array<int, 14> charge_ticks{
-        15, 21, 27, 33, 39, 45, 51, 57, 63, 69, 75, 81, 87, 93};
+    // Denser charge sampling (step 3 ticks) models the player's continuous
+    // charge control more faithfully, so tighter jumps a human can hit are no
+    // longer rejected as unreachable.
+    std::array<int, 29> charge_ticks{
+        15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57,
+        60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90, 93, 96, 99};
     int maximum_air_ticks{480};
-    float launch_sample_spacing{0.25F};
+    float launch_sample_spacing{0.15F};
     float state_quantization{0.10F};
+    // Fraction of full charge the solver may certify. Below 1.0 leaves a human
+    // safety cushion; raising it toward 1.0 permits brutally long/high jumps.
+    // Fairness is still guaranteed by the tolerant_jump replay.
+    float max_charge_ratio{0.98F};
 };
 
 struct SolverJump {

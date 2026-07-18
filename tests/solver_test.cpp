@@ -14,7 +14,7 @@ TEST_CASE("solver finds a tolerant route across a continuous world") {
     REQUIRE(result.reachable);
     CHECK_FALSE(result.jumps.empty());
     CHECK(result.highest_screen == 2);
-    CHECK(result.maximum_charge_ratio <= 0.90F);
+    CHECK(result.maximum_charge_ratio <= SolverConfig{}.max_charge_ratio);
     CHECK(result.tolerance_passed);
 }
 

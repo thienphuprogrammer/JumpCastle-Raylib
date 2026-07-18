@@ -261,7 +261,8 @@ SolverResult ReachabilitySolver::solve_campaign() const {
                      JumpDirection::left, JumpDirection::right, JumpDirection::neutral}) {
                 for (const int charge : config_.charge_ticks) {
                     if (static_cast<float>(charge) /
-                            static_cast<float>(maximum_charge_ticks) > 0.90F) {
+                            static_cast<float>(maximum_charge_ticks) >
+                        config_.max_charge_ratio) {
                         continue;
                     }
                     const auto transition = simulate_jump(
