@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -150,9 +151,60 @@ void show_fatal_error(const std::string& message) {
     CloseWindow();
 }
 
+// `--export-polygons DIR` writes the campaign as per-screen screen-NN.map.json
+// polygon files (the polygon-native form of campaign.level). No window needed.
+std::optional<std::filesystem::path> export_output(const int argc, char** argv) {
+    constexpr std::string_view flag{"--export-polygons"};
+    for (int index = 1; index < argc; ++index) {
+        if (std::string_view{argv[index]} == flag && index + 1 < argc) {
+            return std::filesystem::path{argv[index + 1]};
+        }
+    }
+    return std::nullopt;
+}
+
+int export_polygons(
+    std::optional<std::filesystem::path> override_root,
+    const std::filesystem::path& output_directory) {
+    using namespace jumpcastle;
+    try {
+        const std::filesystem::path executable_directory{GetApplicationDirectory()};
+        const auto asset_directory = resolve_asset_root({
+            .override_root = std::move(override_root),
+            .executable_directory = executable_directory,
+            .installed_root = executable_directory / ".." / "share" / "jumpcastle",
+        });
+        const WorldMap grid =
+            WorldMap::load(asset_directory / "levels" / "campaign.level");
+        const std::vector<ScreenMap> screens =
+            CampaignWorld::screen_maps_from_world_map(grid);
+        std::filesystem::create_directories(output_directory);
+        for (const ScreenMap& screen : screens) {
+            const std::string filename = "screen-" +
+                (screen.index < 10 ? std::string{"0"} : std::string{}) +
+                std::to_string(screen.index) + ".map.json";
+            std::ofstream out{output_directory / filename};
+            if (!out) {
+                std::cerr << "JumpCastle: cannot write " << filename << '\n';
+                return EXIT_FAILURE;
+            }
+            out << serialize_screen_map(screen);
+        }
+        std::cerr << "JumpCastle: exported " << screens.size()
+                  << " polygon screens to " << output_directory << '\n';
+        return EXIT_SUCCESS;
+    } catch (const std::exception& error) {
+        std::cerr << "JumpCastle: export failed: " << error.what() << '\n';
+        return EXIT_FAILURE;
+    }
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
+    if (const auto export_directory = export_output(argc, argv)) {
+        return export_polygons(resolve_override(argc, argv), *export_directory);
+    }
     if (const auto smoke_directory = smoke_output(argc, argv)) {
         return render_smoke_screens(resolve_override(argc, argv), *smoke_directory);
     }

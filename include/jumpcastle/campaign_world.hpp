@@ -35,6 +35,11 @@ struct CampaignWorld {
     // the player snagging on seams between adjacent unit tiles).
     [[nodiscard]] static CampaignWorld from_world_map(const WorldMap& grid);
 
+    // The per-screen, screen-local polygon maps a grid converts to. Exposed so a
+    // one-time export can materialize campaign.level as screen-NN.map.json files.
+    [[nodiscard]] static std::vector<ScreenMap> screen_maps_from_world_map(
+        const WorldMap& grid);
+
     // Loads every screen-NN.map.json in a directory into one campaign world.
     [[nodiscard]] static CampaignWorld load(
         const std::filesystem::path& directory,

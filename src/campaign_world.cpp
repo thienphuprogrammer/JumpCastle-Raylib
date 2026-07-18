@@ -67,7 +67,7 @@ CampaignWorld CampaignWorld::from_screens(
     return world;
 }
 
-CampaignWorld CampaignWorld::from_world_map(const WorldMap& grid) {
+std::vector<ScreenMap> CampaignWorld::screen_maps_from_world_map(const WorldMap& grid) {
     const int screen_height = grid.screen_height();
     const int screen_count = grid.screen_count();
     const int width = grid.width();
@@ -145,9 +145,14 @@ CampaignWorld CampaignWorld::from_world_map(const WorldMap& grid) {
         {EntityType::goal,
          {goal.x, goal.y - static_cast<float>(goal_band * screen_height)}});
 
-    CampaignWorld world = from_screens(screens, screen_height);
-    world.spawn = spawn;  // preserve exact fractional spawn/goal
-    world.goal = goal;
+    return screens;
+}
+
+CampaignWorld CampaignWorld::from_world_map(const WorldMap& grid) {
+    CampaignWorld world =
+        from_screens(screen_maps_from_world_map(grid), grid.screen_height());
+    world.spawn = grid.spawn();  // preserve exact fractional spawn/goal
+    world.goal = grid.goal();
     return world;
 }
 
