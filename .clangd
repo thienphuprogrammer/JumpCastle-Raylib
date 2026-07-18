@@ -1,0 +1,5 @@
+# Point clangd at the CMake compilation database so editor diagnostics use the
+# real include paths and C++20 standard. Regenerate the database with a build
+# that has CMAKE_EXPORT_COMPILE_COMMANDS=ON (enabled in CMakeLists.txt).
+CompileFlags:
+  CompilationDatabase: out/campaign-final
