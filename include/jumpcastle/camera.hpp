@@ -13,10 +13,6 @@ struct CameraBand {
 };
 
 [[nodiscard]] CameraBand select_camera_band(
-    const WorldMap& world,
-    float player_y) noexcept;
-
-[[nodiscard]] CameraBand select_camera_band(
     const CampaignWorld& world,
     float player_y) noexcept;
 
