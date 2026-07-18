@@ -2,6 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <filesystem>
+#include <fstream>
 #include <stdexcept>
 
 using namespace jumpcastle;
@@ -51,4 +53,23 @@ TEST_CASE("serialize then parse round-trips collider count and types") {
     REQUIRE(again.polygons.size() == map.polygons.size());
     REQUIRE(again.entities.size() == map.entities.size());
     REQUIRE(again.index == map.index);
+}
+
+TEST_CASE("parse_screen_map_file reads a .map.json from disk") {
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "jumpcastle_screen_test.map.json";
+    {
+        std::ofstream out{path};
+        out << serialize_screen_map(parse_screen_map(kValid, "seed"));
+    }
+    const ScreenMap map = parse_screen_map_file(path);
+    REQUIRE(map.index == 5);
+    REQUIRE(map.polygons.size() == 3);
+    std::filesystem::remove(path);
+}
+
+TEST_CASE("parse_screen_map_file throws on a missing file") {
+    REQUIRE_THROWS_AS(
+        parse_screen_map_file("/nonexistent/jumpcastle/does-not-exist.map.json"),
+        std::runtime_error);
 }

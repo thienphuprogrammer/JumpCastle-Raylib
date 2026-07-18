@@ -2,6 +2,7 @@
 
 #include "jumpcastle/math.hpp"
 
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -36,6 +37,10 @@ struct ScreenMap {
 // pieces, and precomputes edge normals + AABB per piece. Throws std::runtime_error
 // on invalid input.
 [[nodiscard]] ScreenMap parse_screen_map(std::string_view json, std::string_view label);
+
+// Reads and parses a `.map.json` file. Throws std::runtime_error if the file
+// cannot be opened or the contents are invalid.
+[[nodiscard]] ScreenMap parse_screen_map_file(const std::filesystem::path& path);
 
 [[nodiscard]] std::string serialize_screen_map(const ScreenMap& map);
 

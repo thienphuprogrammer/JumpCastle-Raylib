@@ -4,6 +4,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 namespace jumpcastle {
@@ -124,6 +126,16 @@ ScreenMap parse_screen_map(const std::string_view json, const std::string_view l
     } catch (const std::exception& error) {
         throw std::runtime_error(std::string{label} + ": " + error.what());
     }
+}
+
+ScreenMap parse_screen_map_file(const std::filesystem::path& path) {
+    std::ifstream input{path};
+    if (!input) {
+        throw std::runtime_error("unable to open map file: " + path.string());
+    }
+    std::ostringstream buffer;
+    buffer << input.rdbuf();
+    return parse_screen_map(buffer.str(), path.string());
 }
 
 std::string serialize_screen_map(const ScreenMap& map) {
