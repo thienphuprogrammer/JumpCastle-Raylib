@@ -40,6 +40,18 @@ Color biome_background(const WorldBiome biome) noexcept {
     return {15, 5, 45, 255};
 }
 
+// Per-biome multiplicative tint applied to terrain tiles so the three biomes
+// read as distinct climates while sharing one tileset: warm stone in the
+// courtyard, icy blue in the frosted keep, twilight violet in the crown spire.
+Color biome_terrain_tint(const WorldBiome biome) noexcept {
+    switch (biome) {
+    case WorldBiome::courtyard: return {255, 244, 222, 255};
+    case WorldBiome::frosted_keep: return {176, 206, 255, 255};
+    case WorldBiome::crown_spire: return {214, 178, 236, 255};
+    }
+    return WHITE;
+}
+
 void draw_region(
     const Texture2D texture,
     const SpriteRegion& region,
@@ -119,6 +131,17 @@ SpriteRegion terrain_region(
         }
     }
 
+    // The castle tileset's left-edge column (0) is a diagonal slope whose
+    // top-left corner is transparent; its bricks only fill the lower-right of
+    // the cell. Collision treats the whole tile as solid up to its top edge, so
+    // selecting this slope for a tile with open sky above draws the surface a
+    // few pixels below where the player actually stands and the knight appears
+    // to hover. Any exposed walking surface must present a flat, fully opaque
+    // top, so fall back to the solid fill column there.
+    if (!top && sprite_x == 0) {
+        sprite_x = 1;
+    }
+
     sprite_x = std::clamp(sprite_x, 0, grid.columns - 1);
     sprite_y = std::clamp(sprite_y, 0, grid.rows - 1);
     return {
@@ -136,6 +159,7 @@ void draw_world(
     const Texture2D texture) {
     const int first_row = static_cast<int>(camera.world_top);
     const int last_row = first_row + world.screen_height();
+    const Color terrain_tint = biome_terrain_tint(camera.biome);
     for (int y = first_row; y < last_row; ++y) {
         for (int x = 0; x < world.width(); ++x) {
             const Rectangle destination{
@@ -148,7 +172,8 @@ void draw_world(
                 draw_region(
                     texture,
                     terrain_region(world, x, y, assets.terrain),
-                    destination);
+                    destination,
+                    terrain_tint);
             }
         }
     }
