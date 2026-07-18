@@ -55,16 +55,6 @@ public:
     explicit Renderer(const std::filesystem::path& asset_directory);
 
     void draw(
-        const WorldMap& world,
-        const CameraBand& camera,
-        const PlayerState& player,
-        const CampaignState& campaign,
-        float respawn_animation_time,
-        bool debug_enabled) const;
-
-    // Polygon-world overloads (tinted polygon terrain). Kept alongside the grid
-    // versions until the ASCII path is removed.
-    void draw(
         const CampaignWorld& world,
         const CameraBand& camera,
         const PlayerState& player,
@@ -75,11 +65,6 @@ public:
     // Render one biome screen into the offscreen pixel-art target and return it
     // as a CPU Image (exactly view_width by view_height). Used by headless
     // smoke capture so results never depend on window presentation.
-    [[nodiscard]] Image capture_screen(
-        const WorldMap& world,
-        const CameraBand& camera,
-        const PlayerState& player) const;
-
     [[nodiscard]] Image capture_screen(
         const CampaignWorld& world,
         const CameraBand& camera,
