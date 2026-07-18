@@ -30,6 +30,11 @@ struct CampaignWorld {
         const std::vector<ScreenMap>& screens,
         int screen_height);
 
+    // Bridge: convert the legacy grid WorldMap into a polygon campaign world by
+    // greedily merging runs of solid tiles into rectangles (merged rects avoid
+    // the player snagging on seams between adjacent unit tiles).
+    [[nodiscard]] static CampaignWorld from_world_map(const WorldMap& grid);
+
     // Loads every screen-NN.map.json in a directory into one campaign world.
     [[nodiscard]] static CampaignWorld load(
         const std::filesystem::path& directory,

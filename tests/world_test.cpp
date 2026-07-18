@@ -1,5 +1,6 @@
 #include "jumpcastle/world.hpp"
 
+#include "jumpcastle/campaign_world.hpp"
 #include "test_world_factory.hpp"
 
 #include <catch2/catch_test_macros.hpp>
@@ -10,6 +11,42 @@
 #include <string>
 
 using namespace jumpcastle;
+
+TEST_CASE("from_world_map converts a grid into a merged polygon campaign world") {
+    const WorldMap grid = parse_campaign(R"(version 2
+tile_size 16
+size 4 6
+screen_height 2
+spawn 0 2
+goal 1 4
+biome 1 3 courtyard
+---
+[collision]
+....
+....
+....
+##..
+....
+####)",
+        "convert.level");
+
+    const CampaignWorld world = CampaignWorld::from_world_map(grid);
+
+    CHECK(world.spawn == grid.spawn());
+    CHECK(world.goal == grid.goal());
+    CHECK(world.screen_count() == grid.screen_count());
+    CHECK(world.height == grid.height());
+
+    // The bottom row is four solid tiles; greedy merge collapses them into a
+    // single wide rectangle instead of four unit squares (avoids seam snags).
+    const auto* bottom = world.collision.polygons_for_screen(2);
+    REQUIRE(bottom != nullptr);
+    int wide_floor = 0;
+    for (const ConvexPolygon& polygon : *bottom) {
+        if (polygon.aabb.max.x - polygon.aabb.min.x >= 4.0F) { ++wide_floor; }
+    }
+    CHECK(wide_floor == 1);
+}
 
 TEST_CASE("campaign parser reads dimensions markers and biome ranges") {
     const WorldMap world = parse_campaign(R"(version 2

@@ -39,9 +39,10 @@ Game::Game(std::optional<std::filesystem::path> override_root) {
         .executable_directory = executable_directory,
         .installed_root = executable_directory / ".." / "share" / "jumpcastle",
     });
-    world_.emplace(WorldMap::load(asset_directory / "levels" / "campaign.level"));
-    campaign_ = CampaignState{.spawn = world_->spawn()};
-    reset_player(player_, world_->spawn());
+    world_.emplace(CampaignWorld::from_world_map(
+        WorldMap::load(asset_directory / "levels" / "campaign.level")));
+    campaign_ = CampaignState{.spawn = world_->spawn};
+    reset_player(player_, world_->spawn);
     camera_ = select_camera_band(*world_, player_.position.y);
     renderer_.emplace(asset_directory);
 }
@@ -73,8 +74,8 @@ void Game::update_frame(const float frame_delta) {
     jump_release_latched_ = jump_release_latched_ || frame_input.jump_released;
 
     if (campaign_.complete && IsKeyPressed(KEY_ENTER)) {
-        campaign_ = CampaignState{.spawn = world_->spawn()};
-        reset_player(player_, world_->spawn());
+        campaign_ = CampaignState{.spawn = world_->spawn};
+        reset_player(player_, world_->spawn);
         fixed_clock_.reset();
         jump_release_latched_ = false;
         respawn_animation_time_ = 0.0F;
@@ -82,10 +83,10 @@ void Game::update_frame(const float frame_delta) {
 
     if (debug_enabled_) {
         if (IsKeyPressed(KEY_PAGE_UP)) {
-            player_.position.y -= static_cast<float>(world_->screen_height());
+            player_.position.y -= static_cast<float>(world_->screen_height);
         }
         if (IsKeyPressed(KEY_PAGE_DOWN)) {
-            player_.position.y += static_cast<float>(world_->screen_height());
+            player_.position.y += static_cast<float>(world_->screen_height);
         }
     }
 

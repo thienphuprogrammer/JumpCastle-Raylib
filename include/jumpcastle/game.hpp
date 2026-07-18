@@ -29,7 +29,7 @@ private:
     bool jump_release_latched_{};
     float respawn_animation_time_{};
     FixedStepClock fixed_clock_;
-    std::optional<WorldMap> world_;
+    std::optional<CampaignWorld> world_;
     std::optional<CameraBand> camera_;
     std::optional<Renderer> renderer_;
 };
