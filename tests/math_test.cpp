@@ -13,3 +13,10 @@ TEST_CASE("core vector arithmetic is deterministic") {
     CHECK(value.y == Approx(-1.0F));
     CHECK(jumpcastle::length(Vec2{3.0F, 4.0F}) == Approx(5.0F));
 }
+
+TEST_CASE("dot product and aabb helpers") {
+    CHECK(jumpcastle::dot({1.0F, 2.0F}, {3.0F, 4.0F}) == Approx(11.0F));
+    const jumpcastle::Aabb box{{0.0F, 0.0F}, {2.0F, 4.0F}};
+    CHECK(jumpcastle::aabb_center(box) == Vec2{1.0F, 2.0F});
+    CHECK(jumpcastle::aabb_half(box) == Vec2{1.0F, 2.0F});
+}

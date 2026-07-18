@@ -32,4 +32,21 @@ struct Vec2 {
     return magnitude == 0.0F ? Vec2{} : value * (1.0F / magnitude);
 }
 
+[[nodiscard]] constexpr float dot(const Vec2 a, const Vec2 b) noexcept {
+    return a.x * b.x + a.y * b.y;
+}
+
+struct Aabb {
+    Vec2 min{};
+    Vec2 max{};
+};
+
+[[nodiscard]] constexpr Vec2 aabb_center(const Aabb box) noexcept {
+    return {(box.min.x + box.max.x) * 0.5F, (box.min.y + box.max.y) * 0.5F};
+}
+
+[[nodiscard]] constexpr Vec2 aabb_half(const Aabb box) noexcept {
+    return {(box.max.x - box.min.x) * 0.5F, (box.max.y - box.min.y) * 0.5F};
+}
+
 }  // namespace jumpcastle
