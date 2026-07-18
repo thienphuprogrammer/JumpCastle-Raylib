@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jumpcastle/assets.hpp"
+#include "jumpcastle/camera.hpp"
 #include "jumpcastle/campaign.hpp"
 
 #include "raylib.h"
@@ -47,7 +48,8 @@ public:
     explicit Renderer(const std::filesystem::path& asset_directory);
 
     void draw(
-        const RoomSelection& room,
+        const WorldMap& world,
+        const CameraBand& camera,
         const PlayerState& player,
         const CampaignState& campaign,
         float respawn_animation_time,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jumpcastle/renderer.hpp"
+#include "jumpcastle/fixed_step.hpp"
 #include "jumpcastle/simulation.hpp"
 
 #include <optional>
@@ -19,14 +20,16 @@ public:
 
 private:
     [[nodiscard]] static PlayerInput sample_input() noexcept;
-    void update(float delta);
+    void update_frame(float frame_delta);
 
     PlayerState player_{};
     CampaignState campaign_{};
     bool debug_enabled_{};
+    bool jump_release_latched_{};
     float respawn_animation_time_{};
-    std::optional<LevelRepository> levels_;
-    std::optional<RoomSelection> active_room_;
+    FixedStepClock fixed_clock_;
+    std::optional<WorldMap> world_;
+    std::optional<CameraBand> camera_;
     std::optional<Renderer> renderer_;
 };
 

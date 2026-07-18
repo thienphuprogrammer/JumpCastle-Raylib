@@ -23,14 +23,10 @@ Game::Game() {
     try {
         const auto asset_directory =
             std::filesystem::path{GetApplicationDirectory()} / "assets";
-        levels_.emplace(LevelRepository::load(asset_directory / "levels"));
-        const Vec2 spawn = levels_->campaign_spawn();
-        restart_campaign(campaign_, spawn, 0);
-        reset_player(player_, spawn);
-        active_room_ = levels_->select(player_.position.y);
-        if (!active_room_) {
-            throw std::runtime_error("Campaign spawn is outside the room stack");
-        }
+        world_.emplace(WorldMap::load(asset_directory / "levels" / "campaign.level"));
+        campaign_ = CampaignState{.spawn = world_->spawn()};
+        reset_player(player_, world_->spawn());
+        camera_ = select_camera_band(*world_, player_.position.y);
         renderer_.emplace(asset_directory);
     } catch (...) {
         CloseWindow();
@@ -56,43 +52,48 @@ PlayerInput Game::sample_input() noexcept {
     };
 }
 
-void Game::update(const float delta) {
+void Game::update_frame(const float frame_delta) {
     if (IsKeyPressed(KEY_I)) {
         debug_enabled_ = !debug_enabled_;
     }
 
-    if (campaign_.complete) {
-        if (IsKeyPressed(KEY_ENTER)) {
-            const Vec2 spawn = levels_->campaign_spawn();
-            restart_campaign(campaign_, spawn, 0);
-            reset_player(player_, spawn);
-            respawn_animation_time_ = 0.0F;
+    PlayerInput frame_input = sample_input();
+    jump_release_latched_ = jump_release_latched_ || frame_input.jump_released;
+
+    if (campaign_.complete && IsKeyPressed(KEY_ENTER)) {
+        campaign_ = CampaignState{.spawn = world_->spawn()};
+        reset_player(player_, world_->spawn());
+        fixed_clock_.reset();
+        jump_release_latched_ = false;
+        respawn_animation_time_ = 0.0F;
+    }
+
+    if (debug_enabled_) {
+        if (IsKeyPressed(KEY_PAGE_UP)) {
+            player_.position.y -= static_cast<float>(world_->screen_height());
         }
-    } else {
-        const CampaignEvent event = simulate_step(
-            player_, campaign_, *levels_, sample_input(), delta);
-        if (event == CampaignEvent::respawned) {
+        if (IsKeyPressed(KEY_PAGE_DOWN)) {
+            player_.position.y += static_cast<float>(world_->screen_height());
+        }
+    }
+
+    const int ticks = fixed_clock_.consume(frame_delta);
+    for (int tick = 0; tick < ticks && !campaign_.complete; ++tick) {
+        PlayerInput tick_input = frame_input;
+        tick_input.jump_released = jump_release_latched_;
+        const CampaignEvent event = step_world(
+            player_, campaign_, *world_, tick_input);
+        if (jump_release_latched_) {
+            jump_release_latched_ = false;
+        }
+        if (event == CampaignEvent::fell_below_world) {
             respawn_animation_time_ = 0.45F;
         }
     }
 
-    respawn_animation_time_ = std::max(0.0F, respawn_animation_time_ - delta);
-
-    if (debug_enabled_) {
-        if (IsKeyPressed(KEY_PAGE_UP)) {
-            player_.position.y -= static_cast<float>(config::tilemap_height);
-        }
-        if (IsKeyPressed(KEY_PAGE_DOWN)) {
-            player_.position.y += static_cast<float>(config::tilemap_height);
-        }
-    }
-
-    active_room_ = levels_->select(player_.position.y);
-    if (!active_room_) {
-        respawn_player(campaign_, player_);
-        respawn_animation_time_ = 0.45F;
-        active_room_ = levels_->select(player_.position.y);
-    }
+    respawn_animation_time_ = std::max(
+        0.0F, respawn_animation_time_ - std::clamp(frame_delta, 0.0F, 0.1F));
+    camera_ = select_camera_band(*world_, player_.position.y);
 
     const int width = std::max(GetScreenWidth(), config::view_width);
     const int height = std::max(GetScreenHeight(), config::view_height);
@@ -103,10 +104,10 @@ void Game::update(const float delta) {
 
 void Game::run() {
     while (!WindowShouldClose()) {
-        const float delta = std::clamp(GetFrameTime(), 0.0001F, 0.1F);
-        update(delta);
+        update_frame(GetFrameTime());
         renderer_->draw(
-            *active_room_,
+            *world_,
+            *camera_,
             player_,
             campaign_,
             respawn_animation_time_,

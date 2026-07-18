@@ -21,20 +21,29 @@ std::size_t biome_index(const Biome biome) noexcept {
     return 0;
 }
 
-std::string_view biome_name(const Biome biome) noexcept {
+Biome asset_biome(const WorldBiome biome) noexcept {
     switch (biome) {
-    case Biome::pixel_adventure: return "Pixel Adventure";
-    case Biome::kenney: return "Kenney Clockworks";
-    case Biome::kings_and_pigs: return "Kings and Pigs";
+    case WorldBiome::courtyard: return Biome::pixel_adventure;
+    case WorldBiome::frosted_keep: return Biome::kenney;
+    case WorldBiome::crown_spire: return Biome::kings_and_pigs;
+    }
+    return Biome::pixel_adventure;
+}
+
+std::string_view biome_name(const WorldBiome biome) noexcept {
+    switch (biome) {
+    case WorldBiome::courtyard: return "Castle Courtyard";
+    case WorldBiome::frosted_keep: return "Frosted Keep";
+    case WorldBiome::crown_spire: return "Crown Spire";
     }
     return "Unknown";
 }
 
-Color biome_background(const Biome biome) noexcept {
+Color biome_background(const WorldBiome biome) noexcept {
     switch (biome) {
-    case Biome::pixel_adventure: return {20, 36, 46, 255};
-    case Biome::kenney: return {24, 27, 42, 255};
-    case Biome::kings_and_pigs: return {36, 24, 42, 255};
+    case WorldBiome::courtyard: return {20, 36, 46, 255};
+    case WorldBiome::frosted_keep: return {24, 27, 42, 255};
+    case WorldBiome::crown_spire: return {36, 24, 42, 255};
     }
     return {15, 5, 45, 255};
 }
@@ -65,7 +74,7 @@ void draw_region(
 void draw_background(
     const Texture2D texture,
     const BiomeAssets& assets,
-    const Biome biome) {
+    const WorldBiome biome) {
     ClearBackground(biome_background(biome));
     for (int y = 0; y < config::view_height; y += config::tile_pixels) {
         for (int x = 0; x < config::view_width; x += config::tile_pixels) {
@@ -83,23 +92,23 @@ void draw_background(
     }
 }
 
-bool is_solid(const Tilemap& tilemap, const int x, const int y) noexcept {
-    return tilemap.solid_for_render_at(x, y);
+bool is_solid(const WorldMap& world, const int x, const int y) noexcept {
+    return world.solid_at(x, y);
 }
 
 SpriteRegion terrain_region(
-    const Tilemap& tilemap,
+    const WorldMap& world,
     const int x,
     const int y,
     const TerrainGrid& grid) noexcept {
-    const bool top = is_solid(tilemap, x, y - 1);
-    const bool bottom = is_solid(tilemap, x, y + 1);
-    const bool right = is_solid(tilemap, x + 1, y);
-    const bool left = is_solid(tilemap, x - 1, y);
-    const bool top_right = is_solid(tilemap, x + 1, y - 1);
-    const bool bottom_right = is_solid(tilemap, x + 1, y + 1);
-    const bool top_left = is_solid(tilemap, x - 1, y - 1);
-    const bool bottom_left = is_solid(tilemap, x - 1, y + 1);
+    const bool top = is_solid(world, x, y - 1);
+    const bool bottom = is_solid(world, x, y + 1);
+    const bool right = is_solid(world, x + 1, y);
+    const bool left = is_solid(world, x - 1, y);
+    const bool top_right = is_solid(world, x + 1, y - 1);
+    const bool bottom_right = is_solid(world, x + 1, y + 1);
+    const bool top_left = is_solid(world, x - 1, y - 1);
+    const bool bottom_left = is_solid(world, x - 1, y + 1);
 
     int sprite_x = 1;
     int sprite_y = 1;
@@ -141,47 +150,42 @@ SpriteRegion terrain_region(
     };
 }
 
-void draw_room(
-    const RoomSelection& selection,
-    const CampaignState& campaign,
+void draw_world(
+    const WorldMap& world,
+    const CameraBand& camera,
     const BiomeAssets& assets,
     const Texture2D texture) {
-    const Tilemap& tilemap = selection.room->tilemap;
-    for (int y = 0; y < config::tilemap_height; ++y) {
-        for (int x = 0; x < config::tilemap_width; ++x) {
+    const int first_row = static_cast<int>(camera.world_top);
+    const int last_row = first_row + world.screen_height();
+    for (int y = first_row; y < last_row; ++y) {
+        for (int x = 0; x < world.width(); ++x) {
             const Rectangle destination{
                 static_cast<float>(x * config::tile_pixels),
-                static_cast<float>(y * config::tile_pixels),
+                static_cast<float>((y - first_row) * config::tile_pixels),
                 static_cast<float>(config::tile_pixels),
                 static_cast<float>(config::tile_pixels),
             };
-            switch (tilemap.tile_at(x, y)) {
-            case Tile::solid:
+            if (world.solid_at(x, y)) {
                 draw_region(
                     texture,
-                    terrain_region(tilemap, x, y, assets.terrain),
+                    terrain_region(world, x, y, assets.terrain),
                     destination);
-                break;
-            case Tile::spike:
-                draw_region(texture, assets.spike, destination);
-                break;
-            case Tile::checkpoint:
-                draw_region(
-                    texture,
-                    assets.checkpoint,
-                    destination,
-                    campaign.checkpoint_room == selection.index ? WHITE : GRAY);
-                break;
-            case Tile::exit:
-                draw_region(texture, assets.exit, destination);
-                break;
-            case Tile::spawn:
-                draw_region(texture, assets.checkpoint, destination, Fade(WHITE, 0.35F));
-                break;
-            case Tile::empty:
-                break;
             }
         }
+    }
+
+    const Vec2 goal = world.goal();
+    if (goal.y >= camera.world_top &&
+        goal.y < camera.world_top + static_cast<float>(world.screen_height())) {
+        draw_region(
+            texture,
+            assets.exit,
+            {
+                std::floor(goal.x) * config::tile_pixels,
+                std::floor(goal.y - camera.world_top) * config::tile_pixels,
+                static_cast<float>(config::tile_pixels),
+                static_cast<float>(config::tile_pixels),
+            });
     }
 }
 
@@ -208,7 +212,7 @@ void draw_completion(const CampaignState& campaign) {
     DrawRectangleLines(20, 52, config::view_width - 40, 84, GOLD);
     DrawText("THE CROWN IS YOURS", 48, 66, 16, GOLD);
     DrawText(
-        TextFormat("Time %.1fs   Deaths %i", campaign.elapsed_seconds, campaign.deaths),
+        TextFormat("Time %.1fs   Falls %i", campaign.elapsed_seconds, campaign.falls),
         52,
         92,
         10,
@@ -217,7 +221,8 @@ void draw_completion(const CampaignState& campaign) {
 }
 
 void draw_debug_overlay(
-    const RoomSelection& room,
+    const WorldMap& world,
+    const CameraBand& camera,
     const PlayerState& player,
     const CampaignState& campaign,
     const float scale,
@@ -232,16 +237,13 @@ void draw_debug_overlay(
         font_size * 6 + 8,
         Fade(BLACK, 0.78F));
     DrawText(
-        TextFormat("Room %i/12: %s", static_cast<int>(room.index + 1),
-                   room.room->metadata.name.c_str()),
+        TextFormat("Screen %i/%i", camera.screen + 1, world.screen_count()),
         x, y, font_size, RAYWHITE);
     DrawText(
-        TextFormat("Biome: %s  difficulty %i", biome_name(room.room->metadata.biome).data(),
-                   room.room->metadata.difficulty),
+        TextFormat("Biome: %s", biome_name(camera.biome).data()),
         x, y + font_size, font_size, SKYBLUE);
     DrawText(
-        TextFormat("Checkpoint %i  deaths %i", static_cast<int>(campaign.checkpoint_room + 1),
-                   campaign.deaths),
+        TextFormat("Falls %i", campaign.falls),
         x, y + font_size * 2, font_size, GOLD);
     DrawText(
         TextFormat("Position %.2f, %.2f", player.position.x, player.position.y),
@@ -250,7 +252,12 @@ void draw_debug_overlay(
         TextFormat("Velocity %.2f, %.2f", player.velocity.x, player.velocity.y),
         x, y + font_size * 4, font_size, LIGHTGRAY);
     DrawText(
-        TextFormat("Charge %.0f%%", std::clamp(player.jump_hold_time / 0.77F, 0.0F, 1.0F) * 100.0F),
+        TextFormat(
+            "Charge %.0f%%",
+            std::clamp(
+                player.jump_hold_time / config::maximum_charge_seconds,
+                0.0F,
+                1.0F) * 100.0F),
         x, y + font_size * 5, font_size, LIME);
 }
 
@@ -331,21 +338,22 @@ Renderer::Renderer(const std::filesystem::path& asset_directory)
       pixelart_target_{config::view_width, config::view_height} {}
 
 void Renderer::draw(
-    const RoomSelection& room,
+    const WorldMap& world,
+    const CameraBand& camera,
     const PlayerState& player,
     const CampaignState& campaign,
     const float respawn_animation_time,
     const bool debug_enabled) const {
-    const Biome biome = room.room->metadata.biome;
+    const Biome biome = asset_biome(camera.biome);
     const BiomeAssets& assets = catalog_.biome(biome);
     const Texture2D& biome_texture = biome_textures_[biome_index(biome)].get();
 
     BeginTextureMode(pixelart_target_.get());
-    draw_background(biome_texture, assets, biome);
-    draw_room(room, campaign, assets, biome_texture);
+    draw_background(biome_texture, assets, camera.biome);
+    draw_world(world, camera, assets, biome_texture);
     draw_player(
         player,
-        room.vertical_offset,
+        camera.world_top,
         respawn_animation_time,
         catalog_,
         player_texture_.get());
@@ -382,7 +390,7 @@ void Renderer::draw(
         WHITE);
 
     if (debug_enabled) {
-        draw_debug_overlay(room, player, campaign, scale, offset);
+        draw_debug_overlay(world, camera, player, campaign, scale, offset);
     }
 
     EndDrawing();

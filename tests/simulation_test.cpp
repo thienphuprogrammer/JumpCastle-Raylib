@@ -1,11 +1,23 @@
 #include "jumpcastle/simulation.hpp"
+#include "jumpcastle/fixed_step.hpp"
 
 #include "test_level_factory.hpp"
 #include "test_world_factory.hpp"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 using namespace jumpcastle;
+
+TEST_CASE("frame chunking produces identical fixed steps") {
+    FixedStepClock one;
+    FixedStepClock two;
+
+    CHECK(one.consume(1.0F / 30.0F) == 4);
+    CHECK(two.consume(1.0F / 60.0F) == 2);
+    CHECK(two.consume(1.0F / 60.0F) == 2);
+    CHECK(one.remainder() == Catch::Approx(two.remainder()));
+}
 
 TEST_CASE("spike overlap respawns through production step") {
     const LevelRepository level = test::make_level(Tile::spike);
