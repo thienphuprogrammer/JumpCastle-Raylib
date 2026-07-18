@@ -38,3 +38,14 @@ def test_frosted_keep_covers_midgame_mechanics():
         "narrow_gallery",
         "bell_tower_exam",
     }
+
+
+def test_crown_spire_covers_endgame_mechanics():
+    assert {room.mechanic for room in CHAMBERS[12:]} == {
+        "broken_bridge",
+        "crown_chamber",
+        "vertical_chimney",
+        "overhang_reversal",
+        "fall_funnel",
+        "throne_leap",
+    }

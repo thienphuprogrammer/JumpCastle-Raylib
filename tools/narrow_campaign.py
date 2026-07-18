@@ -116,6 +116,49 @@ FROSTED_KEEP = (
     ),
 )
 
+CROWN_SPIRE = (
+    (
+        "Broken Bridge",
+        "broken_bridge",
+        (SolidRect(20, 34, 7), SolidRect(0, 28, 5)),
+    ),
+    (
+        "Crown Chamber",
+        "crown_chamber",
+        (SolidRect(2, 12, 4, 10), SolidRect(22, 12, 4, 10)),
+    ),
+    (
+        "Vertical Chimney",
+        "vertical_chimney",
+        (SolidRect(0, 6, 1, 24), SolidRect(27, 6, 1, 24)),
+    ),
+    (
+        "Overhang Reversal",
+        "overhang_reversal",
+        (SolidRect(21, 24, 6, 2), SolidRect(0, 12, 6, 2)),
+    ),
+    (
+        "Fall Funnel",
+        "fall_funnel",
+        (
+            SolidRect(0, 30, 5),
+            SolidRect(23, 24, 5),
+            SolidRect(0, 18, 5),
+            SolidRect(23, 12, 5),
+        ),
+    ),
+    (
+        "Throne Leap",
+        "throne_leap",
+        (
+            SolidRect(0, 34, 5),
+            SolidRect(22, 28, 6),
+            SolidRect(0, 16, 5),
+            SolidRect(22, 10, 6),
+        ),
+    ),
+)
+
 
 def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
     route = tuple(
@@ -133,9 +176,9 @@ def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
     elif screen <= len(COURTYARD) + len(FROSTED_KEEP):
         name, mechanic, obstacles = FROSTED_KEEP[screen - len(COURTYARD) - 1]
     else:
-        name = f"Tower Chamber {screen:02d}"
-        mechanic = "tower_spine"
-        obstacles = ()
+        name, mechanic, obstacles = CROWN_SPIRE[
+            screen - len(COURTYARD) - len(FROSTED_KEEP) - 1
+        ]
     return Chamber(name=name, mechanic=mechanic, route=route, obstacles=obstacles)
 
 
