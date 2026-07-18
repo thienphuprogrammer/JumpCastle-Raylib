@@ -151,3 +151,24 @@ TEST_CASE("one-way platform blocks a fall from above but not a rise from below")
         REQUIRE_FALSE(result.on_ground);
     }
 }
+
+TEST_CASE("wall_bounce_restitution scales with impact speed and caps at 1.0") {
+    using config::wall_bounce_restitution;
+
+    // Clamps to the minimum at/below the low anchor.
+    REQUIRE(wall_bounce_restitution(0.0F) == Approx(config::wall_bounce_min));
+    REQUIRE(wall_bounce_restitution(config::wall_bounce_impact_lo) ==
+            Approx(config::wall_bounce_min));
+
+    // Clamps to the maximum at/above the high anchor, never exceeding 1.0.
+    REQUIRE(wall_bounce_restitution(config::wall_bounce_impact_hi) ==
+            Approx(config::wall_bounce_max));
+    REQUIRE(wall_bounce_restitution(100.0F) == Approx(config::wall_bounce_max));
+    REQUIRE(wall_bounce_restitution(100.0F) <= 1.0F);
+
+    // Monotonic ramp strictly between the anchors.
+    const float mid = wall_bounce_restitution(
+        0.5F * (config::wall_bounce_impact_lo + config::wall_bounce_impact_hi));
+    REQUIRE(mid > config::wall_bounce_min);
+    REQUIRE(mid < config::wall_bounce_max);
+}
