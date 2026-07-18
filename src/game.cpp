@@ -31,22 +31,19 @@ Game::Game(std::optional<std::filesystem::path> override_root) {
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
 
-    try {
-        const std::filesystem::path executable_directory{GetApplicationDirectory()};
-        const auto asset_directory = resolve_asset_root({
-            .override_root = std::move(override_root),
-            .executable_directory = executable_directory,
-            .installed_root = executable_directory / ".." / "share" / "jumpcastle",
-        });
-        world_.emplace(WorldMap::load(asset_directory / "levels" / "campaign.level"));
-        campaign_ = CampaignState{.spawn = world_->spawn()};
-        reset_player(player_, world_->spawn());
-        camera_ = select_camera_band(*world_, player_.position.y);
-        renderer_.emplace(asset_directory);
-    } catch (...) {
-        CloseWindow();
-        throw;
-    }
+    // Asset failures propagate with the window still open so the executable
+    // boundary can render an on-screen diagnostic instead of a silent exit.
+    const std::filesystem::path executable_directory{GetApplicationDirectory()};
+    const auto asset_directory = resolve_asset_root({
+        .override_root = std::move(override_root),
+        .executable_directory = executable_directory,
+        .installed_root = executable_directory / ".." / "share" / "jumpcastle",
+    });
+    world_.emplace(WorldMap::load(asset_directory / "levels" / "campaign.level"));
+    campaign_ = CampaignState{.spawn = world_->spawn()};
+    reset_player(player_, world_->spawn());
+    camera_ = select_camera_band(*world_, player_.position.y);
+    renderer_.emplace(asset_directory);
 }
 
 Game::~Game() {

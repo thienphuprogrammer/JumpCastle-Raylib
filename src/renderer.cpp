@@ -242,11 +242,32 @@ void draw_debug_overlay(
 
 }  // namespace
 
-TextureResource::TextureResource(const std::filesystem::path& path)
-    : texture_{LoadTexture(path.string().c_str())} {
-    if (!IsTextureValid(texture_)) {
+namespace {
+
+[[nodiscard]] Texture2D load_texture_or_placeholder(
+    const std::filesystem::path& path, const TextureRequirement requirement) {
+    Texture2D texture = LoadTexture(path.string().c_str());
+    if (IsTextureValid(texture)) {
+        return texture;
+    }
+    if (requirement == TextureRequirement::required) {
         throw std::runtime_error("Unable to load texture: " + path.string());
     }
+    TraceLog(
+        LOG_WARNING,
+        "JumpCastle: optional texture missing, drawing placeholder for %s",
+        path.string().c_str());
+    Image placeholder = GenImageChecked(16, 16, 8, 8, MAGENTA, BLACK);
+    texture = LoadTextureFromImage(placeholder);
+    UnloadImage(placeholder);
+    return texture;
+}
+
+}  // namespace
+
+TextureResource::TextureResource(
+    const std::filesystem::path& path, const TextureRequirement requirement)
+    : texture_{load_texture_or_placeholder(path, requirement)} {
     SetTextureFilter(texture_, TEXTURE_FILTER_POINT);
 }
 

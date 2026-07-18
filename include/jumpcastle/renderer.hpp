@@ -11,9 +11,15 @@
 
 namespace jumpcastle {
 
+// Required textures abort startup when missing; optional decorations fall back
+// to a visible magenta/black placeholder so the failure is obvious in-game.
+enum class TextureRequirement { required, optional };
+
 class TextureResource {
 public:
-    explicit TextureResource(const std::filesystem::path& path);
+    explicit TextureResource(
+        const std::filesystem::path& path,
+        TextureRequirement requirement = TextureRequirement::required);
     ~TextureResource();
 
     TextureResource(const TextureResource&) = delete;

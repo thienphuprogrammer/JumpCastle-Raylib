@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <iostream>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -116,6 +117,36 @@ int render_smoke_screens(
     return status;
 }
 
+// Show a dark diagnostic screen with the first readable line of the failure.
+// Reuses an already-open window (the game constructor leaves it open on asset
+// failure) or opens one; dismissed by Enter/Escape/close, and auto-dismisses
+// after a bounded time so a headless run can never hang.
+void show_fatal_error(const std::string& message) {
+    if (!IsWindowReady()) {
+        InitWindow(jumpcastle::config::view_width, jumpcastle::config::view_height,
+                   "JumpCastle - asset error");
+    }
+    if (!IsWindowReady()) {
+        return;  // No display available; stderr already carried the message.
+    }
+    SetExitKey(KEY_NULL);
+    SetTargetFPS(30);
+    const std::string first_line = message.substr(0, message.find('\n'));
+    for (int frame = 0; frame < 300; ++frame) {
+        if (WindowShouldClose() || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE)) {
+            break;
+        }
+        BeginDrawing();
+        ClearBackground(Color{18, 12, 20, 255});
+        DrawText("Asset loading failed", 20, 40, 20, RAYWHITE);
+        DrawText(first_line.c_str(), 20, 78, 10, Color{232, 160, 174, 255});
+        DrawText("Press Enter or Escape to quit", 20,
+                 jumpcastle::config::view_height - 34, 10, GRAY);
+        EndDrawing();
+    }
+    CloseWindow();
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -128,6 +159,7 @@ int main(int argc, char** argv) {
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "JumpCastle: fatal error: " << error.what() << '\n';
+        show_fatal_error(error.what());
         return 1;
     }
 }
