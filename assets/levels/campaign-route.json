@@ -5,8 +5,8 @@
       "charge_ticks": 99,
       "direction": "right",
       "expected_landing": [
-        6.87441349029541,
-        643.5999755859375
+        6.741280555725098,
+        643.5357055664063
       ],
       "expected_screen": 0,
       "launch": [
@@ -15,11 +15,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        640.5999755859375
+        2.7621631622314453,
+        640.5442504882813
       ],
       "expected_screen": 0,
       "launch": [
@@ -31,8 +31,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        637.5999755859375
+        6.759491443634033,
+        637.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -41,11 +41,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        634.5999755859375
+        2.7621631622314453,
+        634.5442504882813
       ],
       "expected_screen": 0,
       "launch": [
@@ -57,8 +57,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        631.5999755859375
+        6.759491443634033,
+        631.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -67,11 +67,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        628.5999755859375
+        2.7621631622314453,
+        628.5442504882813
       ],
       "expected_screen": 0,
       "launch": [
@@ -83,8 +83,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        625.5999755859375
+        6.759491443634033,
+        625.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -96,8 +96,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        622.5999755859375
+        12.759525299072266,
+        622.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -106,11 +106,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        619.5999755859375
+        8.762157440185547,
+        619.5442504882813
       ],
       "expected_screen": 0,
       "launch": [
@@ -122,8 +122,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        616.5999755859375
+        12.759525299072266,
+        616.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -135,8 +135,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        613.5999755859375
+        18.759489059448242,
+        613.5533447265625
       ],
       "expected_screen": 0,
       "launch": [
@@ -145,11 +145,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        610.5999755859375
+        14.762155532836914,
+        610.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -161,8 +161,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        607.5999755859375
+        18.759489059448242,
+        607.5533447265625
       ],
       "expected_screen": 1,
       "launch": [
@@ -171,11 +171,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        604.5999755859375
+        14.762155532836914,
+        604.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -187,8 +187,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        601.5999755859375
+        18.759489059448242,
+        601.5533447265625
       ],
       "expected_screen": 1,
       "launch": [
@@ -197,11 +197,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        598.5999755859375
+        14.762155532836914,
+        598.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -210,11 +210,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        595.5999755859375
+        8.762157440185547,
+        595.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -223,10 +223,10 @@
       ]
     },
     {
-      "charge_ticks": 84,
+      "charge_ticks": 78,
       "direction": "left",
       "expected_landing": [
-        4.957004547119141,
+        5.286767482757568,
         592.5999755859375
       ],
       "expected_screen": 1,
@@ -236,24 +236,24 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 75,
       "direction": "left",
       "expected_landing": [
-        6.8171067237854,
-        589.5999755859375
+        6.846646308898926,
+        589.5215454101563
       ],
       "expected_screen": 1,
       "launch": [
-        4.350000381469727,
+        2.25,
         592.5999755859375
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        586.5999755859375
+        2.7621631622314453,
+        586.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -265,8 +265,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        583.5999755859375
+        6.759491443634033,
+        583.5533447265625
       ],
       "expected_screen": 1,
       "launch": [
@@ -278,8 +278,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        580.5999755859375
+        12.759525299072266,
+        580.5533447265625
       ],
       "expected_screen": 1,
       "launch": [
@@ -288,11 +288,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        577.5999755859375
+        8.762157440185547,
+        577.5442504882813
       ],
       "expected_screen": 1,
       "launch": [
@@ -301,11 +301,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        574.5999755859375
+        2.7621631622314453,
+        574.5442504882813
       ],
       "expected_screen": 2,
       "launch": [
@@ -317,8 +317,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        571.5999755859375
+        6.759491443634033,
+        571.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -330,8 +330,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        568.5999755859375
+        12.759525299072266,
+        568.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -340,11 +340,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        565.5999755859375
+        8.762157440185547,
+        565.5442504882813
       ],
       "expected_screen": 2,
       "launch": [
@@ -353,11 +353,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        562.5999755859375
+        2.7621631622314453,
+        562.5442504882813
       ],
       "expected_screen": 2,
       "launch": [
@@ -369,8 +369,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        559.5999755859375
+        6.759491443634033,
+        559.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -382,8 +382,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        556.5999755859375
+        12.759525299072266,
+        556.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -395,8 +395,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        553.5999755859375
+        18.759489059448242,
+        553.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -405,11 +405,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        550.5999755859375
+        14.762155532836914,
+        550.5442504882813
       ],
       "expected_screen": 2,
       "launch": [
@@ -421,8 +421,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        547.5999755859375
+        18.759489059448242,
+        547.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -431,11 +431,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        544.5999755859375
+        14.762155532836914,
+        544.5442504882813
       ],
       "expected_screen": 2,
       "launch": [
@@ -447,8 +447,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        541.5999755859375
+        18.759489059448242,
+        541.5533447265625
       ],
       "expected_screen": 2,
       "launch": [
@@ -457,11 +457,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        538.5999755859375
+        14.762155532836914,
+        538.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -473,8 +473,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        535.5999755859375
+        18.759489059448242,
+        535.5533447265625
       ],
       "expected_screen": 3,
       "launch": [
@@ -483,11 +483,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        532.5999755859375
+        14.762155532836914,
+        532.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -496,11 +496,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        529.5999755859375
+        8.762157440185547,
+        529.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -509,11 +509,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        526.5999755859375
+        2.7621631622314453,
+        526.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -525,8 +525,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        523.5999755859375
+        6.759491443634033,
+        523.5533447265625
       ],
       "expected_screen": 3,
       "launch": [
@@ -535,11 +535,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        520.5999755859375
+        2.7621631622314453,
+        520.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -551,8 +551,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        517.5999755859375
+        6.759491443634033,
+        517.5533447265625
       ],
       "expected_screen": 3,
       "launch": [
@@ -561,11 +561,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        514.5999755859375
+        2.7621631622314453,
+        514.5442504882813
       ],
       "expected_screen": 3,
       "launch": [
@@ -577,8 +577,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        511.6000061035156
+        6.759491443634033,
+        511.5533142089844
       ],
       "expected_screen": 3,
       "launch": [
@@ -587,11 +587,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        508.6000061035156
+        2.7621631622314453,
+        508.54425048828125
       ],
       "expected_screen": 3,
       "launch": [
@@ -603,8 +603,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        505.6000061035156
+        6.759491443634033,
+        505.5533752441406
       ],
       "expected_screen": 3,
       "launch": [
@@ -613,11 +613,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        502.6000061035156
+        2.7621631622314453,
+        502.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -629,8 +629,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        499.6000061035156
+        6.759491443634033,
+        499.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -639,11 +639,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        496.6000061035156
+        2.7621631622314453,
+        496.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -655,8 +655,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        493.6000061035156
+        6.759491443634033,
+        493.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -668,8 +668,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        490.6000061035156
+        12.759525299072266,
+        490.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -681,8 +681,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        487.6000061035156
+        18.759489059448242,
+        487.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -691,11 +691,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        484.6000061035156
+        14.762155532836914,
+        484.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -707,8 +707,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        481.6000061035156
+        18.759489059448242,
+        481.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -717,11 +717,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        478.6000061035156
+        14.762155532836914,
+        478.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -730,11 +730,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        475.6000061035156
+        8.762157440185547,
+        475.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -743,11 +743,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        472.6000061035156
+        2.7621631622314453,
+        472.54425048828125
       ],
       "expected_screen": 4,
       "launch": [
@@ -759,8 +759,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        469.6000061035156
+        6.759491443634033,
+        469.5533752441406
       ],
       "expected_screen": 4,
       "launch": [
@@ -772,8 +772,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        466.6000061035156
+        12.759525299072266,
+        466.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -785,8 +785,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        463.6000061035156
+        18.759489059448242,
+        463.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -795,11 +795,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        13.990700721740723,
-        460.6000061035156
+        14.762155532836914,
+        460.54425048828125
       ],
       "expected_screen": 5,
       "launch": [
@@ -808,11 +808,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        457.6000061035156
+        8.762157440185547,
+        457.54425048828125
       ],
       "expected_screen": 5,
       "launch": [
@@ -821,11 +821,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        454.6000061035156
+        2.7621631622314453,
+        454.54425048828125
       ],
       "expected_screen": 5,
       "launch": [
@@ -837,8 +837,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        451.6000061035156
+        6.759491443634033,
+        451.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -850,8 +850,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        448.6000061035156
+        12.759525299072266,
+        448.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -860,11 +860,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        7.990650177001953,
-        445.6000061035156
+        8.762157440185547,
+        445.54425048828125
       ],
       "expected_screen": 5,
       "launch": [
@@ -873,11 +873,11 @@
       ]
     },
     {
-      "charge_ticks": 93,
+      "charge_ticks": 84,
       "direction": "left",
       "expected_landing": [
-        1.990651249885559,
-        442.6000061035156
+        2.7621631622314453,
+        442.54425048828125
       ],
       "expected_screen": 5,
       "launch": [
@@ -889,8 +889,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        439.6000061035156
+        6.759491443634033,
+        439.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -902,8 +902,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        436.6000061035156
+        12.759525299072266,
+        436.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -915,8 +915,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        433.6000061035156
+        18.759489059448242,
+        433.5533752441406
       ],
       "expected_screen": 5,
       "launch": [
@@ -925,41 +925,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        430.6000061035156
+        14.85037612915039,
+        430.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         433.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        427.6000061035156
+        8.850378036499023,
+        427.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         430.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        424.6000061035156
+        2.8503470420837402,
+        424.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         427.6000061035156
       ]
     },
@@ -967,8 +967,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        421.6000061035156
+        6.759491443634033,
+        421.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -980,8 +980,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        418.6000061035156
+        12.759525299072266,
+        418.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -993,8 +993,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        415.6000061035156
+        18.759489059448242,
+        415.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -1003,41 +1003,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        412.6000061035156
+        14.85037612915039,
+        412.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         415.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        409.6000061035156
+        8.850378036499023,
+        409.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         412.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        406.6000061035156
+        2.8503470420837402,
+        406.5295104980469
       ],
       "expected_screen": 6,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         409.6000061035156
       ]
     },
@@ -1045,8 +1045,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        403.6000061035156
+        6.759491443634033,
+        403.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -1058,8 +1058,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        400.6000061035156
+        12.759525299072266,
+        400.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -1071,8 +1071,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        397.6000061035156
+        18.759489059448242,
+        397.5533752441406
       ],
       "expected_screen": 6,
       "launch": [
@@ -1081,28 +1081,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        394.6000061035156
+        14.85037612915039,
+        394.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         397.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        391.6000061035156
+        8.850378036499023,
+        391.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         394.6000061035156
       ]
     },
@@ -1110,8 +1110,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        388.6000061035156
+        12.759525299072266,
+        388.5533752441406
       ],
       "expected_screen": 7,
       "launch": [
@@ -1123,8 +1123,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        385.6000061035156
+        18.759489059448242,
+        385.5533752441406
       ],
       "expected_screen": 7,
       "launch": [
@@ -1133,15 +1133,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        382.6000061035156
+        14.85037612915039,
+        382.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         385.6000061035156
       ]
     },
@@ -1149,8 +1149,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        379.6000061035156
+        18.759489059448242,
+        379.5533752441406
       ],
       "expected_screen": 7,
       "launch": [
@@ -1159,15 +1159,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        376.6000061035156
+        14.85037612915039,
+        376.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         379.6000061035156
       ]
     },
@@ -1175,8 +1175,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        373.6000061035156
+        18.759489059448242,
+        373.5533752441406
       ],
       "expected_screen": 7,
       "launch": [
@@ -1185,15 +1185,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        370.6000061035156
+        14.85037612915039,
+        370.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         373.6000061035156
       ]
     },
@@ -1201,8 +1201,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        367.6000061035156
+        18.759489059448242,
+        367.5533752441406
       ],
       "expected_screen": 7,
       "launch": [
@@ -1211,28 +1211,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        364.6000061035156
+        14.85037612915039,
+        364.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         367.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        361.6000061035156
+        8.850378036499023,
+        361.5295104980469
       ],
       "expected_screen": 7,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         364.6000061035156
       ]
     },
@@ -1240,8 +1240,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        358.6000061035156
+        12.759525299072266,
+        358.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1250,15 +1250,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        355.6000061035156
+        8.850378036499023,
+        355.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         358.6000061035156
       ]
     },
@@ -1266,8 +1266,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        352.6000061035156
+        12.759525299072266,
+        352.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1279,8 +1279,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        349.6000061035156
+        18.759489059448242,
+        349.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1289,41 +1289,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        346.6000061035156
+        14.85037612915039,
+        346.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         349.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        343.6000061035156
+        8.850378036499023,
+        343.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         346.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        340.6000061035156
+        2.8503470420837402,
+        340.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         343.6000061035156
       ]
     },
@@ -1331,8 +1331,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        337.6000061035156
+        6.759491443634033,
+        337.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1341,15 +1341,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        334.6000061035156
+        2.8503470420837402,
+        334.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         337.6000061035156
       ]
     },
@@ -1357,8 +1357,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        331.6000061035156
+        6.759491443634033,
+        331.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1367,15 +1367,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        328.6000061035156
+        2.8503470420837402,
+        328.5295104980469
       ],
       "expected_screen": 8,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         331.6000061035156
       ]
     },
@@ -1383,8 +1383,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        325.6000061035156
+        6.759491443634033,
+        325.5533752441406
       ],
       "expected_screen": 8,
       "launch": [
@@ -1396,8 +1396,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        322.6000061035156
+        12.759525299072266,
+        322.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1406,15 +1406,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        319.6000061035156
+        8.850378036499023,
+        319.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         322.6000061035156
       ]
     },
@@ -1422,8 +1422,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        316.6000061035156
+        12.759525299072266,
+        316.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1432,15 +1432,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        313.6000061035156
+        8.850378036499023,
+        313.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         316.6000061035156
       ]
     },
@@ -1448,8 +1448,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        310.6000061035156
+        12.759525299072266,
+        310.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1458,28 +1458,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        307.6000061035156
+        8.850378036499023,
+        307.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         310.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        304.6000061035156
+        2.8503470420837402,
+        304.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         307.6000061035156
       ]
     },
@@ -1487,8 +1487,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        301.6000061035156
+        6.759491443634033,
+        301.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1500,8 +1500,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        298.6000061035156
+        12.759525299072266,
+        298.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1513,8 +1513,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        295.6000061035156
+        18.759489059448242,
+        295.5533752441406
       ],
       "expected_screen": 9,
       "launch": [
@@ -1523,28 +1523,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        292.6000061035156
+        14.85037612915039,
+        292.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         295.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        289.6000061035156
+        8.850378036499023,
+        289.5295104980469
       ],
       "expected_screen": 9,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         292.6000061035156
       ]
     },
@@ -1552,8 +1552,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        286.6000061035156
+        12.759525299072266,
+        286.5533752441406
       ],
       "expected_screen": 10,
       "launch": [
@@ -1562,15 +1562,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        283.6000061035156
+        8.850378036499023,
+        283.5295104980469
       ],
       "expected_screen": 10,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         286.6000061035156
       ]
     },
@@ -1578,8 +1578,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        280.6000061035156
+        12.759525299072266,
+        280.5533752441406
       ],
       "expected_screen": 10,
       "launch": [
@@ -1591,8 +1591,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        277.6000061035156
+        18.759489059448242,
+        277.5533752441406
       ],
       "expected_screen": 10,
       "launch": [
@@ -1601,54 +1601,54 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        274.6000061035156
+        14.85037612915039,
+        274.5295104980469
       ],
       "expected_screen": 10,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         277.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        271.6000061035156
+        8.850378036499023,
+        271.5295104980469
       ],
       "expected_screen": 10,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         274.6000061035156
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        268.6000061035156
+        2.8503470420837402,
+        268.5295104980469
       ],
       "expected_screen": 10,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         271.6000061035156
       ]
     },
     {
-      "charge_ticks": 84,
+      "charge_ticks": 75,
       "direction": "right",
       "expected_landing": [
-        6.762764930725098,
-        265.6000061035156
+        6.876596450805664,
+        265.52166748046875
       ],
       "expected_screen": 10,
       "launch": [
-        4.9500017166137695,
+        4.800001621246338,
         268.6000061035156
       ]
     },
@@ -1656,8 +1656,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        262.6000061035156
+        12.759525299072266,
+        262.5533752441406
       ],
       "expected_screen": 10,
       "launch": [
@@ -1669,8 +1669,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        259.6000061035156
+        18.759489059448242,
+        259.5533752441406
       ],
       "expected_screen": 10,
       "launch": [
@@ -1679,15 +1679,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        256.6000061035156
+        14.85037612915039,
+        256.5295104980469
       ],
       "expected_screen": 10,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         259.6000061035156
       ]
     },
@@ -1695,8 +1695,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        253.60000610351563
+        18.759489059448242,
+        253.55343627929688
       ],
       "expected_screen": 10,
       "launch": [
@@ -1705,15 +1705,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        250.60000610351563
+        14.85037612915039,
+        250.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         253.60000610351563
       ]
     },
@@ -1721,8 +1721,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        247.60000610351563
+        18.759489059448242,
+        247.55345153808594
       ],
       "expected_screen": 11,
       "launch": [
@@ -1731,15 +1731,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        244.60000610351563
+        14.85037612915039,
+        244.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         247.60000610351563
       ]
     },
@@ -1747,8 +1747,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        241.60000610351563
+        18.759489059448242,
+        241.55345153808594
       ],
       "expected_screen": 11,
       "launch": [
@@ -1757,15 +1757,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        238.60000610351563
+        14.85037612915039,
+        238.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         241.60000610351563
       ]
     },
@@ -1773,8 +1773,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        235.60000610351563
+        18.759489059448242,
+        235.55345153808594
       ],
       "expected_screen": 11,
       "launch": [
@@ -1783,28 +1783,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        232.60000610351563
+        14.85037612915039,
+        232.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         235.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        229.60000610351563
+        8.850378036499023,
+        229.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         232.60000610351563
       ]
     },
@@ -1812,8 +1812,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        226.60000610351563
+        12.759525299072266,
+        226.55345153808594
       ],
       "expected_screen": 11,
       "launch": [
@@ -1825,8 +1825,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        223.60000610351563
+        18.759489059448242,
+        223.55345153808594
       ],
       "expected_screen": 11,
       "launch": [
@@ -1835,41 +1835,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        220.60000610351563
+        14.85037612915039,
+        220.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         223.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        217.60000610351563
+        8.850378036499023,
+        217.52960205078125
       ],
       "expected_screen": 11,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         220.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        214.60000610351563
+        2.8503470420837402,
+        214.52960205078125
       ],
       "expected_screen": 12,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         217.60000610351563
       ]
     },
@@ -1877,8 +1877,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        211.60000610351563
+        6.759491443634033,
+        211.55345153808594
       ],
       "expected_screen": 12,
       "launch": [
@@ -1887,37 +1887,50 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 81,
       "direction": "left",
       "expected_landing": [
-        6.209193706512451,
-        208.60000610351563
+        6.099255561828613,
+        208.54483032226563
       ],
       "expected_screen": 12,
       "launch": [
-        8.69999885559082,
+        8.849998474121094,
         211.60000610351563
       ]
     },
     {
-      "charge_ticks": 75,
+      "charge_ticks": 57,
       "direction": "left",
       "expected_landing": [
-        7.002769470214844,
-        205.60000610351563
+        5.283153057098389,
+        207.59674072265625
       ],
       "expected_screen": 12,
       "launch": [
-        5.350000381469727,
+        2.700000286102295,
         208.60000610351563
       ]
     },
     {
+      "charge_ticks": 93,
+      "direction": "right",
+      "expected_landing": [
+        6.930636405944824,
+        205.5784149169922
+      ],
+      "expected_screen": 12,
+      "launch": [
+        0.3500000238418579,
+        207.60000610351563
+      ]
+    },
+    {
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        202.60000610351563
+        12.759525299072266,
+        202.55345153808594
       ],
       "expected_screen": 12,
       "launch": [
@@ -1929,8 +1942,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        199.60000610351563
+        18.759489059448242,
+        199.55345153808594
       ],
       "expected_screen": 12,
       "launch": [
@@ -1939,15 +1952,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        196.60000610351563
+        14.85037612915039,
+        196.52960205078125
       ],
       "expected_screen": 12,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         199.60000610351563
       ]
     },
@@ -1955,8 +1968,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        193.60000610351563
+        18.759489059448242,
+        193.55345153808594
       ],
       "expected_screen": 12,
       "launch": [
@@ -1965,28 +1978,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        190.60000610351563
+        14.85037612915039,
+        190.52960205078125
       ],
       "expected_screen": 12,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         193.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        187.60000610351563
+        8.850378036499023,
+        187.52960205078125
       ],
       "expected_screen": 12,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         190.60000610351563
       ]
     },
@@ -1994,8 +2007,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        184.60000610351563
+        12.759525299072266,
+        184.55345153808594
       ],
       "expected_screen": 12,
       "launch": [
@@ -2004,28 +2017,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        181.60000610351563
+        8.850378036499023,
+        181.52960205078125
       ],
       "expected_screen": 12,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         184.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        178.60000610351563
+        2.8503470420837402,
+        178.52960205078125
       ],
       "expected_screen": 13,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         181.60000610351563
       ]
     },
@@ -2033,8 +2046,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        175.60000610351563
+        6.759491443634033,
+        175.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2046,8 +2059,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        172.60000610351563
+        12.759525299072266,
+        172.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2059,8 +2072,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        169.60000610351563
+        18.759489059448242,
+        169.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2069,28 +2082,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        166.60000610351563
+        14.85037612915039,
+        166.52960205078125
       ],
       "expected_screen": 13,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         169.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        163.60000610351563
+        8.850378036499023,
+        163.52960205078125
       ],
       "expected_screen": 13,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         166.60000610351563
       ]
     },
@@ -2098,8 +2111,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        160.60000610351563
+        12.759525299072266,
+        160.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2108,15 +2121,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        157.60000610351563
+        8.850378036499023,
+        157.52960205078125
       ],
       "expected_screen": 13,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         160.60000610351563
       ]
     },
@@ -2124,8 +2137,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        154.60000610351563
+        12.759525299072266,
+        154.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2137,8 +2150,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        151.60000610351563
+        18.759489059448242,
+        151.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2147,15 +2160,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        148.60000610351563
+        14.85037612915039,
+        148.52960205078125
       ],
       "expected_screen": 13,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         151.60000610351563
       ]
     },
@@ -2163,8 +2176,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        145.60000610351563
+        18.759489059448242,
+        145.55345153808594
       ],
       "expected_screen": 13,
       "launch": [
@@ -2173,28 +2186,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        142.60000610351563
+        14.85037612915039,
+        142.52960205078125
       ],
       "expected_screen": 14,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         145.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        139.60000610351563
+        8.850378036499023,
+        139.52960205078125
       ],
       "expected_screen": 14,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         142.60000610351563
       ]
     },
@@ -2202,8 +2215,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        136.60000610351563
+        12.759525299072266,
+        136.55345153808594
       ],
       "expected_screen": 14,
       "launch": [
@@ -2215,8 +2228,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        133.60000610351563
+        18.759489059448242,
+        133.55345153808594
       ],
       "expected_screen": 14,
       "launch": [
@@ -2225,41 +2238,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        130.60000610351563
+        14.85037612915039,
+        130.52960205078125
       ],
       "expected_screen": 14,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         133.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        127.5999984741211
+        8.850378036499023,
+        127.52957153320313
       ],
       "expected_screen": 14,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         130.60000610351563
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        124.5999984741211
+        2.8503470420837402,
+        124.52953338623047
       ],
       "expected_screen": 14,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         127.5999984741211
       ]
     },
@@ -2267,8 +2280,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        121.5999984741211
+        6.759491443634033,
+        121.55339050292969
       ],
       "expected_screen": 14,
       "launch": [
@@ -2277,15 +2290,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        118.5999984741211
+        2.8503470420837402,
+        118.52953338623047
       ],
       "expected_screen": 14,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         121.5999984741211
       ]
     },
@@ -2293,8 +2306,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        115.5999984741211
+        6.759491443634033,
+        115.55339050292969
       ],
       "expected_screen": 14,
       "launch": [
@@ -2306,8 +2319,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        112.5999984741211
+        12.759525299072266,
+        112.55339050292969
       ],
       "expected_screen": 14,
       "launch": [
@@ -2316,15 +2329,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        109.5999984741211
+        8.850378036499023,
+        109.52953338623047
       ],
       "expected_screen": 14,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         112.5999984741211
       ]
     },
@@ -2332,8 +2345,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        106.5999984741211
+        12.759525299072266,
+        106.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2345,8 +2358,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        103.5999984741211
+        18.759489059448242,
+        103.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2355,41 +2368,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        100.5999984741211
+        14.85037612915039,
+        100.52953338623047
       ],
       "expected_screen": 15,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         103.5999984741211
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        97.5999984741211
+        8.850378036499023,
+        97.52953338623047
       ],
       "expected_screen": 15,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         100.5999984741211
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        94.5999984741211
+        2.8503470420837402,
+        94.52953338623047
       ],
       "expected_screen": 15,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         97.5999984741211
       ]
     },
@@ -2397,8 +2410,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        91.5999984741211
+        6.759491443634033,
+        91.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2407,28 +2420,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        88.5999984741211
+        2.8503470420837402,
+        88.52953338623047
       ],
       "expected_screen": 15,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         91.5999984741211
       ]
     },
     {
-      "charge_ticks": 84,
+      "charge_ticks": 75,
       "direction": "right",
       "expected_landing": [
-        6.762764930725098,
-        85.5999984741211
+        6.876596450805664,
+        85.52161407470703
       ],
       "expected_screen": 15,
       "launch": [
-        4.9500017166137695,
+        4.800001621246338,
         88.5999984741211
       ]
     },
@@ -2436,8 +2449,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        82.5999984741211
+        12.759525299072266,
+        82.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2446,15 +2459,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        79.5999984741211
+        8.850378036499023,
+        79.52953338623047
       ],
       "expected_screen": 15,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         82.5999984741211
       ]
     },
@@ -2462,8 +2475,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        76.5999984741211
+        12.759525299072266,
+        76.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2475,8 +2488,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        73.5999984741211
+        18.759489059448242,
+        73.55339050292969
       ],
       "expected_screen": 15,
       "launch": [
@@ -2485,15 +2498,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        70.5999984741211
+        14.85037612915039,
+        70.52953338623047
       ],
       "expected_screen": 16,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         73.5999984741211
       ]
     },
@@ -2501,8 +2514,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        67.5999984741211
+        18.759489059448242,
+        67.55339050292969
       ],
       "expected_screen": 16,
       "launch": [
@@ -2511,15 +2524,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        64.5999984741211
+        14.85037612915039,
+        64.529541015625
       ],
       "expected_screen": 16,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         67.5999984741211
       ]
     },
@@ -2527,8 +2540,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        61.599998474121094
+        18.759489059448242,
+        61.55340576171875
       ],
       "expected_screen": 16,
       "launch": [
@@ -2537,28 +2550,28 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        58.599998474121094
+        14.85037612915039,
+        58.52955627441406
       ],
       "expected_screen": 16,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         61.599998474121094
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        55.599998474121094
+        8.850378036499023,
+        55.52955627441406
       ],
       "expected_screen": 16,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         58.599998474121094
       ]
     },
@@ -2566,8 +2579,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        52.599998474121094
+        12.759525299072266,
+        52.55341720581055
       ],
       "expected_screen": 16,
       "launch": [
@@ -2579,8 +2592,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        49.599998474121094
+        18.759489059448242,
+        49.55341720581055
       ],
       "expected_screen": 16,
       "launch": [
@@ -2589,41 +2602,41 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        15.225358963012695,
-        46.599998474121094
+        14.85037612915039,
+        46.52955627441406
       ],
       "expected_screen": 16,
       "launch": [
-        20.699995040893555,
+        20.54999542236328,
         49.599998474121094
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        9.225292205810547,
-        43.599998474121094
+        8.850378036499023,
+        43.52955627441406
       ],
       "expected_screen": 16,
       "launch": [
-        14.699996948242188,
+        14.549997329711914,
         46.599998474121094
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        40.599998474121094
+        2.8503470420837402,
+        40.52955627441406
       ],
       "expected_screen": 16,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         43.599998474121094
       ]
     },
@@ -2631,8 +2644,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        37.599998474121094
+        6.759491443634033,
+        37.55341720581055
       ],
       "expected_screen": 16,
       "launch": [
@@ -2641,41 +2654,54 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 81,
       "direction": "left",
       "expected_landing": [
-        6.209193706512451,
-        34.599998474121094
+        6.099255561828613,
+        34.544795989990234
       ],
       "expected_screen": 17,
       "launch": [
-        8.69999885559082,
+        8.849998474121094,
         37.599998474121094
       ]
     },
     {
-      "charge_ticks": 75,
+      "charge_ticks": 57,
       "direction": "left",
       "expected_landing": [
-        7.002769470214844,
-        31.600000381469727
+        5.283153057098389,
+        33.59672546386719
       ],
       "expected_screen": 17,
       "launch": [
-        5.350000381469727,
+        2.700000286102295,
         34.599998474121094
       ]
     },
     {
-      "charge_ticks": 90,
-      "direction": "left",
+      "charge_ticks": 78,
+      "direction": "right",
       "expected_landing": [
-        3.2253293991088867,
-        28.600000381469727
+        6.821660041809082,
+        31.568750381469727
       ],
       "expected_screen": 17,
       "launch": [
-        8.69999885559082,
+        1.5499998331069946,
+        33.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 96,
+      "direction": "left",
+      "expected_landing": [
+        2.8503470420837402,
+        28.52956199645996
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.549999237060547,
         31.600000381469727
       ]
     },
@@ -2683,8 +2709,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        25.600000381469727
+        6.759491443634033,
+        25.553409576416016
       ],
       "expected_screen": 17,
       "launch": [
@@ -2693,15 +2719,15 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 96,
       "direction": "left",
       "expected_landing": [
-        3.2253293991088867,
-        22.600000381469727
+        2.8503470420837402,
+        22.52956199645996
       ],
       "expected_screen": 17,
       "launch": [
-        8.69999885559082,
+        8.549999237060547,
         25.600000381469727
       ]
     },
@@ -2709,8 +2735,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        19.600000381469727
+        6.759491443634033,
+        19.553409576416016
       ],
       "expected_screen": 17,
       "launch": [
@@ -2719,41 +2745,54 @@
       ]
     },
     {
-      "charge_ticks": 90,
+      "charge_ticks": 81,
       "direction": "left",
       "expected_landing": [
-        6.209193706512451,
-        16.600000381469727
+        6.099255561828613,
+        16.5447998046875
       ],
       "expected_screen": 17,
       "launch": [
-        8.69999885559082,
+        8.849998474121094,
         19.600000381469727
       ]
     },
     {
-      "charge_ticks": 75,
+      "charge_ticks": 57,
       "direction": "left",
       "expected_landing": [
-        7.002769470214844,
-        13.600000381469727
+        5.283153057098389,
+        15.596724510192871
       ],
       "expected_screen": 17,
       "launch": [
-        5.350000381469727,
+        2.700000286102295,
         16.600000381469727
       ]
     },
     {
-      "charge_ticks": 90,
-      "direction": "left",
+      "charge_ticks": 78,
+      "direction": "right",
       "expected_landing": [
-        3.2253293991088867,
-        10.600000381469727
+        6.821660041809082,
+        13.568750381469727
       ],
       "expected_screen": 17,
       "launch": [
-        8.69999885559082,
+        1.5499998331069946,
+        15.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 96,
+      "direction": "left",
+      "expected_landing": [
+        2.8503470420837402,
+        10.529557228088379
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.549999237060547,
         13.600000381469727
       ]
     },
@@ -2761,8 +2800,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        6.8246660232543945,
-        7.599999904632568
+        6.759491443634033,
+        7.553413391113281
       ],
       "expected_screen": 17,
       "launch": [
@@ -2774,8 +2813,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        12.824700355529785,
-        4.599999904632568
+        12.759525299072266,
+        4.553412914276123
       ],
       "expected_screen": 17,
       "launch": [
@@ -2787,8 +2826,8 @@
       "charge_ticks": 90,
       "direction": "right",
       "expected_landing": [
-        18.824663162231445,
-        1.600000023841858
+        18.759489059448242,
+        1.5534131526947021
       ],
       "expected_screen": 17,
       "launch": [

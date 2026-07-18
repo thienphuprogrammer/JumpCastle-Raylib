@@ -52,13 +52,13 @@ struct SolverResult {
 class ReachabilitySolver {
 public:
     explicit ReachabilitySolver(
-        const WorldMap& world,
+        const CampaignWorld& world,
         SolverConfig config = {});
 
     [[nodiscard]] SolverResult solve_campaign() const;
 
 private:
-    const WorldMap& world_;
+    const CampaignWorld& world_;
     SolverConfig config_;
 };
 

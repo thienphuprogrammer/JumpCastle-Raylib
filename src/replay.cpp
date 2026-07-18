@@ -137,9 +137,9 @@ SolverTrace read_trace(const std::filesystem::path& path) {
     return parse_trace(source.str(), path.string());
 }
 
-ReplayResult verify_trace(const WorldMap& world, const SolverTrace& trace) {
-    PlayerState player{.position = world.spawn()};
-    CampaignState campaign{.spawn = world.spawn()};
+ReplayResult verify_trace(const CampaignWorld& world, const SolverTrace& trace) {
+    PlayerState player{.position = world.spawn};
+    CampaignState campaign{.spawn = world.spawn};
 
     for (int tick = 0; tick < 120 && player.mode != PlayerMode::grounded; ++tick) {
         if (step_world(player, campaign, world, {}) == CampaignEvent::fell_below_world) {
@@ -206,8 +206,12 @@ ReplayResult verify_trace(const WorldMap& world, const SolverTrace& trace) {
                 "jump " + std::to_string(index + 1) + " did not reach a landing");
         }
 
-        if (std::abs(player.position.x - jump.expected_landing.x) > 0.15F ||
-            std::abs(player.position.y - jump.expected_landing.y) > 0.15F) {
+        // Polygon SAT lands the walked-in replay a little off the solver's
+        // idealised launch (the two diverge most at platform corners), so the
+        // landing tolerance is wider than the grid path used. The launch-row
+        // check above stays tight, and the y bound still pins the target row.
+        if (std::abs(player.position.x - jump.expected_landing.x) > 0.40F ||
+            std::abs(player.position.y - jump.expected_landing.y) > 0.20F) {
             return replay_failure(
                 executed,
                 "jump " + std::to_string(index + 1) + " expected screen " +
@@ -219,10 +223,10 @@ ReplayResult verify_trace(const WorldMap& world, const SolverTrace& trace) {
     }
 
     for (int tick = 0; tick < 3000 && !campaign.complete; ++tick) {
-        if (std::abs(player.position.y - world.goal().y) > 0.20F) {
+        if (std::abs(player.position.y - world.goal.y) > 0.20F) {
             break;
         }
-        const bool move_right = player.position.x < world.goal().x;
+        const bool move_right = player.position.x < world.goal.x;
         const CampaignEvent event = step_world(
             player,
             campaign,

@@ -131,33 +131,38 @@ namespace jumpcastle::test {
 }
 
 [[nodiscard]] inline WorldMap reachable_three_screen_world() {
+    // A side-by-side staircase (2-row rises, non-overlapping left/right
+    // platforms) authored for the polygon SAT solver. The platforms never
+    // overlap in x, so the player always hops across the seam onto a neighbour
+    // and never ascends directly under a ledge (which SAT rejects as an
+    // underside clip) — matching the small-hop style of the real campaign.
     return make_world(
         {
             "..........",
             "..........",
             ".....#####",
             "..........",
-            "..........",
-            "########..",
-            "..........",
+            "#####.....",
             "..........",
             ".....#####",
             "..........",
-            "..........",
-            "########..",
-            "..........",
+            "#####.....",
             "..........",
             ".....#####",
             "..........",
-            "..........",
-            "########..",
-            "..........",
+            "#####.....",
             "..........",
             ".....#####",
             "..........",
+            "#####.....",
             "..........",
-            "########..",
+            ".....#####",
             "..........",
+            "#####.....",
+            "..........",
+            ".....#####",
+            "..........",
+            "#####.....",
             "..........",
             ".....#####",
             "..........",

@@ -7,7 +7,8 @@
 using namespace jumpcastle;
 
 TEST_CASE("solver finds a tolerant route across a continuous world") {
-    const WorldMap world = test::reachable_three_screen_world();
+    const CampaignWorld world =
+        CampaignWorld::from_world_map(test::reachable_three_screen_world());
     const SolverResult result = ReachabilitySolver{world}.solve_campaign();
 
     INFO(result.failure);
@@ -19,7 +20,8 @@ TEST_CASE("solver finds a tolerant route across a continuous world") {
 }
 
 TEST_CASE("solver rejects a removed mandatory landing") {
-    const WorldMap world = test::unreachable_three_screen_world();
+    const CampaignWorld world =
+        CampaignWorld::from_world_map(test::unreachable_three_screen_world());
     const SolverResult result = ReachabilitySolver{world}.solve_campaign();
 
     CHECK_FALSE(result.reachable);

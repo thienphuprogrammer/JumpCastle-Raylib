@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <optional>
 #include <queue>
 #include <string>
@@ -12,10 +13,14 @@
 namespace jumpcastle {
 namespace {
 
+// A standable horizontal span in world coordinates. `y` is the world-y of the
+// surface top (the player's feet rest here); `screen` is the bottom-up screen
+// number (screen 0 at the base, rising toward the crown) so it matches the
+// numbering the grid solver reported.
 struct Surface {
-    int row{};
-    int start_x{};
-    int end_x{};
+    float y{};
+    float start_x{};
+    float end_x{};
     int screen{};
 };
 
@@ -24,35 +29,65 @@ struct Transition {
     SolverJump jump;
 };
 
-[[nodiscard]] std::vector<Surface> extract_surfaces(const WorldMap& world) {
+// Bottom-up screen number for a world-y. CampaignWorld indexes bands from the
+// top (band 0 at y=0); invert so climbing (decreasing y) yields larger numbers.
+[[nodiscard]] int screen_number(const CampaignWorld& world, const float world_y) {
+    const int band = static_cast<int>(
+        std::floor(world_y / static_cast<float>(world.screen_height)));
+    const int clamped = std::clamp(band, 0, world.screen_count() - 1);
+    return world.screen_count() - 1 - clamped;
+}
+
+// Every upward-facing collider edge becomes a walkable span; collinear abutting
+// spans are merged so a run of adjacent colliders reads as one surface.
+[[nodiscard]] std::vector<Surface> extract_surfaces(const CampaignWorld& world) {
     std::vector<Surface> surfaces;
-    for (int y = 0; y < world.height(); ++y) {
-        int x = 0;
-        while (x < world.width()) {
-            if (!world.solid_at(x, y) || world.solid_at(x, y - 1)) {
-                ++x;
+    for (int index = 0; index < world.screen_count(); ++index) {
+        const std::vector<ConvexPolygon>* polygons =
+            world.collision.polygons_for_screen(index);
+        if (polygons == nullptr) {
+            continue;
+        }
+        for (const ConvexPolygon& polygon : *polygons) {
+            if (polygon.type == ColliderType::hazard) {
                 continue;
             }
-
-            const int start = x;
-            while (x + 1 < world.width() && world.solid_at(x + 1, y) &&
-                   !world.solid_at(x + 1, y - 1)) {
-                ++x;
-            }
-            const bool boundary_cap = start == x &&
-                (start == 0 || start == world.width() - 1);
-            if (!boundary_cap) {
+            const std::size_t count = polygon.points.size();
+            for (std::size_t edge = 0; edge < count; ++edge) {
+                if (polygon.edge_normals[edge].y > -0.9F) {
+                    continue;  // not an upward-facing (top) edge
+                }
+                const Vec2 a = polygon.points[edge];
+                const Vec2 b = polygon.points[(edge + 1) % count];
+                if (std::abs(a.x - b.x) < 0.01F) {
+                    continue;  // vertical/degenerate, not standable
+                }
                 surfaces.push_back({
-                    .row = y,
-                    .start_x = start,
-                    .end_x = x,
-                    .screen = world.screen_for_y(static_cast<float>(y) - 0.5F),
+                    .y = (a.y + b.y) * 0.5F,
+                    .start_x = std::min(a.x, b.x),
+                    .end_x = std::max(a.x, b.x),
+                    .screen = screen_number(world, (a.y + b.y) * 0.5F),
                 });
             }
-            ++x;
         }
     }
-    return surfaces;
+
+    std::sort(surfaces.begin(), surfaces.end(), [](const Surface& l, const Surface& r) {
+        if (std::abs(l.y - r.y) > 0.05F) {
+            return l.y < r.y;
+        }
+        return l.start_x < r.start_x;
+    });
+    std::vector<Surface> merged;
+    for (const Surface& surface : surfaces) {
+        if (!merged.empty() && std::abs(merged.back().y - surface.y) < 0.05F &&
+            surface.start_x <= merged.back().end_x + 0.01F) {
+            merged.back().end_x = std::max(merged.back().end_x, surface.end_x);
+        } else {
+            merged.push_back(surface);
+        }
+    }
+    return merged;
 }
 
 [[nodiscard]] std::optional<std::size_t> supporting_surface(
@@ -61,25 +96,11 @@ struct Transition {
     const float feet = position.y + config::player_half_size.y;
     for (std::size_t index = 0; index < surfaces.size(); ++index) {
         const Surface& surface = surfaces[index];
-        if (std::abs(feet - static_cast<float>(surface.row)) > 0.13F) {
+        if (std::abs(feet - surface.y) > 0.13F) {
             continue;
         }
-        if (position.x > static_cast<float>(surface.start_x) - config::player_half_size.x &&
-            position.x < static_cast<float>(surface.end_x + 1) + config::player_half_size.x) {
-            return index;
-        }
-    }
-    return std::nullopt;
-}
-
-[[nodiscard]] std::optional<std::size_t> marker_surface(
-    const std::vector<Surface>& surfaces,
-    const Vec2 marker) {
-    for (std::size_t index = 0; index < surfaces.size(); ++index) {
-        const Surface& surface = surfaces[index];
-        if (std::abs(static_cast<float>(surface.row) - (marker.y + 0.5F)) < 0.01F &&
-            marker.x >= static_cast<float>(surface.start_x) &&
-            marker.x < static_cast<float>(surface.end_x + 1)) {
+        if (position.x > surface.start_x - config::player_half_size.x &&
+            position.x < surface.end_x + config::player_half_size.x) {
             return index;
         }
     }
@@ -99,7 +120,7 @@ struct Transition {
 }
 
 [[nodiscard]] std::optional<Transition> simulate_jump(
-    const WorldMap& world,
+    const CampaignWorld& world,
     const SolverConfig& solver_config,
     const std::vector<Surface>& surfaces,
     const std::size_t source_index,
@@ -108,79 +129,73 @@ struct Transition {
     const JumpDirection direction,
     const int charge_ticks) {
     const Surface& source = surfaces[source_index];
+    const Vec2 launch{launch_x, source.y - config::player_half_size.y};
     PlayerState player{
-        .position = {launch_x, static_cast<float>(source.row) - config::player_half_size.y},
+        .position = launch,
         .mode = PlayerMode::grounded,
         .on_ground = true,
         .facing_right = direction != JumpDirection::left,
     };
-    CampaignState campaign{.spawn = world.spawn()};
+    CampaignState campaign{.spawn = world.spawn};
+
+    const auto reached_goal = [&]() {
+        return Transition{
+            goal_index,
+            {launch, player.position, direction, charge_ticks,
+             source.screen, surfaces[goal_index].screen},
+        };
+    };
 
     for (int tick = 0; tick < charge_ticks; ++tick) {
         const CampaignEvent event = step_world(
             player, campaign, world, input_for(direction, true, false));
-        if (event == CampaignEvent::fell_below_world) {
+        if (event == CampaignEvent::fell_below_world ||
+            event == CampaignEvent::respawned) {
             return std::nullopt;
         }
         if (event == CampaignEvent::completed) {
-            return Transition{
-                goal_index,
-                {{launch_x, static_cast<float>(source.row) - config::player_half_size.y},
-                 player.position,
-                 direction,
-                 charge_ticks,
-                 source.screen,
-                 surfaces[goal_index].screen},
-            };
+            return reached_goal();
         }
     }
 
     CampaignEvent event = step_world(
         player, campaign, world, input_for(direction, false, true));
-    if (event == CampaignEvent::fell_below_world) {
+    if (event == CampaignEvent::fell_below_world ||
+        event == CampaignEvent::respawned) {
         return std::nullopt;
     }
     if (event == CampaignEvent::completed) {
-        return Transition{
-            goal_index,
-            {{launch_x, static_cast<float>(source.row) - config::player_half_size.y},
-             player.position,
-             direction,
-             charge_ticks,
-             source.screen,
-             surfaces[goal_index].screen},
-        };
+        return reached_goal();
     }
 
     for (int tick = 0; tick < solver_config.maximum_air_ticks; ++tick) {
         event = step_world(player, campaign, world, {});
-        if (event == CampaignEvent::fell_below_world) {
+        if (event == CampaignEvent::fell_below_world ||
+            event == CampaignEvent::respawned) {
             return std::nullopt;
         }
         if (event == CampaignEvent::completed) {
-            return Transition{
-                goal_index,
-                {{launch_x, static_cast<float>(source.row) - config::player_half_size.y},
-                 player.position,
-                 direction,
-                 charge_ticks,
-                 source.screen,
-                 surfaces[goal_index].screen},
-            };
+            return reached_goal();
         }
         if (tick > 1 && player.mode == PlayerMode::grounded) {
             const auto destination = supporting_surface(surfaces, player.position);
             if (!destination || *destination == source_index) {
                 return std::nullopt;
             }
+            // Reject corner-hangs where the player's centre sits past a platform
+            // edge. The solver launches from an idealised rest position, so a
+            // marginal edge catch it certifies will not reproduce when the game
+            // walks to the launch and jumps — demand the centre land over the
+            // surface so the route is replay-robust.
+            const Surface& landing = surfaces[*destination];
+            if (player.position.x < landing.start_x ||
+                player.position.x > landing.end_x) {
+                return std::nullopt;
+            }
             return Transition{
                 *destination,
-                {{launch_x, static_cast<float>(source.row) - config::player_half_size.y},
-                 player.position,
-                 direction,
-                 charge_ticks,
-                 source.screen,
-                 surfaces[*destination].screen},
+                {launch, player.position, direction, charge_ticks,
+                 source.screen, surfaces[*destination].screen},
             };
         }
     }
@@ -188,7 +203,7 @@ struct Transition {
 }
 
 [[nodiscard]] bool tolerant_jump(
-    const WorldMap& world,
+    const CampaignWorld& world,
     const SolverConfig& solver_config,
     const std::vector<Surface>& surfaces,
     const std::size_t source,
@@ -224,14 +239,14 @@ struct Transition {
 }  // namespace
 
 ReachabilitySolver::ReachabilitySolver(
-    const WorldMap& world,
+    const CampaignWorld& world,
     const SolverConfig config_value)
     : world_{world}, config_{config_value} {}
 
 SolverResult ReachabilitySolver::solve_campaign() const {
     const std::vector<Surface> surfaces = extract_surfaces(world_);
-    const auto start = marker_surface(surfaces, world_.spawn());
-    const auto goal = marker_surface(surfaces, world_.goal());
+    const auto start = supporting_surface(surfaces, world_.spawn);
+    const auto goal = supporting_surface(surfaces, world_.goal);
     if (!start || !goal) {
         return {.failure = "spawn or goal has no stable supporting surface"};
     }
@@ -251,10 +266,8 @@ SolverResult ReachabilitySolver::solve_campaign() const {
         const std::size_t source_index = pending.front();
         pending.pop();
         const Surface& source = surfaces[source_index];
-        const float min_x = static_cast<float>(source.start_x) +
-            config::player_half_size.x + 0.05F;
-        const float max_x = static_cast<float>(source.end_x + 1) -
-            config::player_half_size.x - 0.05F;
+        const float min_x = source.start_x + config::player_half_size.x + 0.05F;
+        const float max_x = source.end_x - config::player_half_size.x - 0.05F;
 
         for (float x = min_x; x <= max_x + 0.001F; x += config_.launch_sample_spacing) {
             for (const JumpDirection direction : {
@@ -283,7 +296,7 @@ SolverResult ReachabilitySolver::solve_campaign() const {
                     pending.push(destination);
                     if (surfaces[destination].screen > highest_screen ||
                         (surfaces[destination].screen == highest_screen &&
-                         surfaces[destination].row < surfaces[highest_surface].row)) {
+                         surfaces[destination].y < surfaces[highest_surface].y)) {
                         highest_screen = surfaces[destination].screen;
                         highest_surface = destination;
                     }
@@ -297,7 +310,7 @@ SolverResult ReachabilitySolver::solve_campaign() const {
             .highest_screen = highest_screen,
             .failure = "highest screen " + std::to_string(highest_screen + 1) +
                 " of " + std::to_string(world_.screen_count()) +
-                "; nearest surface row " + std::to_string(surfaces[highest_surface].row),
+                "; nearest surface y " + std::to_string(surfaces[highest_surface].y),
         };
     }
 

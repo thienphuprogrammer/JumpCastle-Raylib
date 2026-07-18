@@ -38,7 +38,7 @@ struct ReplayResult {
 void write_trace(const std::filesystem::path& path, const SolverTrace& trace);
 [[nodiscard]] SolverTrace read_trace(const std::filesystem::path& path);
 [[nodiscard]] ReplayResult verify_trace(
-    const WorldMap& world,
+    const CampaignWorld& world,
     const SolverTrace& trace);
 
 }  // namespace jumpcastle
