@@ -44,7 +44,7 @@ add_library(
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
-target_link_libraries(jumpcastle_core PUBLIC raylib PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(jumpcastle_core PRIVATE nlohmann_json::nlohmann_json)
 
 add_executable(
   jumpcastle
@@ -94,6 +94,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/assets_test.cpp
     tests/assets_manifest_test.cpp
     tests/level_test.cpp
+    tests/math_test.cpp
     tests/player_test.cpp
     tests/player_view_test.cpp
     tests/resource_traits_test.cpp
@@ -101,7 +102,9 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/solver_test.cpp
     tests/tilemap_test.cpp
   )
-  target_link_libraries(jumpcastle_tests PRIVATE jumpcastle_core Catch2::Catch2WithMain)
+  target_link_libraries(
+    jumpcastle_tests PRIVATE jumpcastle_core raylib Catch2::Catch2WithMain
+  )
   target_compile_definitions(
     jumpcastle_tests PRIVATE
     JUMPCASTLE_SOURCE_DIR="${PROJECT_SOURCE_DIR}"

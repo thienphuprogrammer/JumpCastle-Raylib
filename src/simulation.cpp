@@ -5,14 +5,14 @@ namespace {
 
 struct MarkerHit {
     bool found{};
-    Vector2 position{};
+    Vec2 position{};
 };
 
 MarkerHit marker_hit(
     const RoomSelection& selection,
-    const Vector2 player_position,
+    const Vec2 player_position,
     const Tile marker) noexcept {
-    Vector2 local_position = player_position;
+    Vec2 local_position = player_position;
     local_position.y -= selection.vertical_offset;
     const TileRange range = overlapped_tiles(local_position, config::player_half_size);
 

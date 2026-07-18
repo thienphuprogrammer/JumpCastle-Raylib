@@ -19,7 +19,7 @@ TEST_CASE("tilemap applies gameplay boundary policies") {
 }
 
 TEST_CASE("initial position selects the documented starting screen") {
-    const Vector2 start = starting_player_position();
+    const Vec2 start = starting_player_position();
     const ScreenSelection selected = select_screen(start.y);
 
     CHECK(selected.index == starting_screen_index);

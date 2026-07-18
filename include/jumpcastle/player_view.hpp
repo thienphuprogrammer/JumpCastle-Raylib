@@ -3,6 +3,8 @@
 #include "jumpcastle/assets.hpp"
 #include "jumpcastle/player.hpp"
 
+#include "raylib.h"
+
 #include <cmath>
 #include <cstddef>
 
@@ -20,7 +22,7 @@ inline constexpr float player_sprite_display =
 // its feet at the player's feet. Because the sprite is centred in its cell, the
 // destination is independent of facing, so flipping the source never shifts it.
 [[nodiscard]] inline Rectangle player_sprite_destination(
-    const Vector2 position,
+    const Vec2 position,
     const float screen_offset_y) noexcept {
     const float centre_x = position.x * static_cast<float>(config::tile_pixels);
     const float feet_y =

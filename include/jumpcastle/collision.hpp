@@ -11,19 +11,19 @@ struct TileRange {
     int end_y;
 };
 
-[[nodiscard]] TileRange overlapped_tiles(Vector2 center, Vector2 half_size) noexcept;
+[[nodiscard]] TileRange overlapped_tiles(Vec2 center, Vec2 half_size) noexcept;
 
 [[nodiscard]] bool collides_with_tilemap(
     const Tilemap& tilemap,
     float tilemap_offset_y,
-    Vector2 center,
-    Vector2 half_size) noexcept;
+    Vec2 center,
+    Vec2 half_size) noexcept;
 
 void resolve_tilemap_collision(
     const Tilemap& tilemap,
     float tilemap_offset_y,
-    Vector2& center,
-    Vector2& velocity,
-    Vector2 half_size) noexcept;
+    Vec2& center,
+    Vec2& velocity,
+    Vec2 half_size) noexcept;
 
 }  // namespace jumpcastle

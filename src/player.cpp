@@ -4,39 +4,19 @@
 #include <cmath>
 
 namespace jumpcastle {
-namespace {
 
-[[nodiscard]] float vector_length(const Vector2 value) noexcept {
-    return std::hypot(value.x, value.y);
-}
-
-[[nodiscard]] Vector2 scaled(const Vector2 value, const float factor) noexcept {
-    return {value.x * factor, value.y * factor};
-}
-
-[[nodiscard]] Vector2 normalized(const Vector2 value) noexcept {
-    const float length = vector_length(value);
-    if (length == 0.0F) {
-        return {};
-    }
-
-    return scaled(value, 1.0F / length);
-}
-
-}  // namespace
-
-Vector2 charged_jump_velocity(
+Vec2 charged_jump_velocity(
     const float hold_time,
     const float horizontal_input) noexcept {
     const float jump_scale = std::clamp(hold_time * 2.6F, 1.1F, 2.0F) / 2.0F;
     const float horizontal_strength = 0.75F - jump_scale * 0.5F;
     const float direction = std::clamp(horizontal_input, -1.0F, 1.0F);
-    const Vector2 jump_direction = normalized({
+    const Vec2 jump_direction = normalized({
         direction * horizontal_strength,
         -1.0F,
     });
 
-    return scaled(jump_direction, jump_scale * config::jump_strength);
+    return jump_direction * (jump_scale * config::jump_strength);
 }
 
 void simulate_ground_movement(
@@ -70,12 +50,12 @@ void simulate_ground_movement(
 }
 
 void integrate_player(PlayerState& player, const float delta) noexcept {
-    const float speed = vector_length(player.velocity);
+    const float speed = length(player.velocity);
     if (speed > config::maximum_speed) {
-        player.velocity = scaled(normalized(player.velocity), config::maximum_speed);
+        player.velocity = normalized(player.velocity) * config::maximum_speed;
     }
 
-    const Vector2 displacement = scaled(player.velocity, delta);
+    const Vec2 displacement = player.velocity * delta;
     player.position.x += displacement.x;
     player.position.y += displacement.y;
 }

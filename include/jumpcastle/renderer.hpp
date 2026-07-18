@@ -3,6 +3,8 @@
 #include "jumpcastle/assets.hpp"
 #include "jumpcastle/campaign.hpp"
 
+#include "raylib.h"
+
 #include <array>
 #include <filesystem>
 

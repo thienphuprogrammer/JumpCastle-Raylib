@@ -44,7 +44,7 @@ public:
     [[nodiscard]] static LevelRepository load(const std::filesystem::path& directory);
     [[nodiscard]] const Room& room(std::size_t index) const;
     [[nodiscard]] std::optional<RoomSelection> select(float world_y) const noexcept;
-    [[nodiscard]] Vector2 campaign_spawn() const;
+    [[nodiscard]] Vec2 campaign_spawn() const;
 
 private:
     std::array<Room, room_count> rooms_;
@@ -52,7 +52,7 @@ private:
 
 [[nodiscard]] Room parse_room(std::string_view source, std::string_view filename);
 [[nodiscard]] std::optional<std::size_t> room_index_for_world_y(float world_y) noexcept;
-[[nodiscard]] std::vector<Vector2> marker_positions(
+[[nodiscard]] std::vector<Vec2> marker_positions(
     const Room& room,
     Tile marker,
     float vertical_offset);

@@ -220,7 +220,7 @@ std::optional<RoomSelection> LevelRepository::select(const float world_y) const 
     };
 }
 
-Vector2 LevelRepository::campaign_spawn() const {
+Vec2 LevelRepository::campaign_spawn() const {
     const auto positions = marker_positions(rooms_.front(), Tile::spawn,
         -static_cast<float>(config::tilemap_height));
     if (positions.size() != 1) {
@@ -229,11 +229,11 @@ Vector2 LevelRepository::campaign_spawn() const {
     return positions.front();
 }
 
-std::vector<Vector2> marker_positions(
+std::vector<Vec2> marker_positions(
     const Room& room,
     const Tile marker,
     const float vertical_offset) {
-    std::vector<Vector2> positions;
+    std::vector<Vec2> positions;
     for (int y = 0; y < config::tilemap_height; ++y) {
         for (int x = 0; x < config::tilemap_width; ++x) {
             if (room.tilemap.tile_at(x, y) == marker) {

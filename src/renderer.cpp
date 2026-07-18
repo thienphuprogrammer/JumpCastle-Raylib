@@ -36,7 +36,7 @@ Color biome_background(const Biome biome) noexcept {
     case Biome::kenney: return {24, 27, 42, 255};
     case Biome::kings_and_pigs: return {36, 24, 42, 255};
     }
-    return config::background_color;
+    return {15, 5, 45, 255};
 }
 
 Rectangle source_rectangle(const SpriteRegion& region) noexcept {
@@ -221,7 +221,7 @@ void draw_debug_overlay(
     const PlayerState& player,
     const CampaignState& campaign,
     const float scale,
-    const Vector2 offset) {
+    const ::Vector2 offset) {
     const int x = static_cast<int>(offset.x + 5.0F * scale);
     const int y = static_cast<int>(offset.y + 5.0F * scale);
     const int font_size = std::max(10, static_cast<int>(6.0F * scale));
@@ -362,11 +362,11 @@ void Renderer::draw(
         std::floor(std::min(
             window_width / static_cast<float>(config::view_width),
             window_height / static_cast<float>(config::view_height))));
-    const Vector2 size{
+    const ::Vector2 size{
         scale * static_cast<float>(config::view_width),
         scale * static_cast<float>(config::view_height),
     };
-    const Vector2 offset{
+    const ::Vector2 offset{
         (window_width - size.x) * 0.5F,
         (window_height - size.y) * 0.5F,
     };

@@ -32,16 +32,16 @@ TEST_CASE("ground input changes facing direction") {
 }
 
 TEST_CASE("long jump charge is clamped") {
-    const Vector2 short_jump = charged_jump_velocity(0.1F, 0.0F);
-    const Vector2 long_jump = charged_jump_velocity(10.0F, 0.0F);
+    const Vec2 short_jump = charged_jump_velocity(0.1F, 0.0F);
+    const Vec2 long_jump = charged_jump_velocity(10.0F, 0.0F);
 
     CHECK(long_jump.y < short_jump.y);
     CHECK(long_jump.y == Approx(-config::jump_strength));
 }
 
 TEST_CASE("charged jump follows horizontal input") {
-    const Vector2 jump_left = charged_jump_velocity(0.5F, -1.0F);
-    const Vector2 jump_right = charged_jump_velocity(0.5F, 1.0F);
+    const Vec2 jump_left = charged_jump_velocity(0.5F, -1.0F);
+    const Vec2 jump_right = charged_jump_velocity(0.5F, 1.0F);
 
     CHECK(jump_left.x < 0.0F);
     CHECK(jump_right.x > 0.0F);

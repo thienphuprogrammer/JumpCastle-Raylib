@@ -24,7 +24,7 @@ Game::Game() {
         const auto asset_directory =
             std::filesystem::path{GetApplicationDirectory()} / "assets";
         levels_.emplace(LevelRepository::load(asset_directory / "levels"));
-        const Vector2 spawn = levels_->campaign_spawn();
+        const Vec2 spawn = levels_->campaign_spawn();
         restart_campaign(campaign_, spawn, 0);
         reset_player(player_, spawn);
         active_room_ = levels_->select(player_.position.y);
@@ -63,7 +63,7 @@ void Game::update(const float delta) {
 
     if (campaign_.complete) {
         if (IsKeyPressed(KEY_ENTER)) {
-            const Vector2 spawn = levels_->campaign_spawn();
+            const Vec2 spawn = levels_->campaign_spawn();
             restart_campaign(campaign_, spawn, 0);
             reset_player(player_, spawn);
             respawn_animation_time_ = 0.0F;

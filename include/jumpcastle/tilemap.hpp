@@ -48,6 +48,6 @@ inline constexpr std::size_t starting_screen_index = 5;
 
 [[nodiscard]] const Tilemap& screen(std::size_t index) noexcept;
 [[nodiscard]] ScreenSelection select_screen(float world_y) noexcept;
-[[nodiscard]] Vector2 starting_player_position() noexcept;
+[[nodiscard]] Vec2 starting_player_position() noexcept;
 
 }  // namespace jumpcastle

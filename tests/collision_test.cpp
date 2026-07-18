@@ -43,8 +43,8 @@ TEST_CASE("overlapped tiles include both crossed boundaries") {
 
 TEST_CASE("landing clips the player to the floor and stops downward velocity") {
     const Tilemap map = test_map_with_floor_at(6);
-    Vector2 center{4.5F, 5.8F};
-    Vector2 velocity{0.0F, 10.0F};
+    Vec2 center{4.5F, 5.8F};
+    Vec2 velocity{0.0F, 10.0F};
 
     resolve_tilemap_collision(map, 0.0F, center, velocity, config::player_half_size);
 
@@ -54,8 +54,8 @@ TEST_CASE("landing clips the player to the floor and stops downward velocity") {
 
 TEST_CASE("wall collision reflects horizontal velocity") {
     const Tilemap map = test_map_with_wall_at(6);
-    Vector2 center{5.8F, 4.5F};
-    Vector2 velocity{10.0F, 0.0F};
+    Vec2 center{5.8F, 4.5F};
+    Vec2 velocity{10.0F, 0.0F};
 
     resolve_tilemap_collision(map, 0.0F, center, velocity, config::player_half_size);
 

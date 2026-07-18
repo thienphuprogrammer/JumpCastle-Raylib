@@ -14,15 +14,15 @@ struct PlayerInput {
 };
 
 struct PlayerState {
-    Vector2 position{starting_player_position()};
-    Vector2 velocity{};
+    Vec2 position{starting_player_position()};
+    Vec2 velocity{};
     float jump_hold_time{};
     float animation_time{};
     bool on_ground{};
     bool facing_right{true};
 };
 
-[[nodiscard]] Vector2 charged_jump_velocity(
+[[nodiscard]] Vec2 charged_jump_velocity(
     float hold_time,
     float horizontal_input) noexcept;
 

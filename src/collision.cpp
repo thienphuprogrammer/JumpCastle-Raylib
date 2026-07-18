@@ -5,7 +5,7 @@
 
 namespace jumpcastle {
 
-TileRange overlapped_tiles(const Vector2 center, const Vector2 half_size) noexcept {
+TileRange overlapped_tiles(const Vec2 center, const Vec2 half_size) noexcept {
     return {
         static_cast<int>(std::floor(center.x - half_size.x)),
         static_cast<int>(std::floor(center.y - half_size.y)),
@@ -17,8 +17,8 @@ TileRange overlapped_tiles(const Vector2 center, const Vector2 half_size) noexce
 bool collides_with_tilemap(
     const Tilemap& tilemap,
     const float tilemap_offset_y,
-    Vector2 center,
-    const Vector2 half_size) noexcept {
+    Vec2 center,
+    const Vec2 half_size) noexcept {
     center.y -= tilemap_offset_y;
     const TileRange range = overlapped_tiles(center, half_size);
 
@@ -28,11 +28,11 @@ bool collides_with_tilemap(
                 continue;
             }
 
-            const Vector2 tile_center{0.5F + static_cast<float>(x),
+            const Vec2 tile_center{0.5F + static_cast<float>(x),
                                       0.5F + static_cast<float>(y)};
-            const Vector2 combined_half_size{half_size.x + 0.5F,
+            const Vec2 combined_half_size{half_size.x + 0.5F,
                                              half_size.y + 0.5F};
-            const Vector2 surface_distance{
+            const Vec2 surface_distance{
                 std::abs(center.x - tile_center.x) - combined_half_size.x,
                 std::abs(center.y - tile_center.y) - combined_half_size.y,
             };
@@ -49,9 +49,9 @@ bool collides_with_tilemap(
 void resolve_tilemap_collision(
     const Tilemap& tilemap,
     const float tilemap_offset_y,
-    Vector2& center,
-    Vector2& velocity,
-    const Vector2 half_size) noexcept {
+    Vec2& center,
+    Vec2& velocity,
+    const Vec2 half_size) noexcept {
     center.y -= tilemap_offset_y;
     const TileRange range = overlapped_tiles(center, half_size);
 
@@ -61,11 +61,11 @@ void resolve_tilemap_collision(
                 continue;
             }
 
-            const Vector2 tile_center{0.5F + static_cast<float>(x),
+            const Vec2 tile_center{0.5F + static_cast<float>(x),
                                       0.5F + static_cast<float>(y)};
-            const Vector2 combined_half_size{half_size.x + 0.5F,
+            const Vec2 combined_half_size{half_size.x + 0.5F,
                                              half_size.y + 0.5F};
-            const Vector2 surface_distance{
+            const Vec2 surface_distance{
                 std::abs(center.x - tile_center.x) - combined_half_size.x,
                 std::abs(center.y - tile_center.y) - combined_half_size.y,
             };

@@ -14,7 +14,7 @@ enum class CampaignEvent {
 };
 
 struct CampaignState {
-    Vector2 respawn_position{};
+    Vec2 respawn_position{};
     std::size_t checkpoint_room{};
     int deaths{};
     float elapsed_seconds{};
@@ -23,13 +23,13 @@ struct CampaignState {
 
 void activate_checkpoint(
     CampaignState& campaign,
-    Vector2 position,
+    Vec2 position,
     std::size_t room) noexcept;
-void reset_player(PlayerState& player, Vector2 position) noexcept;
+void reset_player(PlayerState& player, Vec2 position) noexcept;
 void respawn_player(CampaignState& campaign, PlayerState& player) noexcept;
 void restart_campaign(
     CampaignState& campaign,
-    Vector2 spawn,
+    Vec2 spawn,
     std::size_t room) noexcept;
 
 }  // namespace jumpcastle

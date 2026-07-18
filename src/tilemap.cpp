@@ -146,7 +146,7 @@ ScreenSelection select_screen(const float world_y) noexcept {
     };
 }
 
-Vector2 starting_player_position() noexcept {
+Vec2 starting_player_position() noexcept {
     return {
         config::tilemap_width / 2.0F,
         -config::tilemap_height / 2.0F,

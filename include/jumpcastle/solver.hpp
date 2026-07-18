@@ -24,8 +24,8 @@ struct SolverConfig {
 };
 
 struct SolverJump {
-    Vector2 start{};
-    Vector2 landing{};
+    Vec2 start{};
+    Vec2 landing{};
     JumpDirection direction{JumpDirection::neutral};
     int charge_frames{};
     std::size_t start_room{};
