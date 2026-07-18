@@ -1,12 +1,15 @@
 #include "jumpcastle/game.hpp"
 
+#include "jumpcastle/asset_root.hpp"
+
 #include <algorithm>
 #include <filesystem>
 #include <stdexcept>
+#include <utility>
 
 namespace jumpcastle {
 
-Game::Game() {
+Game::Game(std::optional<std::filesystem::path> override_root) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(
         config::view_width * 3,
@@ -21,8 +24,12 @@ Game::Game() {
     SetExitKey(KEY_NULL);
 
     try {
-        const auto asset_directory =
-            std::filesystem::path{GetApplicationDirectory()} / "assets";
+        const std::filesystem::path executable_directory{GetApplicationDirectory()};
+        const auto asset_directory = resolve_asset_root({
+            .override_root = std::move(override_root),
+            .executable_directory = executable_directory,
+            .installed_root = executable_directory / ".." / "share" / "jumpcastle",
+        });
         world_.emplace(WorldMap::load(asset_directory / "levels" / "campaign.level"));
         campaign_ = CampaignState{.spawn = world_->spawn()};
         reset_player(player_, world_->spawn());

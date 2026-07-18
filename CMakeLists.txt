@@ -33,6 +33,7 @@ FetchContent_MakeAvailable(nlohmann_json)
 
 add_library(
   jumpcastle_core STATIC
+  src/asset_root.cpp
   src/assets.cpp
   src/camera.cpp
   src/campaign.cpp
@@ -95,6 +96,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/camera_test.cpp
     tests/collision_test.cpp
     tests/campaign_test.cpp
+    tests/asset_root_test.cpp
     tests/assets_test.cpp
     tests/assets_manifest_test.cpp
     tests/level_test.cpp
@@ -143,18 +145,32 @@ if(JUMPCASTLE_BUILD_TESTS)
             ${PROJECT_SOURCE_DIR}/tools/verify_asset_pixels.py
             ${PROJECT_SOURCE_DIR}/assets/generated/manifest.json
   )
+  add_test(
+    NAME asset_recovery
+    COMMAND ${CMAKE_COMMAND}
+            -DBINARY_DIR=${PROJECT_BINARY_DIR}
+            -DASSET_DIR=$<TARGET_FILE_DIR:jumpcastle>/assets
+            -DSOURCE_ASSETS=${PROJECT_SOURCE_DIR}/assets
+            -DCONFIG=$<CONFIG>
+            -P ${PROJECT_SOURCE_DIR}/tests/cmake/asset_recovery.cmake
+  )
 endif()
+
+set(JUMPCASTLE_RUNTIME_ASSETS
+  generated/castle.png
+  generated/knight.png
+  generated/ui.png
+  generated/manifest.json
+  levels/campaign.level
+)
 
 add_custom_target(
   jumpcastle_assets ALL
-  COMMAND ${CMAKE_COMMAND} -E make_directory
-          $<TARGET_FILE_DIR:jumpcastle>/assets
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-          ${PROJECT_SOURCE_DIR}/assets/generated
-          $<TARGET_FILE_DIR:jumpcastle>/assets/generated
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-          ${PROJECT_SOURCE_DIR}/assets/levels
-          $<TARGET_FILE_DIR:jumpcastle>/assets/levels
+  COMMAND ${CMAKE_COMMAND}
+          -DSOURCE_ROOT=${PROJECT_SOURCE_DIR}/assets
+          -DDESTINATION_ROOT=$<TARGET_FILE_DIR:jumpcastle>/assets
+          "-DFILES=${JUMPCASTLE_RUNTIME_ASSETS}"
+          -P ${PROJECT_SOURCE_DIR}/cmake/SyncAssets.cmake
   COMMENT "Synchronizing JumpCastle runtime assets"
   VERBATIM
 )

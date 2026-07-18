@@ -4,13 +4,14 @@
 #include "jumpcastle/fixed_step.hpp"
 #include "jumpcastle/simulation.hpp"
 
+#include <filesystem>
 #include <optional>
 
 namespace jumpcastle {
 
 class Game {
 public:
-    Game();
+    explicit Game(std::optional<std::filesystem::path> override_root = std::nullopt);
     ~Game();
 
     Game(const Game&) = delete;
