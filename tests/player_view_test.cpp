@@ -24,6 +24,17 @@ TEST_CASE("sprite destination ignores facing so flipping never shifts it") {
     CHECK(dest.x + dest.width * 0.5F == Catch::Approx(7.25F * tile));
 }
 
+TEST_CASE("horizontal flip keeps the selected atlas cell") {
+    const SpriteRegion frame{16, 32, 16, 16};
+
+    const Rectangle source = sprite_source_rectangle(frame, true);
+
+    CHECK(source.x == Catch::Approx(16.0F));
+    CHECK(source.y == Catch::Approx(32.0F));
+    CHECK(source.width == Catch::Approx(-16.0F));
+    CHECK(source.height == Catch::Approx(16.0F));
+}
+
 TEST_CASE("animation state follows the player") {
     PlayerState grounded{};
     grounded.on_ground = true;

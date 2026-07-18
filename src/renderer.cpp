@@ -39,26 +39,13 @@ Color biome_background(const WorldBiome biome) noexcept {
     return {15, 5, 45, 255};
 }
 
-Rectangle source_rectangle(const SpriteRegion& region) noexcept {
-    return {
-        static_cast<float>(region.x),
-        static_cast<float>(region.y),
-        static_cast<float>(region.width),
-        static_cast<float>(region.height),
-    };
-}
-
 void draw_region(
     const Texture2D texture,
     const SpriteRegion& region,
     const Rectangle destination,
     const Color tint = WHITE,
     const bool flip_horizontal = false) {
-    Rectangle source = source_rectangle(region);
-    if (flip_horizontal) {
-        source.x += source.width;
-        source.width = -source.width;
-    }
+    const Rectangle source = sprite_source_rectangle(region, flip_horizontal);
     DrawTexturePro(texture, source, destination, {}, 0.0F, tint);
 }
 

@@ -16,6 +16,19 @@ namespace jumpcastle {
 inline constexpr float player_sprite_display =
     2.0F * static_cast<float>(config::tile_pixels);
 
+// raylib flips a source rectangle when its width is negative. Keep x anchored
+// to the selected atlas cell; shifting x would sample the following frame.
+[[nodiscard]] inline Rectangle sprite_source_rectangle(
+    const SpriteRegion& region,
+    const bool flip_horizontal = false) noexcept {
+    return {
+        static_cast<float>(region.x),
+        static_cast<float>(region.y),
+        static_cast<float>(flip_horizontal ? -region.width : region.width),
+        static_cast<float>(region.height),
+    };
+}
+
 // Place the knight so it is centred on the player horizontally and stands with
 // its feet at the player's feet. Because the sprite is centred in its cell, the
 // destination is independent of facing, so flipping the source never shifts it.
