@@ -349,18 +349,68 @@ void draw_convex_polygon(
     }
 }
 
+// The fully-surrounded interior fill sprite of the terrain tileset.
+SpriteRegion terrain_fill_region(const TerrainGrid& grid) noexcept {
+    const int col = std::min(1, grid.columns - 1);
+    const int row = std::min(1, grid.rows - 1);
+    return {
+        grid.x + col * grid.tile_size,
+        grid.y + row * grid.tile_size,
+        grid.tile_size,
+        grid.tile_size,
+    };
+}
+
+bool is_axis_rect(const ConvexPolygon& polygon) noexcept {
+    if (polygon.points.size() != 4) { return false; }
+    for (const Vec2 point : polygon.points) {
+        const bool on_x = point.x == polygon.aabb.min.x || point.x == polygon.aabb.max.x;
+        const bool on_y = point.y == polygon.aabb.min.y || point.y == polygon.aabb.max.y;
+        if (!on_x || !on_y) { return false; }
+    }
+    return true;
+}
+
+// Tile the terrain fill sprite across an axis-aligned rectangle collider so the
+// merged polygon reads as textured terrain rather than a flat color.
+void draw_textured_rect(
+    const Texture2D texture,
+    const SpriteRegion& fill,
+    const ConvexPolygon& polygon,
+    const float world_top,
+    const Color tint) {
+    const float tile = static_cast<float>(config::tile_pixels);
+    for (float wy = polygon.aabb.min.y; wy < polygon.aabb.max.y; wy += 1.0F) {
+        for (float wx = polygon.aabb.min.x; wx < polygon.aabb.max.x; wx += 1.0F) {
+            const float w = std::min(1.0F, polygon.aabb.max.x - wx);
+            const float h = std::min(1.0F, polygon.aabb.max.y - wy);
+            const ::Vector2 screen = world_to_screen({wx, wy}, world_top);
+            draw_region(texture, fill, {screen.x, screen.y, w * tile, h * tile}, tint);
+        }
+    }
+}
+
 void draw_world_polygons(
     const CampaignWorld& world,
     const CameraBand& camera,
     const BiomeAssets& assets,
     const Texture2D texture) {
+    const SpriteRegion fill = terrain_fill_region(assets.terrain);
+    const Color terrain_tint = biome_terrain_tint(camera.biome);
     const std::vector<ConvexPolygon>* polygons =
         world.collision.polygons_for_screen(camera.screen);
     if (polygons != nullptr) {
         for (const ConvexPolygon& polygon : *polygons) {
-            draw_convex_polygon(
-                polygon, camera.world_top,
-                polygon_fill_color(polygon.type, camera.biome));
+            if (polygon.type != ColliderType::hazard && is_axis_rect(polygon)) {
+                const Color tint = polygon.type == ColliderType::oneway
+                    ? scale_rgb(terrain_tint, 0.8F)
+                    : terrain_tint;
+                draw_textured_rect(texture, fill, polygon, camera.world_top, tint);
+            } else {
+                draw_convex_polygon(
+                    polygon, camera.world_top,
+                    polygon_fill_color(polygon.type, camera.biome));
+            }
         }
     }
 
