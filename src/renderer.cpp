@@ -52,6 +52,47 @@ Color biome_terrain_tint(const WorldBiome biome) noexcept {
     return WHITE;
 }
 
+// Atmospheric haze tint for the parallax sky layers: warm dusk over the
+// courtyard, pale ice over the frosted keep, twilight violet over the spire.
+// Kept separate from the terrain tint so the distant sky can read cooler and
+// softer than the bricks in the foreground.
+Color biome_sky_tint(const WorldBiome biome) noexcept {
+    switch (biome) {
+    case WorldBiome::courtyard: return {255, 232, 196, 255};
+    case WorldBiome::frosted_keep: return {198, 222, 255, 255};
+    case WorldBiome::crown_spire: return {222, 196, 246, 255};
+    }
+    return WHITE;
+}
+
+// Multiply a color's RGB by a scalar (alpha preserved), clamped to byte range.
+// Used to darken the gradient toward the top of the tower and to dim distant
+// parallax layers so they recede.
+Color scale_rgb(const Color color, const float factor) noexcept {
+    const auto channel = [factor](const unsigned char value) noexcept {
+        return static_cast<unsigned char>(
+            std::clamp(static_cast<float>(value) * factor, 0.0F, 255.0F));
+    };
+    return {channel(color.r), channel(color.g), channel(color.b), color.a};
+}
+
+// A single vertical-parallax sky layer derived from the biome background tile.
+// Distant layers use a small parallax fraction (they barely move as the camera
+// climbs), a larger tile span (soft, out-of-focus shapes), lower opacity and
+// reduced brightness; near layers scroll faster, stay crisp and bright.
+struct ParallaxLayer {
+    float parallax{};    // fraction of camera travel this layer scrolls
+    float span{};        // on-screen tile size in pixels
+    float alpha{};       // layer opacity
+    float brightness{};  // RGB multiplier applied to the sky tint
+};
+
+inline constexpr std::array<ParallaxLayer, 3> parallax_layers{{
+    {0.12F, 48.0F, 0.06F, 0.55F},  // far  — soft, dim, nearly static
+    {0.30F, 32.0F, 0.09F, 0.78F},  // mid
+    {0.55F, 16.0F, 0.12F, 1.00F},  // near — crisp, brighter, fastest
+}};
+
 void draw_region(
     const Texture2D texture,
     const SpriteRegion& region,
@@ -62,23 +103,39 @@ void draw_region(
     DrawTexturePro(texture, source, destination, {}, 0.0F, tint);
 }
 
-void draw_background(
+// Multi-layer vertical parallax sky. The camera only moves vertically as the
+// player climbs the tower, so depth comes from scrolling distant layers slower
+// than near ones. A per-biome vertical gradient (darker toward the top) forms
+// the infinitely-distant backdrop; on top of it three layers derived from the
+// biome background tile scroll at increasing fractions of the camera travel,
+// each tinted by the biome's sky color. camera.world_top is a tile-row offset
+// into the world, so multiplying it by tile_pixels yields the camera's pixel
+// travel, and fmod keeps each layer's tiling seamless as it scrolls.
+void draw_parallax_background(
     const Texture2D texture,
     const BiomeAssets& assets,
-    const WorldBiome biome) {
-    ClearBackground(biome_background(biome));
-    for (int y = 0; y < config::view_height; y += config::tile_pixels) {
-        for (int x = 0; x < config::view_width; x += config::tile_pixels) {
-            draw_region(
-                texture,
-                assets.background,
-                {
-                    static_cast<float>(x),
-                    static_cast<float>(y),
-                    static_cast<float>(config::tile_pixels),
-                    static_cast<float>(config::tile_pixels),
-                },
-                Fade(WHITE, 0.12F));
+    const WorldBiome biome,
+    const float world_top) {
+    const Color base = biome_background(biome);
+    ClearBackground(base);
+    DrawRectangleGradientV(
+        0, 0, config::view_width, config::view_height, scale_rgb(base, 0.35F), base);
+
+    const Color sky = biome_sky_tint(biome);
+    const float travel = world_top * static_cast<float>(config::tile_pixels);
+    for (const ParallaxLayer& layer : parallax_layers) {
+        const Color tint = Fade(scale_rgb(sky, layer.brightness), layer.alpha);
+        const float span = layer.span;
+        float shift = std::fmod(travel * layer.parallax, span);
+        if (shift < 0.0F) shift += span;
+        // Start one span above the top so the seam scrolled in from above is
+        // always covered, and tile down past the bottom edge.
+        for (float y = shift - span; y < static_cast<float>(config::view_height);
+             y += span) {
+            for (float x = 0.0F; x < static_cast<float>(config::view_width);
+                 x += span) {
+                draw_region(texture, assets.background, {x, y, span, span}, tint);
+            }
         }
     }
 }
@@ -370,7 +427,7 @@ void Renderer::draw(
     const Texture2D& biome_texture = castle_texture_.get();
 
     BeginTextureMode(pixelart_target_.get());
-    draw_background(biome_texture, assets, camera.biome);
+    draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
     draw_world(world, camera, assets, biome_texture);
     draw_player(
         player,
@@ -423,7 +480,7 @@ Image Renderer::capture_screen(
     const Texture2D& biome_texture = castle_texture_.get();
 
     BeginTextureMode(pixelart_target_.get());
-    draw_background(biome_texture, assets, camera.biome);
+    draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
     draw_world(world, camera, assets, biome_texture);
     draw_player(player, camera.world_top, 0.0F, catalog_, player_texture_.get());
     EndTextureMode();
