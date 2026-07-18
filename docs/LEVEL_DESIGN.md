@@ -1,32 +1,36 @@
-# JumpCastle Level Design
+# JumpCastle Continuous Campaign
 
-JumpCastle loads exactly twelve room files, named `room-01.level` through `room-12.level`, in
-bottom-to-top order. A committed campaign is accepted only when its schema and production-physics
-route both pass the test suite.
+JumpCastle loads one continuous world from `assets/levels/campaign.level`. The campaign is 32
+tiles wide and 324 tiles tall: eighteen fixed-camera screens of 32 by 18 tiles. Screen numbers are
+zero-based from bottom to top at runtime, so falling through a screen boundary remains a physical
+fall into the previous screen. Only falling below the complete world resets the player.
 
 ## File format
 
-Every room starts with three metadata fields, a separator, and exactly twelve rows of sixteen
-tokens:
+The version 2 file contains strict metadata, a separator, a collision section, and exactly 324
+rows of 32 collision tokens:
 
 ```text
-name=First Steps
-biome=pixel_adventure
-difficulty=1
+version 2
+tile_size 16
+size 32 324
+screen_height 18
+spawn 4 322
+goal 27 2
+biome 1 6 courtyard
+biome 7 12 frosted_keep
+biome 13 18 crown_spire
 ---
-................
-#..######......#
+[collision]
+................................
 ...
-################
 ```
 
-Metadata keys are required once and unknown keys are rejected.
+Metadata keys are required once and unknown or duplicate keys are rejected. Spawn and goal use
+zero-based tile coordinates and must be empty cells with solid terrain immediately below.
 
-| Field | Allowed value |
-| --- | --- |
-| `name` | Non-empty display name |
-| `biome` | `pixel_adventure`, `kenney`, or `kings_and_pigs` |
-| `difficulty` | Integer from 1 through 4 |
+The three biome ranges must cover all screens exactly once: `courtyard`, `frosted_keep`, then
+`crown_spire`.
 
 ## Tile tokens
 
@@ -34,18 +38,9 @@ Metadata keys are required once and unknown keys are rejected.
 | --- | --- |
 | `.` | Empty space |
 | `#` | Solid terrain |
-| `^` | Lethal spike |
-| `S` | Campaign spawn |
-| `C` | Checkpoint |
-| `E` | Campaign exit |
 
-Only room 1 may contain the single `S`; only room 12 may contain the single `E`. Rooms 1, 5, and 9
-each contain one checkpoint. The biome sequence is four Pixel Adventure rooms, four Kenney rooms,
-then four Kings and Pigs rooms.
-
-Closed side walls prevent leaving a room horizontally. Top and bottom openings must align with the
-vertical campaign path. Place checkpoints on safe platforms at least two tiles wide, and do not put
-spikes inside the only required landing envelope.
+There are no spikes, checkpoints, rescue teleports, or procedural platforms in the collision
+source. Side boundaries are solid outside the world; authored rebound walls are used sparingly.
 
 ## Designing legitimate jumps
 
@@ -58,9 +53,9 @@ direction changes, and safe spike placement rather than single-pixel precision.
 
 ## Solver contract
 
-The headless solver samples launch positions every 0.25 tile, charge lengths at 60 Hz, and left,
-neutral, or right releases. It then advances the same `simulate_step` function used by the game for
-up to 180 airborne frames.
+The headless solver samples launch positions and charge ticks at the same authoritative 120 Hz used
+by the game. Solver and replay both call `step_world`, so a verified route uses production
+collision, committed jump direction, wall bounce, and continuous cross-screen falls.
 
 A route is accepted only when:
 
@@ -68,20 +63,19 @@ A route is accepted only when:
 2. The nominal jump reaches the intended landing surface.
 3. At least three of five replays reach the same surface: nominal, charge -2 frames, charge +2
    frames, launch X -0.1 tile, and launch X +0.1 tile.
-4. Every room and the combined twelve-room campaign have a route.
+4. The single route reaches the goal across all eighteen screens.
 
 Build and inspect a single room:
 
 ```bash
-./build/cmake/jumpcastle_level_solver --levels assets/levels --room 5
+./build/cmake/jumpcastle_campaign_solver --level assets/levels/campaign.level
 ```
 
 Verify the complete campaign and save the route:
 
 ```bash
-./build/cmake/jumpcastle_level_solver \
-  --levels assets/levels \
-  --campaign \
+./build/cmake/jumpcastle_campaign_solver \
+  --level assets/levels/campaign.level \
   --trace build/campaign-route.json
 ```
 
@@ -97,8 +91,8 @@ After editing levels, run:
 ```bash
 cmake --build build/cmake --parallel
 ctest --test-dir build/cmake --output-on-failure
-./build/cmake/jumpcastle_level_solver --levels assets/levels --campaign
+./build/cmake/jumpcastle_campaign_solver --level assets/levels/campaign.level
 ```
 
-The tests also validate marker counts, biome order, spike/checkpoint behavior, and generated asset
-integrity. Do not commit source ZIP archives from `assets/sources/downloads/`.
+The tests validate the campaign shape, biome order, continuous-world reachability, replay trace, and
+generated asset integrity. Legacy room files are archival only and are not runtime inputs.

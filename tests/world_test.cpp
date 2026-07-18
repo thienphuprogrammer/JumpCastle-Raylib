@@ -5,6 +5,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
+#include <filesystem>
+
 using namespace jumpcastle;
 
 TEST_CASE("campaign parser reads dimensions markers and biome ranges") {
@@ -60,4 +62,20 @@ TEST_CASE("test world fixtures use full-world boundary rules") {
     CHECK(world.solid_at(-1, 4));
     CHECK_FALSE(world.solid_at(4, -1));
     CHECK(world.solid_at(4, 9));
+}
+
+TEST_CASE("committed campaign has the approved shape") {
+    const auto path = std::filesystem::path{JUMPCASTLE_SOURCE_DIR} /
+        "assets/levels/campaign.level";
+    const WorldMap world = WorldMap::load(path);
+
+    CHECK(world.width() == 32);
+    CHECK(world.height() == 324);
+    CHECK(world.screen_height() == 18);
+    CHECK(world.screen_count() == 18);
+    CHECK(world.spawn() == Vec2{4.5F, 322.5F});
+    CHECK(world.goal() == Vec2{27.5F, 2.5F});
+    CHECK(world.biome_for_screen(0) == WorldBiome::courtyard);
+    CHECK(world.biome_for_screen(6) == WorldBiome::frosted_keep);
+    CHECK(world.biome_for_screen(12) == WorldBiome::crown_spire);
 }
