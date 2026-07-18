@@ -25,6 +25,20 @@ struct BiomeRange {
     WorldBiome biome{WorldBiome::courtyard};
 };
 
+// Purely-decorative props placed by the optional [decoration] level section.
+// They never collide; each glyph reuses an already-baked biome sprite.
+enum class Prop : char {
+    torch = 't',
+    banner = 'b',
+    crown = 'c',
+};
+
+struct Decoration {
+    int x{};
+    int y{};
+    Prop prop{Prop::torch};
+};
+
 class WorldMap {
 public:
     WorldMap(
@@ -34,7 +48,8 @@ public:
         std::vector<WorldTile> tiles,
         Vec2 spawn,
         Vec2 goal,
-        std::vector<BiomeRange> biomes);
+        std::vector<BiomeRange> biomes,
+        std::vector<Decoration> decorations = {});
 
     [[nodiscard]] static WorldMap load(const std::filesystem::path& path);
 
@@ -48,6 +63,7 @@ public:
     [[nodiscard]] Vec2 goal() const noexcept;
     [[nodiscard]] int screen_for_y(float world_y) const noexcept;
     [[nodiscard]] WorldBiome biome_for_screen(int zero_based_screen) const;
+    [[nodiscard]] const std::vector<Decoration>& decorations() const noexcept;
 
 private:
     int width_{};
@@ -57,6 +73,7 @@ private:
     Vec2 spawn_{};
     Vec2 goal_{};
     std::vector<BiomeRange> biomes_;
+    std::vector<Decoration> decorations_;
 };
 
 [[nodiscard]] WorldMap parse_campaign(

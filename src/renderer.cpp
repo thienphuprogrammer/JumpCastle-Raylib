@@ -209,6 +209,15 @@ SpriteRegion terrain_region(
     };
 }
 
+const SpriteRegion& prop_region(const BiomeAssets& assets, const Prop prop) noexcept {
+    switch (prop) {
+    case Prop::torch: return assets.spike;
+    case Prop::banner: return assets.checkpoint;
+    case Prop::crown: return assets.exit;
+    }
+    return assets.spike;
+}
+
 void draw_world(
     const WorldMap& world,
     const CameraBand& camera,
@@ -233,6 +242,21 @@ void draw_world(
                     terrain_tint);
             }
         }
+    }
+
+    for (const Decoration& decoration : world.decorations()) {
+        if (decoration.y < first_row || decoration.y >= last_row) {
+            continue;
+        }
+        draw_region(
+            texture,
+            prop_region(assets, decoration.prop),
+            {
+                static_cast<float>(decoration.x * config::tile_pixels),
+                static_cast<float>((decoration.y - first_row) * config::tile_pixels),
+                static_cast<float>(config::tile_pixels),
+                static_cast<float>(config::tile_pixels),
+            });
     }
 
     const Vec2 goal = world.goal();

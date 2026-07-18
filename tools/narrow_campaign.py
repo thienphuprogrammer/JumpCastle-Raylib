@@ -237,6 +237,19 @@ def render_campaign(chambers: tuple[Chamber, ...]) -> str:
                 for x in range(rect.x, rect.x + rect.width):
                     grid[band_top + local_y][x] = "#"
 
+    # Sparse, deterministic decorative props (non-colliding). They only sit in
+    # empty cells standing directly on solid ground so torches/banners perch on
+    # platform tops. The two moduli scatter them without cluttering the route.
+    decorations = [["." for _ in range(WIDTH)] for _ in range(HEIGHT)]
+    for y in range(HEIGHT - 1):
+        for x in range(WIDTH):
+            if grid[y][x] != "." or grid[y + 1][x] != "#":
+                continue
+            if (x * 3 + y) % 11 == 0:
+                decorations[y][x] = "t"  # torch
+            elif (x + y) % 17 == 0:
+                decorations[y][x] = "b"  # banner
+
     metadata = (
         "version 2\n"
         "tile_size 16\n"
@@ -250,7 +263,9 @@ def render_campaign(chambers: tuple[Chamber, ...]) -> str:
         "---\n"
         "[collision]\n"
     )
-    return metadata + "\n".join("".join(row) for row in grid) + "\n"
+    collision = "\n".join("".join(row) for row in grid)
+    decoration = "\n".join("".join(row) for row in decorations)
+    return metadata + collision + "\n[decoration]\n" + decoration + "\n"
 
 
 def main() -> None:

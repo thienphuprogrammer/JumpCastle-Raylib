@@ -210,10 +210,50 @@ WorldMap parse_campaign(
             }
         }
     }
-    for (std::size_t index = grid_start + static_cast<std::size_t>(height);
-         index < lines.size(); ++index) {
-        if (!lines[index].empty()) {
-            parse_error(filename, index + 1, 1, "unexpected content after collision grid");
+    // An optional [decoration] section may follow the collision grid. It shares
+    // the world dimensions; '.' is empty and each other glyph is a non-colliding
+    // prop. Files without the section stay backward compatible.
+    std::vector<Decoration> decorations;
+    std::size_t cursor = grid_start + static_cast<std::size_t>(height);
+    while (cursor < lines.size() && lines[cursor].empty()) {
+        ++cursor;
+    }
+    if (cursor < lines.size()) {
+        if (lines[cursor] != "[decoration]") {
+            parse_error(filename, cursor + 1, 1,
+                "expected [decoration] section or end of file");
+        }
+        const std::size_t deco_start = cursor + 1;
+        if (lines.size() < deco_start + static_cast<std::size_t>(height)) {
+            parse_error(filename, deco_start + 1, 1, "decoration grid has too few rows");
+        }
+        for (int y = 0; y < height; ++y) {
+            const std::size_t line_index = deco_start + static_cast<std::size_t>(y);
+            const std::string_view row = lines[line_index];
+            if (row.size() != static_cast<std::size_t>(width)) {
+                parse_error(filename, line_index + 1, 1,
+                    "decoration row has incorrect width");
+            }
+            for (int x = 0; x < width; ++x) {
+                const char token = row[static_cast<std::size_t>(x)];
+                if (token == '.') {
+                    continue;
+                }
+                if (token != static_cast<char>(Prop::torch) &&
+                    token != static_cast<char>(Prop::banner) &&
+                    token != static_cast<char>(Prop::crown)) {
+                    parse_error(filename, line_index + 1, static_cast<std::size_t>(x + 1),
+                        "unknown decoration token '" + std::string(1, token) + "'");
+                }
+                decorations.push_back({x, y, static_cast<Prop>(token)});
+            }
+        }
+        for (std::size_t index = deco_start + static_cast<std::size_t>(height);
+             index < lines.size(); ++index) {
+            if (!lines[index].empty()) {
+                parse_error(filename, index + 1, 1,
+                    "unexpected content after decoration grid");
+            }
         }
     }
 
@@ -226,6 +266,7 @@ WorldMap parse_campaign(
             {static_cast<float>(spawn_x) + 0.5F, static_cast<float>(spawn_y) + 0.5F},
             {static_cast<float>(goal_x) + 0.5F, static_cast<float>(goal_y) + 0.5F},
             std::move(biomes),
+            std::move(decorations),
         };
     } catch (const std::invalid_argument& error) {
         parse_error(filename, 1, 1, error.what());

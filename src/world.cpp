@@ -14,14 +14,16 @@ WorldMap::WorldMap(
     std::vector<WorldTile> tiles,
     const Vec2 spawn,
     const Vec2 goal,
-    std::vector<BiomeRange> biomes)
+    std::vector<BiomeRange> biomes,
+    std::vector<Decoration> decorations)
     : width_{width},
       height_{height},
       screen_height_{screen_height},
       tiles_{std::move(tiles)},
       spawn_{spawn},
       goal_{goal},
-      biomes_{std::move(biomes)} {
+      biomes_{std::move(biomes)},
+      decorations_{std::move(decorations)} {
     if (width_ <= 0 || height_ <= 0 || screen_height_ <= 0 ||
         height_ % screen_height_ != 0) {
         throw std::invalid_argument("world dimensions must be positive and screen-aligned");
@@ -104,6 +106,10 @@ int WorldMap::screen_for_y(const float world_y) const noexcept {
         return -1;
     }
     return screen_count() - band_from_top - 1;
+}
+
+const std::vector<Decoration>& WorldMap::decorations() const noexcept {
+    return decorations_;
 }
 
 WorldBiome WorldMap::biome_for_screen(const int zero_based_screen) const {

@@ -38,6 +38,71 @@ biome 3 3 crown_spire
     CHECK(world.goal() == Vec2{2.5F, 1.5F});
     CHECK(world.biome_for_screen(0) == WorldBiome::courtyard);
     CHECK(world.screen_for_y(4.5F) == 0);
+    CHECK(world.decorations().empty());  // no [decoration] section -> backward compatible
+}
+
+TEST_CASE("campaign parser reads an optional decoration section") {
+    const WorldMap world = parse_campaign(R"(version 2
+tile_size 16
+size 4 6
+screen_height 2
+spawn 1 4
+goal 2 1
+biome 1 1 courtyard
+biome 2 2 frosted_keep
+biome 3 3 crown_spire
+---
+[collision]
+....
+....
+.##.
+....
+....
+####
+[decoration]
+....
+.t..
+....
+...b
+....
+....
+)", "memory.level");
+
+    REQUIRE(world.decorations().size() == 2);
+    CHECK(world.decorations()[0].x == 1);
+    CHECK(world.decorations()[0].y == 1);
+    CHECK(world.decorations()[0].prop == Prop::torch);
+    CHECK(world.decorations()[1].prop == Prop::banner);
+}
+
+TEST_CASE("campaign parser rejects an unknown decoration glyph") {
+    CHECK_THROWS_WITH(
+        parse_campaign(R"(version 2
+tile_size 16
+size 4 6
+screen_height 2
+spawn 1 4
+goal 2 1
+biome 1 1 courtyard
+biome 2 2 frosted_keep
+biome 3 3 crown_spire
+---
+[collision]
+....
+....
+.##.
+....
+....
+####
+[decoration]
+....
+.Z..
+....
+....
+....
+....
+)", "memory.level"),
+        Catch::Matchers::ContainsSubstring("unknown decoration token"));
 }
 
 TEST_CASE("campaign parser reports row and column") {
