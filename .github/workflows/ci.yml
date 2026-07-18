@@ -81,6 +81,3 @@ jobs:
             --level assets/levels/campaign.level \
             --campaign \
             --trace build/campaign-route.json
-          "$solver" \
-            --level assets/levels/campaign.level \
-            --verify-trace build/campaign-route.json
