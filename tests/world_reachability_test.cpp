@@ -7,9 +7,9 @@
 using namespace jumpcastle;
 
 TEST_CASE("committed campaign is reachable as one continuous route") {
-    const auto path = std::filesystem::path{JUMPCASTLE_SOURCE_DIR} /
-        "assets/levels/campaign.level";
-    const CampaignWorld world = CampaignWorld::from_world_map(WorldMap::load(path));
+    const auto screens = std::filesystem::path{JUMPCASTLE_SOURCE_DIR} /
+        "assets/levels/screens";
+    const CampaignWorld world = CampaignWorld::load(screens);
     const SolverResult result = ReachabilitySolver{world}.solve_campaign();
 
     INFO(result.failure);
