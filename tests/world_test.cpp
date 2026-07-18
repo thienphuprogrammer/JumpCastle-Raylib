@@ -6,6 +6,8 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <filesystem>
+#include <set>
+#include <string>
 
 using namespace jumpcastle;
 
@@ -78,4 +80,23 @@ TEST_CASE("committed campaign has the approved shape") {
     CHECK(world.biome_for_screen(0) == WorldBiome::courtyard);
     CHECK(world.biome_for_screen(6) == WorldBiome::frosted_keep);
     CHECK(world.biome_for_screen(12) == WorldBiome::crown_spire);
+}
+
+TEST_CASE("every campaign screen has a distinct collision silhouette") {
+    const auto path = std::filesystem::path{JUMPCASTLE_SOURCE_DIR} /
+        "assets/levels/campaign.level";
+    const WorldMap world = WorldMap::load(path);
+    std::set<std::string> silhouettes;
+
+    for (int screen = 0; screen < world.screen_count(); ++screen) {
+        const int first_row = world.height() - (screen + 1) * world.screen_height();
+        std::string signature;
+        for (int y = first_row; y < first_row + world.screen_height(); ++y) {
+            for (int x = 0; x < world.width(); ++x) {
+                signature.push_back(world.solid_at(x, y) ? '#' : '.');
+            }
+        }
+        INFO("screen " << screen + 1);
+        CHECK(silhouettes.insert(std::move(signature)).second);
+    }
 }
