@@ -30,6 +30,10 @@ public:
     // whether the player is grounded and whether a hazard was touched.
     [[nodiscard]] ResolveResult resolve(Vec2 previous_position, PlayerState& player) const;
 
+    // True if the box overlaps any solid or one-way collider (hazards ignored).
+    // Used for resting-contact / support probes, where SAT penetration is zero.
+    [[nodiscard]] bool overlaps_blocking(const Aabb& box) const noexcept;
+
 private:
     [[nodiscard]] const std::vector<ConvexPolygon>* screen_polygons(int screen_index) const noexcept;
 

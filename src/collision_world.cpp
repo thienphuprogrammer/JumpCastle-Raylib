@@ -54,6 +54,23 @@ const std::vector<ConvexPolygon>* CollisionWorld::screen_polygons(
     return &by_screen_[static_cast<std::size_t>(screen_index)];
 }
 
+bool CollisionWorld::overlaps_blocking(const Aabb& box) const noexcept {
+    const Vec2 center = aabb_center(box);
+    const int screen_index =
+        static_cast<int>(std::floor(center.y / static_cast<float>(screen_height_)));
+    for (int k = screen_index - 1; k <= screen_index + 1; ++k) {
+        const std::vector<ConvexPolygon>* polygons = screen_polygons(k);
+        if (polygons == nullptr) { continue; }
+        for (const ConvexPolygon& polygon : *polygons) {
+            if (polygon.type == ColliderType::hazard) { continue; }
+            if (aabb_vs_convex(box, polygon.points, polygon.edge_normals).overlapping) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 ResolveResult CollisionWorld::resolve(const Vec2 previous_position, PlayerState& player) const {
     const Vec2 target = player.position;
     player.position = previous_position;

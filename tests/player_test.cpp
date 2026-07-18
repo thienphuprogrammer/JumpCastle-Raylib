@@ -1,5 +1,6 @@
 #include "jumpcastle/player.hpp"
 
+#include "jumpcastle/convex.hpp"
 #include "test_world_factory.hpp"
 
 #include <catch2/catch_approx.hpp>
@@ -9,6 +10,31 @@
 
 using Catch::Approx;
 using namespace jumpcastle;
+
+TEST_CASE("player steps against a polygon collision world and lands grounded") {
+    ScreenMap screen;
+    screen.index = 0;
+    screen.width = 16;
+    screen.height = 15;
+    const std::vector<Vec2> floor{{0, 14}, {16, 14}, {16, 15}, {0, 15}};
+    screen.polygons.push_back(
+        {floor, outward_edge_normals(floor), polygon_aabb(floor), ColliderType::solid});
+    const CollisionWorld world = CollisionWorld::from_screens({screen}, 15);
+
+    PlayerState player;
+    player.position = {8.0F, 8.0F};
+    player.velocity = {};
+    player.mode = PlayerMode::airborne;
+
+    ResolveResult result{};
+    for (int tick = 0; tick < 600; ++tick) {
+        result = step_player(player, world, PlayerInput{}, config::fixed_delta);
+    }
+
+    REQUIRE(result.on_ground);
+    REQUIRE(player.on_ground);
+    REQUIRE(player.position.y + config::player_half_size.y == Approx(14.0F).margin(2e-2));
+}
 
 TEST_CASE("player state starts deterministically") {
     const PlayerState player{};

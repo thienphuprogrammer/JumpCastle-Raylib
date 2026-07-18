@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jumpcastle/collision.hpp"
+#include "jumpcastle/collision_world.hpp"
 
 namespace jumpcastle {
 
@@ -50,6 +51,12 @@ void update_player(
 void step_player(
     PlayerState& player,
     const WorldMap& world,
+    PlayerInput input,
+    float fixed_delta) noexcept;
+
+[[nodiscard]] ResolveResult step_player(
+    PlayerState& player,
+    const CollisionWorld& world,
     PlayerInput input,
     float fixed_delta) noexcept;
 

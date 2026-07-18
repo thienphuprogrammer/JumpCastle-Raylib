@@ -93,9 +93,13 @@ void update_player(
     integrate_player(player, delta);
 }
 
-void step_player(
+namespace {
+
+// Applies input, mode transitions and gravity for one tick, updating velocity
+// and clamping to the maximum speed. Returns true when the tick is fully
+// resolved and no movement integration should follow (still charging on ground).
+bool advance_before_resolution(
     PlayerState& player,
-    const WorldMap& world,
     const PlayerInput input,
     const float fixed_delta) noexcept {
     player.animation_time += fixed_delta;
@@ -126,7 +130,7 @@ void step_player(
             player.jump_hold_time = std::min(
                 player.jump_hold_time + fixed_delta,
                 config::maximum_charge_seconds);
-            return;
+            return true;
         }
         if (input.jump_released) {
             const float direction =
@@ -136,7 +140,7 @@ void step_player(
             player.mode = PlayerMode::airborne;
             player.on_ground = false;
         } else {
-            return;
+            return true;
         }
     } else {
         player.on_ground = false;
@@ -148,6 +152,20 @@ void step_player(
     if (speed > config::maximum_speed) {
         player.velocity = normalized(player.velocity) * config::maximum_speed;
     }
+    return false;
+}
+
+}  // namespace
+
+void step_player(
+    PlayerState& player,
+    const WorldMap& world,
+    const PlayerInput input,
+    const float fixed_delta) noexcept {
+    if (advance_before_resolution(player, input, fixed_delta)) {
+        return;
+    }
+
     const Vec2 previous_position = player.position;
     player.position = player.position + player.velocity * fixed_delta;
     resolve_world_collision(world, previous_position, player);
@@ -164,6 +182,43 @@ void step_player(
             player.velocity.y = 0.0F;
         }
     }
+}
+
+ResolveResult step_player(
+    PlayerState& player,
+    const CollisionWorld& world,
+    const PlayerInput input,
+    const float fixed_delta) noexcept {
+    if (advance_before_resolution(player, input, fixed_delta)) {
+        return {true, false};
+    }
+
+    const Vec2 previous_position = player.position;
+    player.position = player.position + player.velocity * fixed_delta;
+    ResolveResult result = world.resolve(previous_position, player);
+
+    // SAT reports penetration, not flush contact; probe just below the feet so a
+    // resting player stays grounded instead of flickering airborne each tick.
+    if (!result.on_ground && player.velocity.y >= 0.0F) {
+        const Vec2 half = config::player_half_size;
+        const Aabb feet{
+            {player.position.x - half.x, player.position.y + half.y - 0.02F},
+            {player.position.x + half.x, player.position.y + half.y + 0.08F}};
+        if (world.overlaps_blocking(feet)) {
+            result.on_ground = true;
+        }
+    }
+
+    player.on_ground = result.on_ground;
+    if (result.on_ground) {
+        player.mode = player.jump_hold_time > 0.0F
+            ? PlayerMode::charging
+            : PlayerMode::grounded;
+        player.velocity.y = 0.0F;
+    } else if (player.mode != PlayerMode::charging) {
+        player.mode = PlayerMode::airborne;
+    }
+    return result;
 }
 
 }  // namespace jumpcastle
