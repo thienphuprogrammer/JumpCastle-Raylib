@@ -154,6 +154,14 @@ if(JUMPCASTLE_BUILD_TESTS)
             -DCONFIG=$<CONFIG>
             -P ${PROJECT_SOURCE_DIR}/tests/cmake/asset_recovery.cmake
   )
+  add_test(
+    NAME asset_render_smoke
+    COMMAND ${Python3_EXECUTABLE} -m pytest
+            ${PROJECT_SOURCE_DIR}/tests/test_render_asset_smoke.py -q
+  )
+  set_tests_properties(asset_render_smoke PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
 endif()
 
 set(JUMPCASTLE_RUNTIME_ASSETS
