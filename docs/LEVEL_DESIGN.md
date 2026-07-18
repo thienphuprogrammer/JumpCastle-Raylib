@@ -68,7 +68,11 @@ ceilings, overhangs, and fall recovery rather than single-pixel precision.
 
 The headless solver samples launch positions and charge ticks at the same authoritative 120 Hz used
 by the game. Solver and replay both call `step_world`, so a verified route uses production
-collision, committed jump direction, wall bounce, and continuous cross-screen falls.
+collision, committed jump direction, wall bounce, and continuous cross-screen falls. The wall
+bounce is charge-proportional: an airborne wall strike rebounds with a restitution that scales
+with impact speed via `config::wall_bounce_restitution` (smoothstep-eased from `wall_bounce_min`
+up to a 1.0 energy-preserving cap), so a harder-charged jump rebounds proportionally bouncier.
+See `docs/superpowers/specs/2026-07-19-charge-proportional-bounce-design.md`.
 
 A route is accepted only when:
 
