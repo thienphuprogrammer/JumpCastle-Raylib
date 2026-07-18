@@ -167,7 +167,12 @@ CampaignWorld CampaignWorld::load(
             screens.push_back(parse_screen_map_file(path));
         }
     }
-    return from_screens(screens, screen_height);
+    int height = screen_height;
+    if (height <= 0 && !screens.empty()) {
+        // Derive the band height from the files so callers need not know it.
+        height = std::max(1, static_cast<int>(std::lround(screens.front().height)));
+    }
+    return from_screens(screens, height);
 }
 
 }  // namespace jumpcastle

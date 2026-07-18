@@ -40,8 +40,10 @@ TEST_CASE("CampaignWorld::load reads a directory of screen-NN.map.json files") {
     write_screen(0, "crown_spire");
     write_screen(1, "courtyard");
 
-    const CampaignWorld world = CampaignWorld::load(dir, 12);
+    // No screen_height passed: it is derived from the loaded screens.
+    const CampaignWorld world = CampaignWorld::load(dir);
 
+    CHECK(world.screen_height == 12);
     CHECK(world.screen_count() == 2);
     CHECK(world.spawn.x == Catch::Approx(2.0F));
     CHECK(world.biome_for_screen(0) == WorldBiome::crown_spire);

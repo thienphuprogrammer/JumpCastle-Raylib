@@ -41,9 +41,11 @@ struct CampaignWorld {
         const WorldMap& grid);
 
     // Loads every screen-NN.map.json in a directory into one campaign world.
+    // screen_height <= 0 derives the band height from the loaded screens, so the
+    // caller need not know it up front.
     [[nodiscard]] static CampaignWorld load(
         const std::filesystem::path& directory,
-        int screen_height);
+        int screen_height = 0);
 };
 
 }  // namespace jumpcastle
