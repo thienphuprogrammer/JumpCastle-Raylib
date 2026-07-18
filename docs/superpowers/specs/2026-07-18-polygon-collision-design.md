@@ -140,6 +140,18 @@ Although this is one spec, staged so the game stays runnable:
 4. Remove ASCII grid path; convert/author real campaign screens.
 5. In-game editor (draw/delete, drag, snap, entities, save).
 
+## 8b. Visual Layer (decision 2026-07-18): textured polygons
+
+Polygon collision decouples collision from art, so the grid can no longer be the visual source. Chosen approach: **render each collider polygon as a textured fill** plus the existing per-biome parallax background. No separate visual authoring is required for the bridge; the map-redesign effort layers richer decor (overhangs, props) on top later.
+
+- **Terrain fill:** triangulate each `ConvexPolygon` (reuse `split_to_convex` / the same triangulation) and draw textured triangles sampling the biome's terrain texture (`AssetCatalog` `TerrainGrid`). **UVs derived from world position** (e.g. `u = world_x * scale`, `v = world_y * scale`) so the texture tiles seamlessly across adjacent polygons instead of stretching per-shape.
+- **Color/tint by type:** `solid` = terrain texture; `oneway` = terrain with a thin highlighted top edge; `hazard` = a distinct hazard tint/texture.
+- **Background:** reuse the per-biome background region already in `AssetCatalog` + parallax.
+- **Debug overlay:** the Task 8 polygon outline draw stays as a debug toggle over the textured fill.
+- The renderer, camera (`CameraBand`, `select_camera_band`), and `capture_screen` move from `const WorldMap&` to `const CampaignWorld&` (they need spawn/goal/height/screen metadata, which `CampaignWorld` carries).
+
+Rejected: tile-decor layer (A) — needs separate visual authoring + editor tile placement before the game looks right; auto-tile from polygons (B) — couples visuals to collision shape and breaks on arbitrary polygons.
+
 ## 9. Out of Scope (YAGNI)
 
 Swept/time-of-impact collision; polygon-vs-polygon player; moving/rotating platforms; editor undo-history and multi-select; external editor/TMX import.

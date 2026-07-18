@@ -705,6 +705,28 @@ TEST_CASE("hazard overlap is reported without positional resolve") {
 
 ---
 
+## Stage 3c — Visual layer (textured polygons) + game cutover (decision 2026-07-18)
+
+> Chosen visual approach: **textured polygon fill** (see spec 8b). The renderer/camera/`capture_screen` move to `const CampaignWorld&`; the game loads a `CampaignWorld` from `screen-NN.map.json` and runs the polygon `step_world`. Progress so far: `CampaignWorld` + polygon `step_world` overload + `parse_screen_map_file` + first asset are DONE and green (commits 70a909b, 704f6d1).
+
+### Task 7c: Camera on CampaignWorld
+**Files:** `include/jumpcastle/camera.hpp`, `src/camera.cpp`. Add a `select_camera_band(const CampaignWorld&, float y)` overload (or template) returning the same `CameraBand`; keep the WorldMap overload until Task 9. Test in `tests/camera_test.cpp`.
+
+### Task 8: Renderer textured-polygon draw
+**Files:** `include/jumpcastle/renderer.hpp`, `src/renderer.cpp`.
+- [ ] Add `Renderer::draw(const CampaignWorld&, const CameraBand&, const PlayerState&, const CampaignState&, float, bool)` (and a `capture_screen(const CampaignWorld&, …)`), leaving the WorldMap versions until Task 9.
+- [ ] Terrain: for each `ConvexPolygon` in the camera's screens, triangulate (reuse `split_to_convex`) and draw textured triangles from the biome terrain texture; UVs = `world_pos * kTerrainUvScale` for seamless tiling. Tint `oneway`/`hazard` per spec 8b.
+- [ ] Background: reuse the biome background region + parallax already in `draw`.
+- [ ] Debug: keep polygon outline draw under `debug_enabled`.
+- [ ] Verify with `python tools/render_asset_smoke.py` (headless capture) that terrain renders textured, not wireframe.
+
+### Task 8b: Game cutover
+**Files:** `include/jumpcastle/game.hpp`, `src/game.cpp`.
+- [ ] `world_` becomes `std::optional<CampaignWorld>`, loaded via `CampaignWorld::load(asset_directory / "levels", screen_height)`.
+- [ ] `step_world(player_, campaign_, *world_, input)` now resolves the `CampaignWorld` overload; camera via Task 7c overload; renderer via Task 8 overload.
+- [ ] Author the remaining `screen-NN.map.json` tower screens (replace `campaign.level`).
+- [ ] Manual verify: run the game — player collides with polygons, terrain is textured, one-way/hazard behave.
+
 ## Stage 3b — Solver port to polygon collision (decision 2026-07-18)
 
 > The user chose to **port the solver to polygon collision** rather than retire it. The solver (`src/solver.cpp`, `src/solver_main.cpp`, `include/jumpcastle/solver.hpp`) and replay (`src/replay.cpp`, `verify_trace`) currently reason about the grid `WorldMap` (`solid_at`) to auto-generate and validate beatable campaigns. They MUST move to `CollisionWorld` so the "beatable" guarantee matches real in-game collision. This stage runs after Task 7 (loader) so a polygon world exists to solve against.
