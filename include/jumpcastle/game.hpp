@@ -1,5 +1,6 @@
 #pragma once
 
+#include "jumpcastle/editor.hpp"
 #include "jumpcastle/renderer.hpp"
 #include "jumpcastle/fixed_step.hpp"
 #include "jumpcastle/simulation.hpp"
@@ -22,6 +23,8 @@ public:
 private:
     [[nodiscard]] static PlayerInput sample_input() noexcept;
     void update_frame(float frame_delta);
+    void update_editor();
+    void save_editor_screen() const;
 
     PlayerState player_{};
     CampaignState campaign_{};
@@ -32,6 +35,14 @@ private:
     std::optional<CampaignWorld> world_;
     std::optional<CameraBand> camera_;
     std::optional<Renderer> renderer_;
+
+    // In-game polygon editor (F1). Authors the current screen and saves it to a
+    // screen-NN.map.json; the running world is unaffected until reloaded.
+    std::filesystem::path asset_directory_;
+    bool editor_mode_{};
+    bool editor_snap_{true};
+    ColliderType editor_type_{ColliderType::solid};
+    EditorState editor_{};
 };
 
 }  // namespace jumpcastle

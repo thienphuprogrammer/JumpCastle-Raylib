@@ -3,6 +3,7 @@
 #include "jumpcastle/assets.hpp"
 #include "jumpcastle/camera.hpp"
 #include "jumpcastle/campaign.hpp"
+#include "jumpcastle/editor.hpp"
 
 #include "raylib.h"
 
@@ -83,6 +84,15 @@ public:
         const CampaignWorld& world,
         const CameraBand& camera,
         const PlayerState& player) const;
+
+    // Draws the in-game editor: the authored polygons, the in-progress draft,
+    // a snap grid, and a status line. Renders its own frame like draw().
+    void draw_editor(
+        const EditorState& editor,
+        const CameraBand& camera,
+        int screen_height,
+        bool snap_enabled,
+        ColliderType current_type) const;
 
 private:
     AssetCatalog catalog_;
