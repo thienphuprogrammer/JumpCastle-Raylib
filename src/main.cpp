@@ -84,8 +84,12 @@ int render_smoke_screens(
             .executable_directory = executable_directory,
             .installed_root = executable_directory / ".." / "share" / "jumpcastle",
         });
-        const CampaignWorld world = CampaignWorld::from_world_map(
-            WorldMap::load(asset_directory / "levels" / "campaign.level"));
+        const std::filesystem::path screens_directory =
+            asset_directory / "levels" / "screens";
+        const CampaignWorld world = std::filesystem::is_directory(screens_directory)
+            ? CampaignWorld::load(screens_directory)
+            : CampaignWorld::from_world_map(
+                  WorldMap::load(asset_directory / "levels" / "campaign.level"));
         const Renderer renderer{asset_directory};
         std::filesystem::create_directories(output_directory);
 

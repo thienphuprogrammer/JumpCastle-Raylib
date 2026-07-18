@@ -41,8 +41,14 @@ Game::Game(std::optional<std::filesystem::path> override_root) {
         .executable_directory = executable_directory,
         .installed_root = executable_directory / ".." / "share" / "jumpcastle",
     });
-    world_.emplace(CampaignWorld::from_world_map(
-        WorldMap::load(asset_directory / "levels" / "campaign.level")));
+    const std::filesystem::path screens_directory =
+        asset_directory / "levels" / "screens";
+    if (std::filesystem::is_directory(screens_directory)) {
+        world_.emplace(CampaignWorld::load(screens_directory));
+    } else {
+        world_.emplace(CampaignWorld::from_world_map(
+            WorldMap::load(asset_directory / "levels" / "campaign.level")));
+    }
     campaign_ = CampaignState{.spawn = world_->spawn};
     reset_player(player_, world_->spawn);
     camera_ = select_camera_band(*world_, player_.position.y);
