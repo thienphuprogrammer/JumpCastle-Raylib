@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Build deterministic runtime atlases from the three approved CC0 archives."""
+"""Compile approved CC0 source regions into deterministic runtime atlases."""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
-from pathlib import Path, PurePosixPath
-import re
-import zipfile
+from pathlib import Path
+from typing import Any
 
 from PIL import Image
 
@@ -17,129 +15,54 @@ from PIL import Image
 TILE = 16
 TERRAIN_COLUMNS = 7
 TERRAIN_ROWS = 5
-ATLAS_SIZE = (TERRAIN_COLUMNS * TILE, (TERRAIN_ROWS + 1) * TILE)
-PLAYER_CELL = 48
-
-SOURCES = (
+BIOME_ORDER = ("courtyard", "frosted_keep", "crown_spire")
+ANIMATION_NAMES = {
+    "idle": "idle",
+    "walk": "run",
+    "charge": "charge",
+    "rise": "rise",
+    "fall": "fall",
+    "reset": "respawn",
+}
+SOURCE_RECORDS = (
     {
-        "id": "pixel_adventure",
-        "creator": "Pixel Frog",
-        "url": "https://pixelfrog-assets.itch.io/pixel-adventure-1",
-        "archive": "Pixel Adventure 1.zip",
+        "id": "castle_tileset",
+        "creator": "rubberduck",
+        "url": "https://opengameart.org/content/pixel-art-castle-tileset",
         "license": "CC0-1.0",
+        "files": [
+            {"name": "castle_tileset_part1.png", "sha256": "cb25ec05aa353a50f87798548ea737228f9e72989143f7cb3f1bcecc7478bba6"},
+            {"name": "castle_tileset_part2.png", "sha256": "11da497a383fc4807078e95575ca91b284ad7931bbaefaa56669bf4d917c5fd9"},
+            {"name": "castle_tileset_part3.png", "sha256": "24354419ec6eb06f8b3675ac7a6049ff4c1018d1d92e7fb98d26a90c7702c5f8"},
+        ],
     },
     {
-        "id": "kenney",
+        "id": "gloomy_knight",
+        "creator": "loveOS by @cookiielove_",
+        "url": "https://loveosstudio.itch.io/gloomy-knight-16x16",
+        "license": "CC0-1.0",
+        "files": [
+            {"name": "Gloomy Knight.zip", "sha256": "ebb0d53789e7cb70c0a94dde307515a902fffc57027ec37ce7d3bf82b640a5c5"}
+        ],
+    },
+    {
+        "id": "kenney_ui",
         "creator": "Kenney",
-        "url": "https://kenney.nl/assets/pixel-platformer",
-        "archive": "kenney_pixel-platformer.zip",
+        "url": "https://kenney.nl/assets/ui-pack-pixel-adventure",
         "license": "CC0-1.0",
-    },
-    {
-        "id": "kings_and_pigs",
-        "creator": "Pixel Frog",
-        "url": "https://pixelfrog-assets.itch.io/kings-and-pigs",
-        "archive": "Kings and Pigs.zip",
-        "license": "CC0-1.0",
-    },
-    {
-        "id": "gothicvania_hero",
-        "creator": "Luis Zuno aka Ansimuz",
-        "url": "https://ansimuz.itch.io/gothicvania-swamp",
-        "archive": "Gothicvania Swamp files.zip",
-        "license": "CC0-1.0",
+        "files": [
+            {"name": "kenney_ui-pack-pixel-adventure.zip", "sha256": "0b0ed4802ebcfff5e44e370f394baa1d751862a5a4a7612ac4ce84e85faa0627"}
+        ],
     },
 )
 
 
-def member_bytes(archive: zipfile.ZipFile, expected: str) -> bytes:
-    wanted = PurePosixPath(expected).as_posix().casefold()
-    matches = [
-        name for name in archive.namelist()
-        if PurePosixPath(name).as_posix().casefold() == wanted
-    ]
-    if len(matches) != 1:
-        raise RuntimeError(
-            f"expected one archive member {expected!r}, found {len(matches)}")
-    return archive.read(matches[0])
-
-
-def open_rgba(archive: zipfile.ZipFile, expected: str) -> Image.Image:
-    return Image.open(io.BytesIO(member_bytes(archive, expected))).convert("RGBA")
-
-
-def fitted(image: Image.Image, size: int = TILE) -> Image.Image:
-    image = image.convert("RGBA")
-    image.thumbnail((size, size), Image.Resampling.NEAREST)
-    result = Image.new("RGBA", (size, size))
-    result.alpha_composite(
-        image,
-        ((size - image.width) // 2, size - image.height),
-    )
-    return result
-
-
-def sheet_cells(image: Image.Image, source_tile: int, count: int) -> list[Image.Image]:
-    columns = image.width // source_tile
-    rows = image.height // source_tile
-    if columns * rows < count:
-        raise RuntimeError(
-            f"sheet {image.width}x{image.height} has fewer than {count} cells")
-    cells: list[Image.Image] = []
-    for index in range(count):
-        x = (index % columns) * source_tile
-        y = (index // columns) * source_tile
-        cell = image.crop((x, y, x + source_tile, y + source_tile))
-        cells.append(cell.resize((TILE, TILE), Image.Resampling.NEAREST))
-    return cells
-
-
-def nonempty_sheet_cells(
-    image: Image.Image,
-    source_tile: int,
-    count: int,
-) -> list[Image.Image]:
-    columns = image.width // source_tile
-    rows = image.height // source_tile
-    cells: list[Image.Image] = []
-    for index in range(columns * rows):
-        x = (index % columns) * source_tile
-        y = (index // columns) * source_tile
-        cell = image.crop((x, y, x + source_tile, y + source_tile))
-        if cell.getbbox() is not None:
-            cells.append(cell.resize((TILE, TILE), Image.Resampling.NEAREST))
-        if len(cells) == count:
-            return cells
-    raise RuntimeError(f"sheet has fewer than {count} non-empty cells")
-
-
-def repeated_sheet_cell(
-    image: Image.Image,
-    source_tile: int,
-    index: int,
-    count: int,
-) -> list[Image.Image]:
-    columns = image.width // source_tile
-    rows = image.height // source_tile
-    if index < 0 or index >= columns * rows:
-        raise RuntimeError(f"terrain cell {index} is outside its source sheet")
-    x = (index % columns) * source_tile
-    y = (index // columns) * source_tile
-    cell = image.crop((x, y, x + source_tile, y + source_tile))
-    if cell.getbbox() is None:
-        raise RuntimeError(f"terrain cell {index} is empty")
-    normalized = cell.resize((TILE, TILE), Image.Resampling.NEAREST)
-    return [normalized.copy() for _ in range(count)]
-
-
-def first_frame(image: Image.Image, frame_width: int, frame_height: int) -> Image.Image:
-    if image.width < frame_width or image.height < frame_height:
-        raise RuntimeError("animation sheet is smaller than its declared frame")
-    return image.crop((0, 0, frame_width, frame_height))
-
-
 def rect(x: int, y: int, width: int = TILE, height: int = TILE) -> dict[str, int]:
     return {"x": x, "y": y, "width": width, "height": height}
+
+
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def save_png(image: Image.Image, path: Path) -> None:
@@ -147,11 +70,7 @@ def save_png(image: Image.Image, path: Path) -> None:
     image.save(path, format="PNG", optimize=False, compress_level=9)
 
 
-def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def atlas_record(path: Path, regions: dict[str, object]) -> dict[str, object]:
+def atlas_record(path: Path) -> dict[str, Any]:
     with Image.open(path) as image:
         width, height = image.size
     return {
@@ -159,256 +78,184 @@ def atlas_record(path: Path, regions: dict[str, object]) -> dict[str, object]:
         "sha256": digest(path),
         "width": width,
         "height": height,
-        "terrain_grid": {
-            "x": 0,
-            "y": 0,
-            "tile_size": TILE,
-            "columns": TERRAIN_COLUMNS,
-            "rows": TERRAIN_ROWS,
-        },
-        "regions": regions,
     }
 
 
-def build_biome_atlas(
-    terrain: list[Image.Image],
-    specials: list[Image.Image],
-    path: Path,
-) -> dict[str, object]:
-    if len(terrain) != TERRAIN_COLUMNS * TERRAIN_ROWS or len(specials) != 4:
-        raise RuntimeError("biome atlas inputs do not match the stable layout")
-    atlas = Image.new("RGBA", ATLAS_SIZE)
-    for index, tile in enumerate(terrain):
-        atlas.alpha_composite(
-            tile,
-            ((index % TERRAIN_COLUMNS) * TILE, (index // TERRAIN_COLUMNS) * TILE),
+class SourceImages:
+    def __init__(self, downloads: Path):
+        self.downloads = downloads.resolve()
+        self.images: dict[Path, Image.Image] = {}
+
+    def crop(self, region: dict[str, Any]) -> Image.Image:
+        relative = Path(region["file"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError(f"unsafe source path: {relative}")
+        path = (self.downloads / relative).resolve()
+        if self.downloads not in path.parents:
+            raise ValueError(f"source escapes downloads root: {relative}")
+        if path not in self.images:
+            if not path.is_file():
+                raise FileNotFoundError(f"source image is missing: {path}")
+            self.images[path] = Image.open(path).convert("RGBA")
+        image = self.images[path]
+        x = region["x"]
+        y = region["y"]
+        width = region["width"]
+        height = region["height"]
+        if min(x, y) < 0 or width <= 0 or height <= 0:
+            raise ValueError(f"invalid source rectangle in {relative}")
+        if x + width > image.width or y + height > image.height:
+            raise ValueError(f"source rectangle exceeds {relative}")
+        cropped = image.crop((x, y, x + width, y + height))
+        if cropped.getbbox() is None:
+            raise ValueError(f"source rectangle is transparent in {relative}")
+        return cropped
+
+    def close(self) -> None:
+        for image in self.images.values():
+            image.close()
+
+
+def fitted_tile(image: Image.Image) -> Image.Image:
+    return image.resize((TILE, TILE), Image.Resampling.NEAREST)
+
+
+def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
+    normalized = fitted_tile(image)
+    if derive is None:
+        return normalized
+    if derive != "charge_squash":
+        raise ValueError(f"unsupported derived frame: {derive}")
+    squashed = normalized.resize((TILE, 13), Image.Resampling.NEAREST)
+    result = Image.new("RGBA", (TILE, TILE))
+    result.alpha_composite(squashed, (0, TILE - squashed.height))
+    return result
+
+
+def terrain_layout() -> tuple[tuple[str, ...], ...]:
+    return (
+        ("top_left", "top", "top_right", "isolated", "inner_corner_top_left", "top", "inner_corner_top_right"),
+        ("left", "center", "right", "isolated", "left", "center", "right"),
+        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bottom_left", "bottom", "inner_corner_bottom_right"),
+        ("top_left", "top", "top_right", "isolated", "inner_corner_top_left", "top", "inner_corner_top_right"),
+        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bottom_left", "bottom", "inner_corner_bottom_right"),
+    )
+
+
+def build_castle(
+    selection: dict[str, Any], sources: SourceImages, output: Path
+) -> dict[str, Any]:
+    biome_width = TERRAIN_COLUMNS * TILE
+    atlas = Image.new("RGBA", (len(BIOME_ORDER) * biome_width, 6 * TILE))
+    biome_records: dict[str, Any] = {}
+    props = selection["props"]
+
+    for biome_index, biome_name in enumerate(BIOME_ORDER):
+        origin_x = biome_index * biome_width
+        regions = selection["biomes"][biome_name]
+        for row, names in enumerate(terrain_layout()):
+            for column, name in enumerate(names):
+                atlas.alpha_composite(
+                    fitted_tile(sources.crop(regions[name])),
+                    (origin_x + column * TILE, row * TILE),
+                )
+
+        special_regions: dict[str, dict[str, int]] = {}
+        specials = (
+            ("spike", props["torch"]),
+            ("checkpoint", props["banner"]),
+            ("exit", props["crown"]),
+            ("background", regions["background"]),
         )
-    names = ("spike", "checkpoint", "exit", "background")
-    regions: dict[str, object] = {}
-    for index, (name, image) in enumerate(zip(names, specials, strict=True)):
-        x = index * TILE
-        y = TERRAIN_ROWS * TILE
-        atlas.alpha_composite(fitted(image), (x, y))
-        regions[name] = rect(x, y)
+        for column, (name, source_region) in enumerate(specials):
+            x = origin_x + column * TILE
+            y = TERRAIN_ROWS * TILE
+            atlas.alpha_composite(fitted_tile(sources.crop(source_region)), (x, y))
+            special_regions[name] = rect(x, y)
+
+        biome_records[biome_name] = {
+            "terrain_grid": {
+                "x": origin_x,
+                "y": 0,
+                "tile_size": TILE,
+                "columns": TERRAIN_COLUMNS,
+                "rows": TERRAIN_ROWS,
+            },
+            "regions": special_regions,
+        }
+
+    path = output / "castle.png"
     save_png(atlas, path)
-    return atlas_record(path, regions)
+    record = atlas_record(path)
+    record["biomes"] = biome_records
+    return record
 
 
-def pixel_adventure_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
-    terrain_sheet = open_rgba(archive, "Free/Terrain/Terrain (16x16).png")
-    terrain = repeated_sheet_cell(
-        terrain_sheet, 16, 29, TERRAIN_COLUMNS * TERRAIN_ROWS)
-    specials = [
-        open_rgba(archive, "Free/Traps/Spikes/Idle.png"),
-        first_frame(open_rgba(
-            archive,
-            "Free/Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png",
-        ), 64, 64),
-        open_rgba(archive, "Free/Items/Checkpoints/End/End (Idle).png"),
-        open_rgba(archive, "Free/Background/Blue.png"),
-    ]
-    return build_biome_atlas(terrain, specials, output / "pixel-adventure.png")
+def build_knight(
+    selection: dict[str, Any], sources: SourceImages, output: Path
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    max_frames = max(len(animation["frames"]) for animation in selection["player"].values())
+    atlas = Image.new("RGBA", (max_frames * TILE, len(ANIMATION_NAMES) * TILE))
+    animations: dict[str, Any] = {}
 
-
-def kenney_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
-    base = open_rgba(archive, "Tiles/tile_0005.png").resize(
-        (TILE, TILE), Image.Resampling.NEAREST)
-    terrain = [base.copy() for _ in range(TERRAIN_COLUMNS * TERRAIN_ROWS)]
-    specials = [
-        open_rgba(archive, "Tiles/tile_0035.png"),
-        open_rgba(archive, "Tiles/Characters/tile_0000.png"),
-        open_rgba(archive, "Tiles/Characters/tile_0011.png"),
-        open_rgba(archive, "Tiles/Backgrounds/tile_0008.png"),
-    ]
-    return build_biome_atlas(terrain, specials, output / "kenney.png")
-
-
-def kings_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
-    terrain_sheet = open_rgba(archive, "Sprites/14-TileSets/Terrain (32x32).png")
-    decoration_sheet = open_rgba(
-        archive, "Sprites/14-TileSets/Decorations (32x32).png")
-    terrain = repeated_sheet_cell(
-        terrain_sheet, 32, 162, TERRAIN_COLUMNS * TERRAIN_ROWS)
-    decorations = nonempty_sheet_cells(decoration_sheet, 32, 4)
-    return build_biome_atlas(
-        terrain,
-        [decorations[0], decorations[1], decorations[2], decorations[3]],
-        output / "kings-and-pigs.png",
-    )
-
-
-STABLE_STATES = frozenset({"idle", "run", "charge", "rise", "fall"})
-
-# Map the six game animation states to the Gothicvania hero's source folders,
-# whose frames are stored as individual numbered PNG files.
-HERO_STATE_FOLDERS = (
-    ("idle", "idle"),
-    ("run", "run"),
-    ("charge", "crouch"),
-    ("rise", "jump"),
-    ("fall", "fall"),
-    ("respawn", "hurt"),
-)
-
-
-def hero_state_frames(archive: zipfile.ZipFile, folder: str) -> list[Image.Image]:
-    """Load a hero animation's individual frame PNGs from its folder, ordered by
-    the trailing frame number (so run2 precedes run10)."""
-    pattern = re.compile(rf"Sprites/Player/{re.escape(folder)}/[^/]+\.png$")
-    members = [
-        name for name in archive.namelist()
-        if pattern.search(name) and "__MACOSX" not in name
-    ]
-    if not members:
-        raise RuntimeError(f"no frames for hero state folder {folder!r}")
-
-    def frame_number(name: str) -> int:
-        match = re.search(r"(\d+)\.png$", name)
-        return int(match.group(1)) if match else 0
-
-    members.sort(key=frame_number)
-    return [
-        Image.open(io.BytesIO(archive.read(name))).convert("RGBA")
-        for name in members
-    ]
-
-
-def union_box(
-    frames: list[Image.Image],
-) -> tuple[int, int, int, int] | None:
-    """Return the smallest box covering the opaque content of every frame."""
-    box: tuple[int, int, int, int] | None = None
-    for frame in frames:
-        bounds = frame.getbbox()
-        if bounds is None:
-            continue
-        box = bounds if box is None else (
-            min(box[0], bounds[0]),
-            min(box[1], bounds[1]),
-            max(box[2], bounds[2]),
-            max(box[3], bounds[3]),
-        )
-    return box
-
-
-def register_king_frames(
-    frames: list[Image.Image],
-    box: tuple[int, int, int, int],
-) -> list[Image.Image]:
-    """Crop every frame to a shared content box, then scale and place it
-    bottom-centre inside a PLAYER_CELL square so all King states line up on one
-    anchor: horizontally centred, feet on the cell floor. This keeps the King a
-    constant size, prevents a horizontal jump when the sprite is flipped, and
-    lets the renderer align the sprite's feet to the player's feet."""
-    left, top, right, bottom = box
-    crop_width, crop_height = right - left, bottom - top
-    scale = min(PLAYER_CELL / crop_width, PLAYER_CELL / crop_height)
-    scaled_width = max(1, round(crop_width * scale))
-    scaled_height = max(1, round(crop_height * scale))
-    placed: list[Image.Image] = []
-    for frame in frames:
-        cropped = frame.crop(box).resize(
-            (scaled_width, scaled_height), Image.Resampling.NEAREST)
-        cell = Image.new("RGBA", (PLAYER_CELL, PLAYER_CELL))
-        cell.alpha_composite(
-            cropped,
-            ((PLAYER_CELL - scaled_width) // 2, PLAYER_CELL - scaled_height),
-        )
-        placed.append(cell)
-    return placed
-
-
-def king_player_atlas(
-    archive: zipfile.ZipFile,
-    output: Path,
-) -> tuple[dict[str, object], dict[str, object]]:
-    raw: list[tuple[str, list[Image.Image]]] = [
-        (state, hero_state_frames(archive, folder))
-        for state, folder in HERO_STATE_FOLDERS
-    ]
-    frame_width = raw[0][1][0].width
-
-    state_boxes = {state: union_box(frames) for state, frames in raw}
-    if any(box is None for box in state_boxes.values()):
-        raise RuntimeError("a King animation has no opaque frames")
-    stable = [state_boxes[state] for state in STABLE_STATES]
-    horizontal_centre = (
-        min(box[0] for box in stable) + max(box[2] for box in stable)) / 2.0
-    every = list(state_boxes.values())
-    content_left = min(box[0] for box in every)
-    content_right = max(box[2] for box in every)
-    half_width = max(
-        horizontal_centre - content_left, content_right - horizontal_centre)
-    # Put the standing states' feet on the cell floor so the renderer can align
-    # the sprite's feet to the player's feet; the death slump may extend a hair
-    # lower and is clipped rather than lifting every pose off the ground.
-    standing_floor = max(state_boxes[state][3] for state in STABLE_STATES)
-    shared_box = (
-        max(0, round(horizontal_centre - half_width)),
-        min(box[1] for box in every),
-        min(frame_width, round(horizontal_centre + half_width)),
-        standing_floor,
-    )
-
-    sheets = [
-        (state, register_king_frames(frames, shared_box))
-        for state, frames in raw
-    ]
-
-    width = max(len(frames) for _, frames in sheets) * PLAYER_CELL
-    height = len(sheets) * PLAYER_CELL
-    atlas = Image.new("RGBA", (width, height))
-    animations: dict[str, object] = {}
-    for row, (state, frames) in enumerate(sheets):
-        frame_rects = []
-        for column, frame in enumerate(frames):
-            x = column * PLAYER_CELL
-            y = row * PLAYER_CELL
+    for row, (selection_name, runtime_name) in enumerate(ANIMATION_NAMES.items()):
+        source_animation = selection["player"][selection_name]
+        frames = []
+        for column, source_region in enumerate(source_animation["frames"]):
+            frame = derived_frame(
+                sources.crop(source_region), source_region.get("derive")
+            )
+            x = column * TILE
+            y = row * TILE
             atlas.alpha_composite(frame, (x, y))
-            frame_rects.append(rect(x, y, PLAYER_CELL, PLAYER_CELL))
-        animations[state] = {
-            "atlas": "player",
-            "fps": 10,
-            "frames": frame_rects,
+            frames.append(rect(x, y))
+        animations[runtime_name] = {
+            "atlas": "knight",
+            "fps": source_animation["fps"],
+            "frames": frames,
         }
 
-    path = output / "player.png"
+    path = output / "knight.png"
     save_png(atlas, path)
-    record = {
-        "file": path.name,
-        "sha256": digest(path),
-        "width": width,
-        "height": height,
-        "regions": {},
-    }
-    return record, animations
+    return atlas_record(path), animations
 
 
-def build(downloads: Path, output: Path, manifest_path: Path) -> None:
-    archives = {
-        source["id"]: zipfile.ZipFile(downloads / source["archive"])
-        for source in SOURCES
-    }
+def build_ui(
+    selection: dict[str, Any], sources: SourceImages, output: Path
+) -> dict[str, Any]:
+    names = tuple(selection["ui"])
+    atlas = Image.new("RGBA", (len(names) * TILE, TILE))
+    regions: dict[str, Any] = {}
+    for column, name in enumerate(names):
+        x = column * TILE
+        atlas.alpha_composite(fitted_tile(sources.crop(selection["ui"][name])), (x, 0))
+        regions[name] = rect(x, 0)
+
+    path = output / "ui.png"
+    save_png(atlas, path)
+    record = atlas_record(path)
+    record["regions"] = regions
+    return record
+
+
+def build(downloads: Path, selection_path: Path, output: Path, manifest_path: Path) -> None:
+    selection = json.loads(selection_path.read_text(encoding="utf-8"))
+    if selection.get("schema_version") != 1:
+        raise ValueError("unsupported source-selection schema")
+
+    sources = SourceImages(downloads)
     try:
-        atlases: dict[str, object] = {
-            "pixel_adventure": pixel_adventure_atlas(
-                archives["pixel_adventure"], output),
-            "kenney": kenney_atlas(archives["kenney"], output),
-            "kings_and_pigs": kings_atlas(
-                archives["kings_and_pigs"], output),
-        }
-        player, animations = king_player_atlas(
-            archives["gothicvania_hero"], output)
-        atlases["player"] = player
+        castle = build_castle(selection, sources, output)
+        knight, animations = build_knight(selection, sources, output)
+        ui = build_ui(selection, sources, output)
     finally:
-        for archive in archives.values():
-            archive.close()
+        sources.close()
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "license": "CC0-1.0",
-        "sources": list(SOURCES),
-        "atlases": atlases,
+        "sources": list(SOURCE_RECORDS),
+        "atlases": {"castle": castle, "knight": knight, "ui": ui},
         "animations": animations,
     }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -422,10 +269,16 @@ def build(downloads: Path, output: Path, manifest_path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--downloads", type=Path, required=True)
+    parser.add_argument("--selection", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
     arguments = parser.parse_args()
-    build(arguments.downloads, arguments.output, arguments.manifest)
+    build(
+        arguments.downloads,
+        arguments.selection,
+        arguments.output,
+        arguments.manifest,
+    )
 
 
 if __name__ == "__main__":

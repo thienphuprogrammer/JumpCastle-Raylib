@@ -22,13 +22,13 @@ std::string generated_manifest() {
 TEST_CASE("asset manifest identifies all approved CC0 sources") {
     const std::string manifest = generated_manifest();
     for (const std::string_view source : {
-             "pixel_adventure", "kenney", "kings_and_pigs"}) {
+             "castle_tileset", "gloomy_knight", "kenney_ui"}) {
         INFO("source " << source);
         CHECK(manifest.find(source) != std::string::npos);
     }
 }
 
-TEST_CASE("asset manifest exposes every King movement state") {
+TEST_CASE("asset manifest exposes every knight movement state") {
     const std::string manifest = generated_manifest();
     for (const std::string_view state : {
              "idle", "run", "charge", "rise", "fall", "respawn"}) {

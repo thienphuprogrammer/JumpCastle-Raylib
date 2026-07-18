@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the committed generated asset manifest without third-party packages."""
+"""Validate the committed schema-v2 asset manifest without third-party packages."""
 
 from __future__ import annotations
 
@@ -12,13 +12,14 @@ import sys
 
 
 APPROVED_SOURCES = {
-    "pixel_adventure": "https://pixelfrog-assets.itch.io/pixel-adventure-1",
-    "kenney": "https://kenney.nl/assets/pixel-platformer",
-    "kings_and_pigs": "https://pixelfrog-assets.itch.io/kings-and-pigs",
-    "gothicvania_hero": "https://ansimuz.itch.io/gothicvania-swamp",
+    "castle_tileset": "https://opengameart.org/content/pixel-art-castle-tileset",
+    "gloomy_knight": "https://loveosstudio.itch.io/gloomy-knight-16x16",
+    "kenney_ui": "https://kenney.nl/assets/ui-pack-pixel-adventure",
 }
-EXPECTED_ATLASES = {"pixel_adventure", "kenney", "kings_and_pigs", "player"}
+EXPECTED_ATLASES = {"castle", "knight", "ui"}
+EXPECTED_BIOMES = {"courtyard", "frosted_keep", "crown_spire"}
 EXPECTED_ANIMATIONS = {"idle", "run", "charge", "rise", "fall", "respawn"}
+EXPECTED_UI = {"panel", "button", "button_pressed", "keycap"}
 
 
 def require(condition: bool, message: str) -> None:
@@ -45,7 +46,7 @@ def check_rect(region: object, width: int, height: int, label: str) -> None:
 
 def verify(manifest_path: Path) -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    require(manifest.get("schema_version") == 1, "unsupported manifest schema")
+    require(manifest.get("schema_version") == 2, "unsupported manifest schema")
     require(manifest.get("license") == "CC0-1.0", "manifest license must be CC0-1.0")
 
     sources = manifest.get("sources")
@@ -56,8 +57,13 @@ def verify(manifest_path: Path) -> None:
         source = source_map[source_id]
         require(source.get("url") == url, f"unexpected URL for {source_id}")
         require(source.get("license") == "CC0-1.0", f"unexpected license for {source_id}")
-        require(str(source.get("archive", "")).lower().endswith(".zip"),
-                f"missing archive metadata for {source_id}")
+        files = source.get("files")
+        require(isinstance(files, list) and files, f"missing source files for {source_id}")
+        for file in files:
+            require(isinstance(file.get("name"), str), f"missing filename for {source_id}")
+            digest = file.get("sha256")
+            require(isinstance(digest, str) and len(digest) == 64,
+                    f"missing SHA-256 for {source_id}")
 
     atlases = manifest.get("atlases")
     require(isinstance(atlases, dict), "atlases must be an object")
@@ -77,34 +83,47 @@ def verify(manifest_path: Path) -> None:
         require(hashlib.sha256(path.read_bytes()).hexdigest() == atlas.get("sha256"),
                 f"atlas digest does not match: {filename}")
         atlas_sizes[atlas_id] = (width, height)
-        for region_id, region in atlas.get("regions", {}).items():
-            check_rect(region, width, height, f"{atlas_id}.{region_id}")
 
-        if atlas_id != "player":
-            grid = atlas.get("terrain_grid")
-            require(isinstance(grid, dict), f"atlas {atlas_id} has no terrain grid")
-            require(grid.get("tile_size") == 16, f"atlas {atlas_id} tile size must be 16")
-            require(grid.get("columns") == 7 and grid.get("rows") == 5,
-                    f"atlas {atlas_id} terrain grid changed unexpectedly")
-            check_rect({
-                "x": grid.get("x"),
-                "y": grid.get("y"),
-                "width": grid.get("columns", 0) * grid.get("tile_size", 0),
-                "height": grid.get("rows", 0) * grid.get("tile_size", 0),
-            }, width, height, f"{atlas_id}.terrain_grid")
+    castle = atlases["castle"]
+    biomes = castle.get("biomes")
+    require(isinstance(biomes, dict) and set(biomes) == EXPECTED_BIOMES,
+            "castle biome records are incomplete")
+    castle_width, castle_height = atlas_sizes["castle"]
+    for biome_name, biome in biomes.items():
+        grid = biome.get("terrain_grid")
+        require(isinstance(grid, dict), f"{biome_name} has no terrain grid")
+        require(grid.get("tile_size") == 16, f"{biome_name} tile size must be 16")
+        require(grid.get("columns") == 7 and grid.get("rows") == 5,
+                f"{biome_name} terrain grid changed unexpectedly")
+        check_rect({
+            "x": grid.get("x"),
+            "y": grid.get("y"),
+            "width": grid.get("columns", 0) * grid.get("tile_size", 0),
+            "height": grid.get("rows", 0) * grid.get("tile_size", 0),
+        }, castle_width, castle_height, f"{biome_name}.terrain_grid")
+        regions = biome.get("regions")
+        require(isinstance(regions, dict) and
+                set(regions) == {"spike", "checkpoint", "exit", "background"},
+                f"{biome_name} semantic regions are incomplete")
+        for name, region in regions.items():
+            check_rect(region, castle_width, castle_height, f"{biome_name}.{name}")
+
+    ui = atlases["ui"]
+    require(set(ui.get("regions", {})) == EXPECTED_UI, "UI regions are incomplete")
+    for name, region in ui["regions"].items():
+        check_rect(region, *atlas_sizes["ui"], f"ui.{name}")
 
     animations = manifest.get("animations")
     require(isinstance(animations, dict), "animations must be an object")
-    require(set(animations) == EXPECTED_ANIMATIONS, "King animation states are incomplete")
+    require(set(animations) == EXPECTED_ANIMATIONS, "knight animation states are incomplete")
     for state, animation in animations.items():
-        require(animation.get("atlas") == "player", f"{state} uses the wrong atlas")
+        require(animation.get("atlas") == "knight", f"{state} uses the wrong atlas")
         require(isinstance(animation.get("fps"), int) and animation["fps"] > 0,
                 f"{state} has invalid FPS")
         frames = animation.get("frames")
         require(isinstance(frames, list) and frames, f"{state} has no frames")
-        width, height = atlas_sizes["player"]
         for index, frame in enumerate(frames):
-            check_rect(frame, width, height, f"animation.{state}[{index}]")
+            check_rect(frame, *atlas_sizes["knight"], f"animation.{state}[{index}]")
 
     repository = manifest_path.parents[2]
     tracked = subprocess.run(
@@ -116,8 +135,9 @@ def verify(manifest_path: Path) -> None:
     require(not tracked, "source ZIP archives must not be tracked by git")
 
     print(
-        f"verified {len(atlases)} atlases, {len(animations)} King animations, "
-        f"and {len(sources)} CC0 sources")
+        f"verified {len(atlases)} atlases, {len(animations)} knight animations, "
+        f"and {len(sources)} approved CC0 sources"
+    )
 
 
 def main() -> int:

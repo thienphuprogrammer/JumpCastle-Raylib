@@ -58,7 +58,7 @@ public:
 private:
     AssetCatalog catalog_;
     TextureResource player_texture_;
-    std::array<TextureResource, 3> biome_textures_;
+    TextureResource castle_texture_;
     RenderTargetResource pixelart_target_;
 };
 

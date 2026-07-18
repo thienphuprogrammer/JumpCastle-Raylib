@@ -13,7 +13,7 @@ std::filesystem::path manifest_path() {
 
 }  // namespace
 
-TEST_CASE("catalog exposes every biome and King animation") {
+TEST_CASE("catalog exposes every castle biome and knight animation") {
     const jumpcastle::AssetCatalog catalog =
         jumpcastle::AssetCatalog::load(manifest_path());
 
@@ -32,6 +32,6 @@ TEST_CASE("catalog resolves atlas files relative to manifest") {
     const jumpcastle::AssetCatalog catalog =
         jumpcastle::AssetCatalog::load(manifest_path());
 
-    CHECK(catalog.player_atlas().filename() == "player.png");
-    CHECK(catalog.biome(jumpcastle::Biome::kenney).atlas.filename() == "kenney.png");
+    CHECK(catalog.player_atlas().filename() == "knight.png");
+    CHECK(catalog.biome(jumpcastle::Biome::kenney).atlas.filename() == "castle.png");
 }

@@ -10,15 +10,13 @@
 
 namespace jumpcastle {
 
-// The generated King atlas registers every cell the same way: the sprite is
-// horizontally centred and its feet sit on the cell floor. Drawing the cell as
-// a square this many pixels tall makes the King about two tiles wide and keeps
-// its feet on the ground when the destination bottom is aligned to the player's
-// feet.
+// Gloomy Knight frames are registered in square cells with the sprite centred
+// horizontally and its feet on the cell floor. Two logical tiles keep the
+// 16-pixel source readable without overpowering the platforms.
 inline constexpr float player_sprite_display =
-    3.0F * static_cast<float>(config::tile_pixels);
+    2.0F * static_cast<float>(config::tile_pixels);
 
-// Place the King so it is centred on the player horizontally and stands with
+// Place the knight so it is centred on the player horizontally and stands with
 // its feet at the player's feet. Because the sprite is centred in its cell, the
 // destination is independent of facing, so flipping the source never shifts it.
 [[nodiscard]] inline Rectangle player_sprite_destination(

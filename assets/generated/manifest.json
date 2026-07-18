@@ -1,372 +1,301 @@
 {
   "animations": {
     "charge": {
-      "atlas": "player",
-      "fps": 10,
+      "atlas": "knight",
+      "fps": 3,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
-          "y": 96
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 48,
-          "y": 96
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 96,
-          "y": 96
+          "y": 32
         }
       ]
     },
     "fall": {
-      "atlas": "player",
-      "fps": 10,
+      "atlas": "knight",
+      "fps": 6,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
-          "y": 192
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 48,
-          "y": 192
+          "y": 64
         }
       ]
     },
     "idle": {
-      "atlas": "player",
-      "fps": 10,
+      "atlas": "knight",
+      "fps": 3,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
           "y": 0
         },
         {
-          "height": 48,
-          "width": 48,
-          "x": 48,
-          "y": 0
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 96,
-          "y": 0
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 144,
-          "y": 0
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 192,
-          "y": 0
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 240,
+          "height": 16,
+          "width": 16,
+          "x": 16,
           "y": 0
         }
       ]
     },
     "respawn": {
-      "atlas": "player",
+      "atlas": "knight",
       "fps": 10,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
-          "y": 240
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 48,
-          "y": 240
+          "y": 80
         }
       ]
     },
     "rise": {
-      "atlas": "player",
-      "fps": 10,
+      "atlas": "knight",
+      "fps": 6,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
-          "y": 144
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 48,
-          "y": 144
+          "y": 48
         }
       ]
     },
     "run": {
-      "atlas": "player",
-      "fps": 10,
+      "atlas": "knight",
+      "fps": 8,
       "frames": [
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
           "x": 0,
-          "y": 48
+          "y": 16
         },
         {
-          "height": 48,
-          "width": 48,
+          "height": 16,
+          "width": 16,
+          "x": 16,
+          "y": 16
+        },
+        {
+          "height": 16,
+          "width": 16,
+          "x": 32,
+          "y": 16
+        },
+        {
+          "height": 16,
+          "width": 16,
           "x": 48,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 96,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 144,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 192,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 240,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 288,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 336,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 384,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 432,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 480,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 528,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 576,
-          "y": 48
-        },
-        {
-          "height": 48,
-          "width": 48,
-          "x": 624,
-          "y": 48
+          "y": 16
         }
       ]
     }
   },
   "atlases": {
-    "kenney": {
-      "file": "kenney.png",
-      "height": 96,
-      "regions": {
-        "background": {
-          "height": 16,
-          "width": 16,
-          "x": 48,
-          "y": 80
+    "castle": {
+      "biomes": {
+        "courtyard": {
+          "regions": {
+            "background": {
+              "height": 16,
+              "width": 16,
+              "x": 48,
+              "y": 80
+            },
+            "checkpoint": {
+              "height": 16,
+              "width": 16,
+              "x": 16,
+              "y": 80
+            },
+            "exit": {
+              "height": 16,
+              "width": 16,
+              "x": 32,
+              "y": 80
+            },
+            "spike": {
+              "height": 16,
+              "width": 16,
+              "x": 0,
+              "y": 80
+            }
+          },
+          "terrain_grid": {
+            "columns": 7,
+            "rows": 5,
+            "tile_size": 16,
+            "x": 0,
+            "y": 0
+          }
         },
-        "checkpoint": {
+        "crown_spire": {
+          "regions": {
+            "background": {
+              "height": 16,
+              "width": 16,
+              "x": 272,
+              "y": 80
+            },
+            "checkpoint": {
+              "height": 16,
+              "width": 16,
+              "x": 240,
+              "y": 80
+            },
+            "exit": {
+              "height": 16,
+              "width": 16,
+              "x": 256,
+              "y": 80
+            },
+            "spike": {
+              "height": 16,
+              "width": 16,
+              "x": 224,
+              "y": 80
+            }
+          },
+          "terrain_grid": {
+            "columns": 7,
+            "rows": 5,
+            "tile_size": 16,
+            "x": 224,
+            "y": 0
+          }
+        },
+        "frosted_keep": {
+          "regions": {
+            "background": {
+              "height": 16,
+              "width": 16,
+              "x": 160,
+              "y": 80
+            },
+            "checkpoint": {
+              "height": 16,
+              "width": 16,
+              "x": 128,
+              "y": 80
+            },
+            "exit": {
+              "height": 16,
+              "width": 16,
+              "x": 144,
+              "y": 80
+            },
+            "spike": {
+              "height": 16,
+              "width": 16,
+              "x": 112,
+              "y": 80
+            }
+          },
+          "terrain_grid": {
+            "columns": 7,
+            "rows": 5,
+            "tile_size": 16,
+            "x": 112,
+            "y": 0
+          }
+        }
+      },
+      "file": "castle.png",
+      "height": 96,
+      "sha256": "ec47fab4d507a52ff8eb4fefa580e3c9e15e4960ea7e9d07189581ca1ad3750c",
+      "width": 336
+    },
+    "knight": {
+      "file": "knight.png",
+      "height": 96,
+      "sha256": "3a2f21b8e91b7c1158890818ed6cbb098eb406d01fcbb0120a4c39c4691129c5",
+      "width": 64
+    },
+    "ui": {
+      "file": "ui.png",
+      "height": 16,
+      "regions": {
+        "button": {
           "height": 16,
           "width": 16,
           "x": 16,
-          "y": 80
+          "y": 0
         },
-        "exit": {
+        "button_pressed": {
           "height": 16,
           "width": 16,
           "x": 32,
-          "y": 80
+          "y": 0
         },
-        "spike": {
-          "height": 16,
-          "width": 16,
-          "x": 0,
-          "y": 80
-        }
-      },
-      "sha256": "54b5def4ffce71c097f80636283fbdf513546e8b25f708ad9471dbe9e630287a",
-      "terrain_grid": {
-        "columns": 7,
-        "rows": 5,
-        "tile_size": 16,
-        "x": 0,
-        "y": 0
-      },
-      "width": 112
-    },
-    "kings_and_pigs": {
-      "file": "kings-and-pigs.png",
-      "height": 96,
-      "regions": {
-        "background": {
+        "keycap": {
           "height": 16,
           "width": 16,
           "x": 48,
-          "y": 80
+          "y": 0
         },
-        "checkpoint": {
-          "height": 16,
-          "width": 16,
-          "x": 16,
-          "y": 80
-        },
-        "exit": {
-          "height": 16,
-          "width": 16,
-          "x": 32,
-          "y": 80
-        },
-        "spike": {
+        "panel": {
           "height": 16,
           "width": 16,
           "x": 0,
-          "y": 80
+          "y": 0
         }
       },
-      "sha256": "4e356562d724799127c7e830b6e2465ef7d8e0dea16429abf2b6fb26f6cd9295",
-      "terrain_grid": {
-        "columns": 7,
-        "rows": 5,
-        "tile_size": 16,
-        "x": 0,
-        "y": 0
-      },
-      "width": 112
-    },
-    "pixel_adventure": {
-      "file": "pixel-adventure.png",
-      "height": 96,
-      "regions": {
-        "background": {
-          "height": 16,
-          "width": 16,
-          "x": 48,
-          "y": 80
-        },
-        "checkpoint": {
-          "height": 16,
-          "width": 16,
-          "x": 16,
-          "y": 80
-        },
-        "exit": {
-          "height": 16,
-          "width": 16,
-          "x": 32,
-          "y": 80
-        },
-        "spike": {
-          "height": 16,
-          "width": 16,
-          "x": 0,
-          "y": 80
-        }
-      },
-      "sha256": "4a114952ba36415a7233cb5381c188dfed35277467579459735edfcb4245de8a",
-      "terrain_grid": {
-        "columns": 7,
-        "rows": 5,
-        "tile_size": 16,
-        "x": 0,
-        "y": 0
-      },
-      "width": 112
-    },
-    "player": {
-      "file": "player.png",
-      "height": 288,
-      "regions": {},
-      "sha256": "4d6fcca456c7e35d88262b46376f1f2a2f171514de151210f99a98995c97d517",
-      "width": 672
+      "sha256": "96ebef2c09d7807c8de61ff82214058355e0691567f4b0cbe5c866ae89e1cb60",
+      "width": 64
     }
   },
   "license": "CC0-1.0",
-  "schema_version": 1,
+  "schema_version": 2,
   "sources": [
     {
-      "archive": "Pixel Adventure 1.zip",
-      "creator": "Pixel Frog",
-      "id": "pixel_adventure",
+      "creator": "rubberduck",
+      "files": [
+        {
+          "name": "castle_tileset_part1.png",
+          "sha256": "cb25ec05aa353a50f87798548ea737228f9e72989143f7cb3f1bcecc7478bba6"
+        },
+        {
+          "name": "castle_tileset_part2.png",
+          "sha256": "11da497a383fc4807078e95575ca91b284ad7931bbaefaa56669bf4d917c5fd9"
+        },
+        {
+          "name": "castle_tileset_part3.png",
+          "sha256": "24354419ec6eb06f8b3675ac7a6049ff4c1018d1d92e7fb98d26a90c7702c5f8"
+        }
+      ],
+      "id": "castle_tileset",
       "license": "CC0-1.0",
-      "url": "https://pixelfrog-assets.itch.io/pixel-adventure-1"
+      "url": "https://opengameart.org/content/pixel-art-castle-tileset"
     },
     {
-      "archive": "kenney_pixel-platformer.zip",
+      "creator": "loveOS by @cookiielove_",
+      "files": [
+        {
+          "name": "Gloomy Knight.zip",
+          "sha256": "ebb0d53789e7cb70c0a94dde307515a902fffc57027ec37ce7d3bf82b640a5c5"
+        }
+      ],
+      "id": "gloomy_knight",
+      "license": "CC0-1.0",
+      "url": "https://loveosstudio.itch.io/gloomy-knight-16x16"
+    },
+    {
       "creator": "Kenney",
-      "id": "kenney",
+      "files": [
+        {
+          "name": "kenney_ui-pack-pixel-adventure.zip",
+          "sha256": "0b0ed4802ebcfff5e44e370f394baa1d751862a5a4a7612ac4ce84e85faa0627"
+        }
+      ],
+      "id": "kenney_ui",
       "license": "CC0-1.0",
-      "url": "https://kenney.nl/assets/pixel-platformer"
-    },
-    {
-      "archive": "Kings and Pigs.zip",
-      "creator": "Pixel Frog",
-      "id": "kings_and_pigs",
-      "license": "CC0-1.0",
-      "url": "https://pixelfrog-assets.itch.io/kings-and-pigs"
-    },
-    {
-      "archive": "Gothicvania Swamp files.zip",
-      "creator": "Luis Zuno aka Ansimuz",
-      "id": "gothicvania_hero",
-      "license": "CC0-1.0",
-      "url": "https://ansimuz.itch.io/gothicvania-swamp"
+      "url": "https://kenney.nl/assets/ui-pack-pixel-adventure"
     }
   ]
 }

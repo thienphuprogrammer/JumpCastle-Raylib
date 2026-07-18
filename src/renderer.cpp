@@ -12,15 +12,6 @@
 namespace jumpcastle {
 namespace {
 
-std::size_t biome_index(const Biome biome) noexcept {
-    switch (biome) {
-    case Biome::pixel_adventure: return 0;
-    case Biome::kenney: return 1;
-    case Biome::kings_and_pigs: return 2;
-    }
-    return 0;
-}
-
 Biome asset_biome(const WorldBiome biome) noexcept {
     switch (biome) {
     case WorldBiome::courtyard: return Biome::pixel_adventure;
@@ -330,11 +321,7 @@ const RenderTexture2D& RenderTargetResource::get() const noexcept {
 Renderer::Renderer(const std::filesystem::path& asset_directory)
     : catalog_{AssetCatalog::load(asset_directory / "generated" / "manifest.json")},
       player_texture_{catalog_.player_atlas()},
-      biome_textures_{
-          TextureResource{catalog_.biome(Biome::pixel_adventure).atlas},
-          TextureResource{catalog_.biome(Biome::kenney).atlas},
-          TextureResource{catalog_.biome(Biome::kings_and_pigs).atlas},
-      },
+      castle_texture_{catalog_.biome(Biome::pixel_adventure).atlas},
       pixelart_target_{config::view_width, config::view_height} {}
 
 void Renderer::draw(
@@ -346,7 +333,7 @@ void Renderer::draw(
     const bool debug_enabled) const {
     const Biome biome = asset_biome(camera.biome);
     const BiomeAssets& assets = catalog_.biome(biome);
-    const Texture2D& biome_texture = biome_textures_[biome_index(biome)].get();
+    const Texture2D& biome_texture = castle_texture_.get();
 
     BeginTextureMode(pixelart_target_.get());
     draw_background(biome_texture, assets, camera.biome);

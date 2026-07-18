@@ -1,112 +1,497 @@
 {
   "schema_version": 1,
+  "license": "CC0-1.0",
   "biomes": {
     "courtyard": {
-      "top_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 0, "width": 32, "height": 32},
-      "top": {"file": "castle_tileset_part1.png", "x": 352, "y": 0, "width": 32, "height": 32},
-      "top_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 0, "width": 32, "height": 32},
-      "left": {"file": "castle_tileset_part1.png", "x": 320, "y": 32, "width": 32, "height": 32},
-      "center": {"file": "castle_tileset_part1.png", "x": 352, "y": 32, "width": 32, "height": 32},
-      "right": {"file": "castle_tileset_part1.png", "x": 384, "y": 32, "width": 32, "height": 32},
-      "bottom_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 64, "width": 32, "height": 32},
-      "bottom": {"file": "castle_tileset_part1.png", "x": 352, "y": 64, "width": 32, "height": 32},
-      "bottom_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 64, "width": 32, "height": 32},
-      "isolated": {"file": "castle_tileset_part1.png", "x": 320, "y": 0, "width": 32, "height": 32},
-      "inner_corner_top_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 0, "width": 32, "height": 32},
-      "inner_corner_top_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 0, "width": 32, "height": 32},
-      "inner_corner_bottom_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 64, "width": 32, "height": 32},
-      "inner_corner_bottom_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 64, "width": 32, "height": 32},
-      "background": {"file": "castle_tileset_part1.png", "x": 320, "y": 64, "width": 32, "height": 32}
+      "top_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 192,
+        "width": 16,
+        "height": 16
+      },
+      "top": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 192,
+        "width": 16,
+        "height": 16
+      },
+      "top_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 192,
+        "width": 16,
+        "height": 16
+      },
+      "left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "center": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "bottom": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "isolated": {
+        "file": "castle_tileset_part1.png",
+        "x": 96,
+        "y": 192,
+        "width": 16,
+        "height": 16
+      },
+      "standable_rim": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 192,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tr": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_bl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_br": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 208,
+        "width": 16,
+        "height": 16
+      }
     },
     "frosted_keep": {
-      "top_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 768, "width": 32, "height": 32},
-      "top": {"file": "castle_tileset_part1.png", "x": 352, "y": 768, "width": 32, "height": 32},
-      "top_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 768, "width": 32, "height": 32},
-      "left": {"file": "castle_tileset_part1.png", "x": 320, "y": 800, "width": 32, "height": 32},
-      "center": {"file": "castle_tileset_part1.png", "x": 352, "y": 800, "width": 32, "height": 32},
-      "right": {"file": "castle_tileset_part1.png", "x": 384, "y": 800, "width": 32, "height": 32},
-      "bottom_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 832, "width": 32, "height": 32},
-      "bottom": {"file": "castle_tileset_part1.png", "x": 352, "y": 832, "width": 32, "height": 32},
-      "bottom_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 832, "width": 32, "height": 32},
-      "isolated": {"file": "castle_tileset_part1.png", "x": 320, "y": 768, "width": 32, "height": 32},
-      "inner_corner_top_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 768, "width": 32, "height": 32},
-      "inner_corner_top_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 768, "width": 32, "height": 32},
-      "inner_corner_bottom_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 832, "width": 32, "height": 32},
-      "inner_corner_bottom_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 832, "width": 32, "height": 32},
-      "background": {"file": "castle_tileset_part1.png", "x": 320, "y": 832, "width": 32, "height": 32}
+      "top_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 960,
+        "width": 16,
+        "height": 16
+      },
+      "top": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 960,
+        "width": 16,
+        "height": 16
+      },
+      "top_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 960,
+        "width": 16,
+        "height": 16
+      },
+      "left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "center": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "bottom": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "isolated": {
+        "file": "castle_tileset_part1.png",
+        "x": 96,
+        "y": 960,
+        "width": 16,
+        "height": 16
+      },
+      "standable_rim": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 960,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tr": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_bl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_br": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 976,
+        "width": 16,
+        "height": 16
+      }
     },
     "crown_spire": {
-      "top_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 1152, "width": 32, "height": 32},
-      "top": {"file": "castle_tileset_part1.png", "x": 352, "y": 1152, "width": 32, "height": 32},
-      "top_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 1152, "width": 32, "height": 32},
-      "left": {"file": "castle_tileset_part1.png", "x": 320, "y": 1184, "width": 32, "height": 32},
-      "center": {"file": "castle_tileset_part1.png", "x": 352, "y": 1184, "width": 32, "height": 32},
-      "right": {"file": "castle_tileset_part1.png", "x": 384, "y": 1184, "width": 32, "height": 32},
-      "bottom_left": {"file": "castle_tileset_part1.png", "x": 320, "y": 1216, "width": 32, "height": 32},
-      "bottom": {"file": "castle_tileset_part1.png", "x": 352, "y": 1216, "width": 32, "height": 32},
-      "bottom_right": {"file": "castle_tileset_part1.png", "x": 384, "y": 1216, "width": 32, "height": 32},
-      "isolated": {"file": "castle_tileset_part1.png", "x": 320, "y": 1152, "width": 32, "height": 32},
-      "inner_corner_top_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 1152, "width": 32, "height": 32},
-      "inner_corner_top_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 1152, "width": 32, "height": 32},
-      "inner_corner_bottom_left": {"file": "castle_tileset_part1.png", "x": 416, "y": 1216, "width": 32, "height": 32},
-      "inner_corner_bottom_right": {"file": "castle_tileset_part1.png", "x": 480, "y": 1216, "width": 32, "height": 32},
-      "background": {"file": "castle_tileset_part1.png", "x": 320, "y": 1216, "width": 32, "height": 32}
+      "top_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 1152,
+        "width": 16,
+        "height": 16
+      },
+      "top": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 1152,
+        "width": 16,
+        "height": 16
+      },
+      "top_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 1152,
+        "width": 16,
+        "height": 16
+      },
+      "left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "center": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_left": {
+        "file": "castle_tileset_part1.png",
+        "x": 16,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "bottom": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "bottom_right": {
+        "file": "castle_tileset_part1.png",
+        "x": 64,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "isolated": {
+        "file": "castle_tileset_part1.png",
+        "x": 96,
+        "y": 1152,
+        "width": 16,
+        "height": 16
+      },
+      "standable_rim": {
+        "file": "castle_tileset_part1.png",
+        "x": 32,
+        "y": 1152,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_tr": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_bl": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      },
+      "inner_corner_br": {
+        "file": "castle_tileset_part1.png",
+        "x": 48,
+        "y": 1168,
+        "width": 16,
+        "height": 16
+      }
     }
-  },
-  "props": {
-    "banner": {"file": "castle_tileset_part3.png", "x": 32, "y": 192, "width": 64, "height": 64},
-    "window": {"file": "castle_tileset_part3.png", "x": 0, "y": 0, "width": 32, "height": 96},
-    "torch": {"file": "castle_tileset_part3.png", "x": 32, "y": 0, "width": 32, "height": 32},
-    "door": {"file": "castle_tileset_part3.png", "x": 96, "y": 32, "width": 96, "height": 128},
-    "crown": {"file": "castle_tileset_part2.png", "x": 0, "y": 0, "width": 32, "height": 32}
   },
   "player": {
     "idle": {
-      "fps": 3,
+      "fps": 4,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png", "x": 0, "y": 0, "width": 16, "height": 16},
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png", "x": 16, "y": 0, "width": 16, "height": 16}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png",
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        },
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png",
+          "x": 16,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        }
       ]
     },
     "walk": {
-      "fps": 8,
+      "fps": 10,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png", "x": 0, "y": 0, "width": 16, "height": 16},
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png", "x": 16, "y": 0, "width": 16, "height": 16},
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png", "x": 32, "y": 0, "width": 16, "height": 16},
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png", "x": 48, "y": 0, "width": 16, "height": 16}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png",
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        },
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png",
+          "x": 16,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        },
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png",
+          "x": 32,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        },
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightWalk.png",
+          "x": 48,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        }
       ]
     },
     "charge": {
-      "fps": 3,
+      "fps": 1,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png", "x": 0, "y": 0, "width": 16, "height": 16, "derive": "charge_squash"}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightIdle.png",
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 16,
+          "derive": "charge_squash"
+        }
       ]
     },
     "rise": {
-      "fps": 6,
+      "fps": 1,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightJumpFall.png", "x": 0, "y": 0, "width": 16, "height": 16}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightJumpFall.png",
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        }
       ]
     },
     "fall": {
-      "fps": 6,
+      "fps": 1,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightJumpFall.png", "x": 16, "y": 0, "width": 16, "height": 16}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightJumpFall.png",
+          "x": 16,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        }
       ]
     },
     "reset": {
-      "fps": 10,
+      "fps": 1,
       "frames": [
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightDash.png", "x": 0, "y": 0, "width": 16, "height": 16},
-        {"file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightDash.png", "x": 16, "y": 0, "width": 16, "height": 16}
+        {
+          "file": "extracted/gloomy/Gloomy Knight Asset Pack/knight/knightDash.png",
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 16
+        }
       ]
     }
   },
+  "props": {
+    "banner": {
+      "file": "castle_tileset_part3.png",
+      "x": 19,
+      "y": 198,
+      "width": 90,
+      "height": 41
+    },
+    "window": {
+      "file": "castle_tileset_part3.png",
+      "x": 3,
+      "y": 6,
+      "width": 26,
+      "height": 58
+    },
+    "torch": {
+      "file": "castle_tileset_part3.png",
+      "x": 40,
+      "y": 0,
+      "width": 16,
+      "height": 16
+    },
+    "door": {
+      "file": "castle_tileset_part3.png",
+      "x": 261,
+      "y": 32,
+      "width": 86,
+      "height": 128
+    },
+    "crown": {
+      "file": "castle_tileset_part2.png",
+      "x": 40,
+      "y": 644,
+      "width": 16,
+      "height": 16
+    }
+  },
   "ui": {
-    "panel": {"file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png", "x": 160, "y": 0, "width": 16, "height": 16},
-    "button": {"file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png", "x": 48, "y": 0, "width": 16, "height": 16},
-    "button_pressed": {"file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png", "x": 64, "y": 0, "width": 16, "height": 16},
-    "keycap": {"file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png", "x": 128, "y": 0, "width": 16, "height": 16}
+    "panel": {
+      "file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png",
+      "x": 160,
+      "y": 0,
+      "width": 16,
+      "height": 16
+    },
+    "button": {
+      "file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png",
+      "x": 192,
+      "y": 0,
+      "width": 16,
+      "height": 16
+    },
+    "button_pressed": {
+      "file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png",
+      "x": 192,
+      "y": 16,
+      "width": 16,
+      "height": 16
+    },
+    "keycap": {
+      "file": "extracted/kenney-ui/Tilesheets/Small tiles/Thin outline/tilemap_packed.png",
+      "x": 112,
+      "y": 80,
+      "width": 16,
+      "height": 16
+    }
   }
 }

@@ -1,23 +1,23 @@
 # JumpCastle
 
 JumpCastle is a vertical charge-jumping platformer built with C++20 and
-[raylib](https://www.raylib.com/). Climb a twelve-room castle across three visual biomes, activate
-checkpoints, avoid spikes, and reach the crown. Every committed room is verified by a headless
-solver running the same production physics as the game.
+[raylib](https://www.raylib.com/). Climb one continuous 18-screen castle across three visual
+biomes using committed, no-air-control jumps. The full route is verified by a headless solver
+running the same production physics as the game.
 
 Created and maintained by [Thien Phu](https://github.com/thienphuprogrammer)
 (`@thienphuprogrammer`).
 
 ## Campaign
 
-- 12 hand-authored rooms in three four-room regions: garden, clockworks, and royal castle.
-- Checkpoints in rooms 1, 5, and 9 become the next respawn position.
-- Spike contact respawns the King and increments the death counter.
-- The exit in room 12 completes the run and shows elapsed time and deaths.
-- Press Enter on the completion screen to restart the full campaign.
+- 18 fixed-camera screens in one uninterrupted 32 by 324 tile world.
+- Three six-screen regions: Castle Courtyard, Frosted Keep, and Crown Spire.
+- Missing a landing can drop the knight through every previous screen; there are no checkpoints.
+- Reaching the goal on screen 18 completes the run and shows elapsed time and falls.
+- Press Enter on the completion screen to restart the full climb.
 
-The level solver accepts only routes below 85% charge and replays each jump with timing and launch
-position perturbations. See [Level Design](docs/LEVEL_DESIGN.md) for the format and guarantees.
+The level solver accepts only routes below 86% charge and replays the resulting JSON trace through
+production physics. See [Level Design](docs/LEVEL_DESIGN.md) for the format and guarantees.
 
 ## Controls
 
@@ -75,8 +75,9 @@ cmake --build build/cmake --config Release --parallel
 .\build\cmake\Release\jumpcastle.exe
 ```
 
-CMake copies only `assets/generated/` and `assets/levels/` beside the executable, so the game can
-run directly from its output directory without source archives or asset tooling.
+The always-run `jumpcastle_assets` CMake target synchronizes `assets/generated/` and
+`assets/levels/` beside the executable. Deleted runtime images are restored even when the C++
+executable does not need relinking.
 
 ## Development and Verification
 
@@ -90,9 +91,9 @@ cmake --build build/cmake --parallel
 ctest --test-dir build/cmake --output-on-failure
 ```
 
-The suite covers parsing, collision, charge physics, spikes, checkpoints, completion, asset
-integrity, every room's tolerant route, and the full campaign. Run the solver directly for a
-human-readable route or a JSON trace:
+The suite covers parsing, collision, committed-jump physics, continuous falls, completion, asset
+integrity, fixed camera bands, and the full campaign. Run the solver directly for a human-readable
+route or a JSON trace:
 
 ```bash
 ./build/cmake/jumpcastle_level_solver \
@@ -111,9 +112,11 @@ python3 -m venv out/assets-venv
 out/assets-venv/bin/pip install -r tools/requirements-assets.txt
 out/assets-venv/bin/python tools/build_assets.py \
   --downloads assets/sources/downloads \
+  --selection assets/source-selection.json \
   --output assets/generated \
   --manifest assets/generated/manifest.json
 python3 tools/verify_assets.py assets/generated/manifest.json
+out/assets-venv/bin/python tools/verify_asset_pixels.py assets/generated/manifest.json
 ```
 
 ## Art Sources
@@ -121,12 +124,12 @@ python3 tools/verify_assets.py assets/generated/manifest.json
 All third-party art is CC0 1.0 and may be remixed or used commercially without attribution. Source
 metadata and the legal text are stored under `assets/sources/`.
 
-- [Pixel Adventure by Pixel Frog](https://pixelfrog-assets.itch.io/pixel-adventure-1)
-- [Pixel Platformer by Kenney](https://kenney.nl/assets/pixel-platformer)
-- [Kings and Pigs by Pixel Frog](https://pixelfrog-assets.itch.io/kings-and-pigs)
+- [Pixel Art Castle Tileset by rubberduck](https://opengameart.org/content/pixel-art-castle-tileset)
+- [Gloomy Knight by loveOS](https://loveosstudio.itch.io/gloomy-knight-16x16)
+- [UI Pack - Pixel Adventure by Kenney](https://kenney.nl/assets/ui-pack-pixel-adventure)
 
-The playable King is the King Human animation set from Kings and Pigs. Attribution above is kept as
-project documentation even though CC0 does not require it.
+The playable character is the Gloomy Knight. These credits document the actual third-party art;
+JumpCastle game and source-code authorship belongs to Thien Phu (`@thienphuprogrammer`).
 
 ## Project Structure
 
@@ -134,7 +137,7 @@ project documentation even though CC0 does not require it.
 .
 ├── assets/
 │   ├── generated/                # Deterministic runtime atlases and manifest
-│   ├── levels/                   # Twelve strict 16x12 room files
+│   ├── levels/                   # Continuous 18-screen campaign and legacy room archive
 │   └── sources/                  # CC0 provenance; downloaded ZIPs are ignored
 ├── include/jumpcastle/           # Public C++ module interfaces
 ├── src/                          # Core simulation, solver, rendering, and game loop
@@ -143,10 +146,10 @@ project documentation even though CC0 does not require it.
 └── CMakeLists.txt
 ```
 
-`jumpcastle_core` contains the level repository, campaign state, collision, player simulation,
-asset catalog, and reachability solver. The `jumpcastle` executable adds raylib resource ownership,
-rendering, input, and the game loop. Both the playable game and solver call the same
-`simulate_step` function.
+`jumpcastle_core` contains world parsing, campaign state, collision, committed-jump simulation,
+asset catalog, replay, and reachability solver. The `jumpcastle` executable adds raylib resource
+ownership, rendering, input, and the fixed-step game loop. Both the playable game and solver call
+the same production physics functions.
 
 ## License
 

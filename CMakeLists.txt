@@ -129,10 +129,24 @@ if(JUMPCASTLE_BUILD_TESTS)
             ${PROJECT_SOURCE_DIR}/tools/verify_assets.py
             ${PROJECT_SOURCE_DIR}/assets/generated/manifest.json
   )
+  add_test(
+    NAME asset_selection
+    COMMAND ${Python3_EXECUTABLE} -m pytest
+            ${PROJECT_SOURCE_DIR}/tests/test_asset_selection.py -q
+  )
+  set_tests_properties(asset_selection PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
+  add_test(
+    NAME asset_pixels
+    COMMAND ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tools/verify_asset_pixels.py
+            ${PROJECT_SOURCE_DIR}/assets/generated/manifest.json
+  )
 endif()
 
-add_custom_command(
-  TARGET jumpcastle POST_BUILD
+add_custom_target(
+  jumpcastle_assets ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory
           $<TARGET_FILE_DIR:jumpcastle>/assets
   COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -141,7 +155,10 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy_directory
           ${PROJECT_SOURCE_DIR}/assets/levels
           $<TARGET_FILE_DIR:jumpcastle>/assets/levels
+  COMMENT "Synchronizing JumpCastle runtime assets"
+  VERBATIM
 )
+add_dependencies(jumpcastle jumpcastle_assets)
 
 install(TARGETS jumpcastle RUNTIME DESTINATION bin)
 install(DIRECTORY assets/generated/ DESTINATION bin/assets/generated)

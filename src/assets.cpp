@@ -121,18 +121,19 @@ std::filesystem::path parse_atlas_path(
 
 BiomeAssets parse_biome(
     const Json& atlas,
+    const Json& biome,
     const std::filesystem::path& directory,
     const std::string& label) {
     const int width = positive_integer(
         required(atlas, "width", label), label + ".width");
     const int height = positive_integer(
         required(atlas, "height", label), label + ".height");
-    const Json& regions = required(atlas, "regions", label);
+    const Json& regions = required(biome, "regions", label);
     return {
         parse_atlas_path(atlas, directory, label),
         width,
         height,
-        parse_terrain(required(atlas, "terrain_grid", label), width, height,
+        parse_terrain(required(biome, "terrain_grid", label), width, height,
                       label + ".terrain_grid"),
         parse_region(required(regions, "spike", label + ".regions"),
                      width, height, label + ".regions.spike"),
@@ -151,8 +152,8 @@ AnimationClip parse_animation(
     const int atlas_height,
     const std::string& label) {
     const Json& atlas = required(value, "atlas", label);
-    if (!atlas.is_string() || atlas.get<std::string>() != "player") {
-        throw std::runtime_error(label + " must reference the player atlas");
+    if (!atlas.is_string() || atlas.get<std::string>() != "knight") {
+        throw std::runtime_error(label + " must reference the knight atlas");
     }
     AnimationClip clip;
     clip.fps = positive_integer(required(value, "fps", label), label + ".fps");
@@ -196,31 +197,37 @@ AssetCatalog AssetCatalog::load(const std::filesystem::path& manifest_path) {
         }
         Json manifest;
         input >> manifest;
-        if (required(manifest, "schema_version", "manifest") != 1) {
+        if (required(manifest, "schema_version", "manifest") != 2) {
             throw std::runtime_error("unsupported manifest schema");
         }
 
         const Json& atlases = required(manifest, "atlases", "manifest");
         require_exact_keys(
             atlases,
-            {"pixel_adventure", "kenney", "kings_and_pigs", "player"},
+            {"castle", "knight", "ui"},
             "manifest.atlases");
 
         const auto directory = manifest_path.parent_path();
         AssetCatalog catalog;
+        const Json& castle = atlases.at("castle");
+        const Json& biomes = required(castle, "biomes", "atlas.castle");
+        require_exact_keys(
+            biomes,
+            {"courtyard", "frosted_keep", "crown_spire"},
+            "atlas.castle.biomes");
         catalog.biomes_[biome_index(Biome::pixel_adventure)] = parse_biome(
-            atlases.at("pixel_adventure"), directory, "atlas.pixel_adventure");
+            castle, biomes.at("courtyard"), directory, "atlas.castle.courtyard");
         catalog.biomes_[biome_index(Biome::kenney)] = parse_biome(
-            atlases.at("kenney"), directory, "atlas.kenney");
+            castle, biomes.at("frosted_keep"), directory, "atlas.castle.frosted_keep");
         catalog.biomes_[biome_index(Biome::kings_and_pigs)] = parse_biome(
-            atlases.at("kings_and_pigs"), directory, "atlas.kings_and_pigs");
+            castle, biomes.at("crown_spire"), directory, "atlas.castle.crown_spire");
 
-        const Json& player = atlases.at("player");
+        const Json& player = atlases.at("knight");
         const int player_width = positive_integer(
-            required(player, "width", "atlas.player"), "atlas.player.width");
+            required(player, "width", "atlas.knight"), "atlas.knight.width");
         const int player_height = positive_integer(
-            required(player, "height", "atlas.player"), "atlas.player.height");
-        catalog.player_atlas_ = parse_atlas_path(player, directory, "atlas.player");
+            required(player, "height", "atlas.knight"), "atlas.knight.height");
+        catalog.player_atlas_ = parse_atlas_path(player, directory, "atlas.knight");
 
         const Json& animations = required(manifest, "animations", "manifest");
         require_exact_keys(
