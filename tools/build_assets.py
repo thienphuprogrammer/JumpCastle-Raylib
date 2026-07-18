@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 from pathlib import Path, PurePosixPath
+import re
 import zipfile
 
 from PIL import Image
@@ -39,6 +40,13 @@ SOURCES = (
         "creator": "Pixel Frog",
         "url": "https://pixelfrog-assets.itch.io/kings-and-pigs",
         "archive": "Kings and Pigs.zip",
+        "license": "CC0-1.0",
+    },
+    {
+        "id": "gothicvania_hero",
+        "creator": "Luis Zuno aka Ansimuz",
+        "url": "https://ansimuz.itch.io/gothicvania-swamp",
+        "archive": "Gothicvania Swamp files.zip",
         "license": "CC0-1.0",
     },
 )
@@ -229,8 +237,40 @@ def kings_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
     )
 
 
-KING_FRAME = (78, 58)
 STABLE_STATES = frozenset({"idle", "run", "charge", "rise", "fall"})
+
+# Map the six game animation states to the Gothicvania hero's source folders,
+# whose frames are stored as individual numbered PNG files.
+HERO_STATE_FOLDERS = (
+    ("idle", "idle"),
+    ("run", "run"),
+    ("charge", "crouch"),
+    ("rise", "jump"),
+    ("fall", "fall"),
+    ("respawn", "hurt"),
+)
+
+
+def hero_state_frames(archive: zipfile.ZipFile, folder: str) -> list[Image.Image]:
+    """Load a hero animation's individual frame PNGs from its folder, ordered by
+    the trailing frame number (so run2 precedes run10)."""
+    pattern = re.compile(rf"Sprites/Player/{re.escape(folder)}/[^/]+\.png$")
+    members = [
+        name for name in archive.namelist()
+        if pattern.search(name) and "__MACOSX" not in name
+    ]
+    if not members:
+        raise RuntimeError(f"no frames for hero state folder {folder!r}")
+
+    def frame_number(name: str) -> int:
+        match = re.search(r"(\d+)\.png$", name)
+        return int(match.group(1)) if match else 0
+
+    members.sort(key=frame_number)
+    return [
+        Image.open(io.BytesIO(archive.read(name))).convert("RGBA")
+        for name in members
+    ]
 
 
 def union_box(
@@ -282,25 +322,11 @@ def king_player_atlas(
     archive: zipfile.ZipFile,
     output: Path,
 ) -> tuple[dict[str, object], dict[str, object]]:
-    states = (
-        ("idle", "Idle (78x58).png"),
-        ("run", "Run (78x58).png"),
-        ("charge", "Ground (78x58).png"),
-        ("rise", "Jump (78x58).png"),
-        ("fall", "Fall (78x58).png"),
-        ("respawn", "Dead (78x58).png"),
-    )
-    frame_width, frame_height = KING_FRAME
-    raw: list[tuple[str, list[Image.Image]]] = []
-    for state, filename in states:
-        sheet = open_rgba(archive, f"Sprites/01-King Human/{filename}")
-        if sheet.height != frame_height or sheet.width % frame_width != 0:
-            raise RuntimeError(f"unexpected King animation dimensions for {filename}")
-        frames = [
-            sheet.crop((x, 0, x + frame_width, frame_height))
-            for x in range(0, sheet.width, frame_width)
-        ]
-        raw.append((state, frames))
+    raw: list[tuple[str, list[Image.Image]]] = [
+        (state, hero_state_frames(archive, folder))
+        for state, folder in HERO_STATE_FOLDERS
+    ]
+    frame_width = raw[0][1][0].width
 
     state_boxes = {state: union_box(frames) for state, frames in raw}
     if any(box is None for box in state_boxes.values()):
@@ -372,7 +398,7 @@ def build(downloads: Path, output: Path, manifest_path: Path) -> None:
                 archives["kings_and_pigs"], output),
         }
         player, animations = king_player_atlas(
-            archives["kings_and_pigs"], output)
+            archives["gothicvania_hero"], output)
         atlases["player"] = player
     finally:
         for archive in archives.values():

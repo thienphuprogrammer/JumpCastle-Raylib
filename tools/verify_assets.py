@@ -15,6 +15,7 @@ APPROVED_SOURCES = {
     "pixel_adventure": "https://pixelfrog-assets.itch.io/pixel-adventure-1",
     "kenney": "https://kenney.nl/assets/pixel-platformer",
     "kings_and_pigs": "https://pixelfrog-assets.itch.io/kings-and-pigs",
+    "gothicvania_hero": "https://ansimuz.itch.io/gothicvania-swamp",
 }
 EXPECTED_ATLASES = {"pixel_adventure", "kenney", "kings_and_pigs", "player"}
 EXPECTED_ANIMATIONS = {"idle", "run", "charge", "rise", "fall", "respawn"}
