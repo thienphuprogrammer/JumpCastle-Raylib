@@ -119,10 +119,15 @@ grid resolver (`src/collision.cpp` `resolve_world_x` / `resolve_tilemap_collisio
 through the same `wall_bounce_restitution` (using `std::abs(velocity.x)` as the
 impact speed), so there is exactly one bounce formula in the codebase.
 
-**Blast-radius decision (during implementation):** if `src/collision.cpp` /
-the `WorldMap` grid path is confirmed reachable only from tests (not gameplay,
-solver, or replay), prefer **deleting** the grid bounce path and its tests over
-unifying it. The chosen outcome is recorded back into this spec.
+**Blast-radius decision — RESOLVED: unify, do not delete.** The grid path is
+still compiled and test-covered: `resolve_world_collision` is called from
+`src/player.cpp:171` and `resolve_tilemap_collision` from `src/simulation.cpp:62`
+(the `WorldMap` `step_player`/`simulate_step` stack), with dedicated coverage in
+`tests/collision_test.cpp`. Deleting it would cascade through `player.cpp`,
+`simulation.cpp`, and three test files — too invasive for a "low-risk cleanup".
+So both resolvers route through the shared `wall_bounce_restitution` (grid path
+uses `std::abs(velocity.x)` as the impact speed) and the divergent
+`horizontal_bounce` constant is removed.
 
 ### Docs reconciliation
 
@@ -195,4 +200,6 @@ four bounce constants (never the level) and re-solve until it certifies.
 ## Open items resolved during implementation
 
 - Exact final values of the four bounce constants (tuned via re-solve).
-- Whether the legacy grid bounce path is unified or deleted (blast-radius check).
+- Legacy grid bounce path: **RESOLVED — unified** (see "One bounce path"); the
+  grid stack is compiled/test-covered so it is kept and routed through the
+  shared restitution function rather than deleted.
