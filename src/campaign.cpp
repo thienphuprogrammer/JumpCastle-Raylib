@@ -17,6 +17,7 @@ void reset_player(PlayerState& player, const Vec2 position) noexcept {
 
 void respawn_player(CampaignState& campaign, PlayerState& player) noexcept {
     reset_player(player, campaign.respawn_position);
+    ++campaign.falls;
     ++campaign.deaths;
 }
 
@@ -25,6 +26,7 @@ void restart_campaign(
     const Vec2 spawn,
     const std::size_t room) noexcept {
     campaign = CampaignState{};
+    campaign.spawn = spawn;
     campaign.respawn_position = spawn;
     campaign.checkpoint_room = room;
 }

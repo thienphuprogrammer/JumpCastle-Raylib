@@ -12,4 +12,10 @@ namespace jumpcastle {
     PlayerInput input,
     float delta) noexcept;
 
+[[nodiscard]] CampaignEvent step_world(
+    PlayerState& player,
+    CampaignState& campaign,
+    const WorldMap& world,
+    PlayerInput input) noexcept;
+
 }  // namespace jumpcastle

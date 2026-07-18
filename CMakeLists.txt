@@ -34,6 +34,7 @@ FetchContent_MakeAvailable(nlohmann_json)
 add_library(
   jumpcastle_core STATIC
   src/assets.cpp
+  src/camera.cpp
   src/campaign.cpp
   src/collision.cpp
   src/level.cpp
@@ -90,6 +91,7 @@ if(JUMPCASTLE_BUILD_TESTS)
 
   add_executable(
     jumpcastle_tests
+    tests/camera_test.cpp
     tests/collision_test.cpp
     tests/campaign_test.cpp
     tests/campaign_reachability_test.cpp

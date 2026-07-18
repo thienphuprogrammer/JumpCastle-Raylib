@@ -8,16 +8,21 @@ namespace jumpcastle {
 
 enum class CampaignEvent {
     none,
+    fell_below_world,
     checkpoint_activated,
     respawned,
     completed,
 };
 
 struct CampaignState {
+    Vec2 spawn{};
+    int falls{};
+
+    // Legacy room-campaign compatibility. Removed with the room runtime.
     Vec2 respawn_position{};
     std::size_t checkpoint_room{};
     int deaths{};
-    float elapsed_seconds{};
+    double elapsed_seconds{};
     bool complete{};
 };
 
