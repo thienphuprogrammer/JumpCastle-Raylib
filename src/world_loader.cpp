@@ -76,18 +76,18 @@ int parse_integer(
     return value;
 }
 
-Biome parse_biome(
+WorldBiome parse_biome(
     const std::string_view token,
     const std::string_view filename,
     const std::size_t line) {
     if (token == "courtyard") {
-        return Biome::courtyard;
+        return WorldBiome::courtyard;
     }
     if (token == "frosted_keep") {
-        return Biome::frosted_keep;
+        return WorldBiome::frosted_keep;
     }
     if (token == "crown_spire") {
-        return Biome::crown_spire;
+        return WorldBiome::crown_spire;
     }
     parse_error(filename, line, 1, "unknown biome '" + std::string{token} + "'");
 }

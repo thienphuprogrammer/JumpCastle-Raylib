@@ -8,15 +8,17 @@ namespace jumpcastle {
 Vec2 charged_jump_velocity(
     const float hold_time,
     const float horizontal_input) noexcept {
-    const float jump_scale = std::clamp(hold_time * 2.6F, 1.1F, 2.0F) / 2.0F;
-    const float horizontal_strength = 0.75F - jump_scale * 0.5F;
+    const float raw_charge = std::clamp(
+        (hold_time - config::minimum_charge_seconds) /
+            (config::maximum_charge_seconds - config::minimum_charge_seconds),
+        0.0F,
+        1.0F);
+    const float charge = raw_charge * raw_charge * (3.0F - 2.0F * raw_charge);
     const float direction = std::clamp(horizontal_input, -1.0F, 1.0F);
-    const Vec2 jump_direction = normalized({
-        direction * horizontal_strength,
-        -1.0F,
-    });
-
-    return jump_direction * (jump_scale * config::jump_strength);
+    return {
+        direction * (4.5F + charge * 3.5F),
+        -config::jump_strength * (0.55F + charge * 0.45F),
+    };
 }
 
 void simulate_ground_movement(
@@ -30,7 +32,10 @@ void simulate_ground_movement(
     }
 
     if (input.jump_down) {
-        player.jump_hold_time += delta;
+        player.jump_hold_time = std::min(
+            player.jump_hold_time + delta,
+            config::maximum_charge_seconds);
+        player.mode = PlayerMode::charging;
         return;
     }
 
@@ -74,14 +79,91 @@ void update_player(
         {0.1F, 0.05F});
 
     if (player.on_ground) {
+        player.mode = player.jump_hold_time > 0.0F
+            ? PlayerMode::charging
+            : PlayerMode::grounded;
         player.velocity.x = 0.0F;
         simulate_ground_movement(player, input, delta);
     } else {
+        player.mode = PlayerMode::airborne;
         player.jump_hold_time = 0.0F;
     }
 
     player.animation_time += delta;
     integrate_player(player, delta);
+}
+
+void step_player(
+    PlayerState& player,
+    const WorldMap& world,
+    const PlayerInput input,
+    const float fixed_delta) noexcept {
+    player.animation_time += fixed_delta;
+
+    if (player.mode == PlayerMode::grounded) {
+        player.on_ground = true;
+        player.velocity = {};
+        if (input.jump_down) {
+            player.mode = PlayerMode::charging;
+            player.jump_hold_time = std::min(
+                fixed_delta,
+                config::maximum_charge_seconds);
+        } else {
+            const float direction =
+                (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
+            player.velocity.x = direction * config::movement_acceleration * fixed_delta;
+            if (direction != 0.0F) {
+                player.facing_right = direction > 0.0F;
+            }
+        }
+    } else if (player.mode == PlayerMode::charging) {
+        player.on_ground = true;
+        player.velocity = {};
+        if (input.right != input.left) {
+            player.facing_right = input.right;
+        }
+        if (input.jump_down) {
+            player.jump_hold_time = std::min(
+                player.jump_hold_time + fixed_delta,
+                config::maximum_charge_seconds);
+            return;
+        }
+        if (input.jump_released) {
+            const float direction =
+                (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
+            player.velocity = charged_jump_velocity(player.jump_hold_time, direction);
+            player.jump_hold_time = 0.0F;
+            player.mode = PlayerMode::airborne;
+            player.on_ground = false;
+        } else {
+            return;
+        }
+    } else {
+        player.on_ground = false;
+        player.jump_hold_time = 0.0F;
+        player.velocity.y += config::gravity * fixed_delta;
+    }
+
+    const float speed = length(player.velocity);
+    if (speed > config::maximum_speed) {
+        player.velocity = normalized(player.velocity) * config::maximum_speed;
+    }
+    const Vec2 previous_position = player.position;
+    player.position = player.position + player.velocity * fixed_delta;
+    resolve_world_collision(world, previous_position, player);
+
+    if (player.mode != PlayerMode::charging) {
+        const bool supported = collides_with_world(
+            world,
+            {player.position.x,
+             player.position.y + config::player_half_size.y + 0.10F},
+            {config::player_half_size.x, 0.02F});
+        if (supported && player.velocity.y >= 0.0F) {
+            player.mode = PlayerMode::grounded;
+            player.on_ground = true;
+            player.velocity.y = 0.0F;
+        }
+    }
 }
 
 }  // namespace jumpcastle

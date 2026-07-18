@@ -63,7 +63,7 @@ namespace jumpcastle::test {
         10,
         {4.5F, 8.5F},
         {8.5F, 8.5F},
-        {{1, 1, Biome::courtyard}});
+        {{1, 1, WorldBiome::courtyard}});
 }
 
 [[nodiscard]] inline WorldMap world_with_ceiling() {
@@ -83,7 +83,7 @@ namespace jumpcastle::test {
         10,
         {4.5F, 8.5F},
         {8.5F, 8.5F},
-        {{1, 1, Biome::courtyard}});
+        {{1, 1, WorldBiome::courtyard}});
 }
 
 [[nodiscard]] inline WorldMap three_screen_world() {
@@ -124,9 +124,9 @@ namespace jumpcastle::test {
         {2.5F, 28.5F},
         {7.5F, 0.5F},
         {
-            {1, 1, Biome::courtyard},
-            {2, 2, Biome::frosted_keep},
-            {3, 3, Biome::crown_spire},
+            {1, 1, WorldBiome::courtyard},
+            {2, 2, WorldBiome::frosted_keep},
+            {3, 3, WorldBiome::crown_spire},
         });
 }
 
@@ -172,9 +172,9 @@ namespace jumpcastle::test {
         {2.5F, 28.5F},
         {7.5F, 0.5F},
         {
-            {1, 1, Biome::courtyard},
-            {2, 2, Biome::frosted_keep},
-            {3, 3, Biome::crown_spire},
+            {1, 1, WorldBiome::courtyard},
+            {2, 2, WorldBiome::frosted_keep},
+            {3, 3, WorldBiome::crown_spire},
         });
 }
 

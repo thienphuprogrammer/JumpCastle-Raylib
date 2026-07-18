@@ -4,6 +4,12 @@
 
 namespace jumpcastle {
 
+enum class PlayerMode {
+    airborne,
+    grounded,
+    charging,
+};
+
 struct PlayerInput {
     bool left{};
     bool right{};
@@ -18,6 +24,7 @@ struct PlayerState {
     Vec2 velocity{};
     float jump_hold_time{};
     float animation_time{};
+    PlayerMode mode{PlayerMode::airborne};
     bool on_ground{};
     bool facing_right{true};
 };
@@ -39,5 +46,11 @@ void update_player(
     float tilemap_offset_y,
     PlayerInput input,
     float delta) noexcept;
+
+void step_player(
+    PlayerState& player,
+    const WorldMap& world,
+    PlayerInput input,
+    float fixed_delta) noexcept;
 
 }  // namespace jumpcastle

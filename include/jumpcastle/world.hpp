@@ -13,7 +13,7 @@ enum class WorldTile : char {
     solid = '#',
 };
 
-enum class Biome {
+enum class WorldBiome {
     courtyard,
     frosted_keep,
     crown_spire,
@@ -22,7 +22,7 @@ enum class Biome {
 struct BiomeRange {
     int first_screen{};
     int last_screen{};
-    Biome biome{Biome::courtyard};
+    WorldBiome biome{WorldBiome::courtyard};
 };
 
 class WorldMap {
@@ -47,7 +47,7 @@ public:
     [[nodiscard]] Vec2 spawn() const noexcept;
     [[nodiscard]] Vec2 goal() const noexcept;
     [[nodiscard]] int screen_for_y(float world_y) const noexcept;
-    [[nodiscard]] Biome biome_for_screen(int zero_based_screen) const;
+    [[nodiscard]] WorldBiome biome_for_screen(int zero_based_screen) const;
 
 private:
     int width_{};

@@ -106,7 +106,7 @@ int WorldMap::screen_for_y(const float world_y) const noexcept {
     return screen_count() - band_from_top - 1;
 }
 
-Biome WorldMap::biome_for_screen(const int zero_based_screen) const {
+WorldBiome WorldMap::biome_for_screen(const int zero_based_screen) const {
     if (zero_based_screen < 0 || zero_based_screen >= screen_count()) {
         throw std::out_of_range("screen is outside the world");
     }

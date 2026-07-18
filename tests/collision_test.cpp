@@ -1,5 +1,8 @@
 #include "jumpcastle/collision.hpp"
 
+#include "jumpcastle/player.hpp"
+#include "test_world_factory.hpp"
+
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -68,4 +71,18 @@ TEST_CASE("collision query distinguishes solid and empty regions") {
 
     CHECK(collides_with_tilemap(map, 0.0F, {4.5F, 5.8F}, config::player_half_size));
     CHECK_FALSE(collides_with_tilemap(map, 0.0F, {4.5F, 2.0F}, config::player_half_size));
+}
+
+TEST_CASE("swept world collision cannot tunnel through one tile ceiling") {
+    const WorldMap world = test::world_with_ceiling();
+    PlayerState player{
+        .position = {4.5F, 3.6F},
+        .velocity = {0.0F, -600.0F},
+        .mode = PlayerMode::airborne,
+    };
+
+    resolve_world_collision(world, {4.5F, 8.6F}, player);
+
+    CHECK(player.position.y == Catch::Approx(6.0F + config::player_half_size.y));
+    CHECK(player.velocity.y == 0.0F);
 }

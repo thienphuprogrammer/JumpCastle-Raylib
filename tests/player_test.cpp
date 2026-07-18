@@ -1,5 +1,7 @@
 #include "jumpcastle/player.hpp"
 
+#include "test_world_factory.hpp"
+
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -69,4 +71,39 @@ TEST_CASE("position integration is stable across equivalent frame splits") {
 
     CHECK(one_step.position.x == Approx(two_steps.position.x));
     CHECK(one_step.position.y == Approx(two_steps.position.y));
+}
+
+TEST_CASE("release commits jump and airborne input cannot steer") {
+    const WorldMap world = test::flat_world();
+    PlayerState player{
+        .position = {4.5F, 8.5F},
+        .mode = PlayerMode::grounded,
+        .on_ground = true,
+    };
+
+    for (int tick = 0; tick < 60; ++tick) {
+        step_player(
+            player,
+            world,
+            PlayerInput{.right = true, .jump_down = true},
+            config::fixed_delta);
+    }
+    REQUIRE(player.mode == PlayerMode::charging);
+
+    step_player(
+        player,
+        world,
+        PlayerInput{.right = true, .jump_released = true},
+        config::fixed_delta);
+    const float committed_x = player.velocity.x;
+    REQUIRE(committed_x > 0.0F);
+
+    step_player(
+        player,
+        world,
+        PlayerInput{.left = true},
+        config::fixed_delta);
+
+    CHECK(player.mode == PlayerMode::airborne);
+    CHECK(player.velocity.x == Approx(committed_x));
 }

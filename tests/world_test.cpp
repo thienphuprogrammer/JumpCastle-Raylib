@@ -32,7 +32,7 @@ biome 3 3 crown_spire
     CHECK(world.screen_count() == 3);
     CHECK(world.spawn() == Vec2{1.5F, 4.5F});
     CHECK(world.goal() == Vec2{2.5F, 1.5F});
-    CHECK(world.biome_for_screen(0) == Biome::courtyard);
+    CHECK(world.biome_for_screen(0) == WorldBiome::courtyard);
     CHECK(world.screen_for_y(4.5F) == 0);
 }
 
