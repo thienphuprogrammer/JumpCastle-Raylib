@@ -41,6 +41,8 @@ add_library(
   src/simulation.cpp
   src/solver.cpp
   src/tilemap.cpp
+  src/world.cpp
+  src/world_loader.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
@@ -101,6 +103,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/simulation_test.cpp
     tests/solver_test.cpp
     tests/tilemap_test.cpp
+    tests/world_test.cpp
   )
   target_link_libraries(
     jumpcastle_tests PRIVATE jumpcastle_core raylib Catch2::Catch2WithMain
