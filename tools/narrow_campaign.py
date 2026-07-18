@@ -34,7 +34,6 @@ ROUTE_X = (
     (1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 13, 19),
 )
 
-
 @dataclass(frozen=True, order=True)
 class SolidRect:
     x: int
@@ -59,6 +58,28 @@ class Chamber:
         return len(self.route) - 1
 
 
+COURTYARD = (
+    ("Training Ascent", "training_ascent", (SolidRect(20, 34, 7),)),
+    (
+        "Long-Gap Court",
+        "long_gap",
+        (SolidRect(22, 25, 5), SolidRect(0, 16, 4)),
+    ),
+    ("Rebound Alley", "wall_rebound", (SolidRect(25, 10, 2, 16),)),
+    ("Low-Ceiling Hall", "low_ceiling", (SolidRect(12, 22, 6, 2),)),
+    ("Central Tower", "central_tower", (SolidRect(12, 24, 4, 8),)),
+    (
+        "Gatehouse Exam",
+        "gatehouse_exam",
+        (
+            SolidRect(0, 9, 1, 12),
+            SolidRect(25, 18, 2, 12),
+            SolidRect(6, 31, 6, 2),
+        ),
+    ),
+)
+
+
 def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
     route = tuple(
         SolidRect(
@@ -70,11 +91,13 @@ def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
         )
         for x, y in zip(route_x, ROUTE_Y, strict=True)
     )
-    return Chamber(
-        name=f"Tower Chamber {screen:02d}",
-        mechanic="tower_spine",
-        route=route,
-    )
+    if screen <= len(COURTYARD):
+        name, mechanic, obstacles = COURTYARD[screen - 1]
+    else:
+        name = f"Tower Chamber {screen:02d}"
+        mechanic = "tower_spine"
+        obstacles = ()
+    return Chamber(name=name, mechanic=mechanic, route=route, obstacles=obstacles)
 
 
 CHAMBERS = tuple(
