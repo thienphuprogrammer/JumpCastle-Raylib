@@ -134,6 +134,39 @@ TEST_CASE("release commits jump and airborne input cannot steer") {
     CHECK(player.velocity.x == Approx(committed_x));
 }
 
+TEST_CASE("grounded player falls when it walks off a platform edge") {
+    // Platform occupies row 2 cols 0-3; col 4 (and everything below) is a void.
+    const WorldMap world = parse_campaign(R"(version 2
+tile_size 16
+size 5 4
+screen_height 4
+spawn 0 1
+goal 3 1
+biome 1 1 courtyard
+---
+[collision]
+.....
+.....
+####.
+.....
+)", "edge.level");
+
+    PlayerState player{
+        .position = {3.5F, 1.6F},  // grounded on the platform's right-most tile
+        .mode = PlayerMode::grounded,
+        .on_ground = true,
+    };
+
+    for (int tick = 0; tick < 120; ++tick) {
+        step_player(player, world, PlayerInput{.right = true}, config::fixed_delta);
+    }
+
+    // Walking off the edge must drop the player instead of freezing it in the
+    // air still in grounded mode.
+    CHECK_FALSE(player.on_ground);
+    CHECK(player.position.y > 2.5F);
+}
+
 TEST_CASE("airborne player does not land before touching a platform") {
     const WorldMap world = test::flat_world();
     PlayerState player{

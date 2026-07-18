@@ -180,6 +180,11 @@ void step_player(
             player.mode = PlayerMode::grounded;
             player.on_ground = true;
             player.velocity.y = 0.0F;
+        } else {
+            // No ground beneath the feet (walked off an edge): drop to airborne
+            // so gravity applies next tick instead of freezing mid-air.
+            player.mode = PlayerMode::airborne;
+            player.on_ground = false;
         }
     }
 }
