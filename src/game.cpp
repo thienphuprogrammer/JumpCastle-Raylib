@@ -1,6 +1,7 @@
 #include "jumpcastle/game.hpp"
 
 #include "jumpcastle/asset_root.hpp"
+#include "jumpcastle/presentation.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -12,13 +13,20 @@ namespace jumpcastle {
 Game::Game(std::optional<std::filesystem::path> override_root) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(
-        config::view_width * 3,
-        config::view_height * 3,
+        config::view_width,
+        config::view_height,
         "JumpCastle - Thien Phu (@thienphuprogrammer)");
 
     if (!IsWindowReady()) {
         throw std::runtime_error("Unable to initialize the game window");
     }
+
+    const int monitor = GetCurrentMonitor();
+    const int window_scale = preferred_window_scale(
+        GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+    SetWindowSize(
+        config::view_width * window_scale,
+        config::view_height * window_scale);
 
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);

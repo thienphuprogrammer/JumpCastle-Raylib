@@ -1,6 +1,7 @@
 #include "jumpcastle/renderer.hpp"
 
 #include "jumpcastle/player_view.hpp"
+#include "jumpcastle/presentation.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -339,18 +340,15 @@ void Renderer::draw(
 
     const float window_width = static_cast<float>(GetScreenWidth());
     const float window_height = static_cast<float>(GetScreenHeight());
-    const float scale = std::max(
-        1.0F,
-        std::floor(std::min(
-            window_width / static_cast<float>(config::view_width),
-            window_height / static_cast<float>(config::view_height))));
+    const PresentationLayout layout = fit_presentation(
+        static_cast<int>(window_width), static_cast<int>(window_height));
     const ::Vector2 size{
-        scale * static_cast<float>(config::view_width),
-        scale * static_cast<float>(config::view_height),
+        layout.width,
+        layout.height,
     };
     const ::Vector2 offset{
-        (window_width - size.x) * 0.5F,
-        (window_height - size.y) * 0.5F,
+        layout.offset_x,
+        layout.offset_y,
     };
 
     const Texture2D& target_texture = pixelart_target_.get().texture;
@@ -364,7 +362,7 @@ void Renderer::draw(
         WHITE);
 
     if (debug_enabled) {
-        draw_debug_overlay(world, camera, player, campaign, scale, offset);
+        draw_debug_overlay(world, camera, player, campaign, layout.scale, offset);
     }
 
     EndDrawing();

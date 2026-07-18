@@ -40,6 +40,7 @@ add_library(
   src/collision.cpp
   src/level.cpp
   src/player.cpp
+  src/presentation.cpp
   src/replay.cpp
   src/simulation.cpp
   src/solver.cpp
@@ -103,6 +104,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/math_test.cpp
     tests/player_test.cpp
     tests/player_view_test.cpp
+    tests/presentation_test.cpp
     tests/resource_traits_test.cpp
     tests/replay_test.cpp
     tests/simulation_test.cpp

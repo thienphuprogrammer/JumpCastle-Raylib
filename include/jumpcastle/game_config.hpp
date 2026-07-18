@@ -7,8 +7,8 @@ namespace jumpcastle::config {
 inline constexpr int tilemap_width = 16;
 inline constexpr int tilemap_height = 12;
 inline constexpr int tile_pixels = 16;
-inline constexpr int viewport_tiles_width = 32;
-inline constexpr int viewport_tiles_height = 18;
+inline constexpr int viewport_tiles_width = 28;
+inline constexpr int viewport_tiles_height = 36;
 inline constexpr int view_width = viewport_tiles_width * tile_pixels;
 inline constexpr int view_height = viewport_tiles_height * tile_pixels;
 inline constexpr Vec2 player_half_size{0.3F, 0.4F};
