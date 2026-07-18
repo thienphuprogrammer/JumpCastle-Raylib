@@ -4,7 +4,7 @@
 Dependency-independent proof (Pillow only, no GPU/raylib) that the manifest
 regions and campaign collision produce a distinct, non-empty scene for each
 biome. Writes courtyard.png, frosted-keep.png and crown-spire.png at the exact
-512x288 logical resolution used by the runtime renderer.
+logical resolution declared by the runtime campaign.
 """
 
 from __future__ import annotations
@@ -16,10 +16,6 @@ from pathlib import Path
 from PIL import Image
 
 TILE = 16
-SCREEN_TILES_W = 32
-SCREEN_TILES_H = 18
-VIEW_W = SCREEN_TILES_W * TILE  # 512
-VIEW_H = SCREEN_TILES_H * TILE  # 288
 
 # One representative screen (1-indexed from the bottom) per biome band.
 BIOME_SCREENS = {
@@ -30,7 +26,7 @@ BIOME_SCREENS = {
 
 
 def alpha_coverage(image: Image.Image) -> float:
-    pixels = image.convert("RGBA").getdata()
+    pixels = image.convert("RGBA").get_flattened_data()
     opaque = sum(1 for pixel in pixels if pixel[3] > 0)
     return opaque / (image.width * image.height)
 
@@ -41,7 +37,7 @@ def _region(atlas: Image.Image, region: dict) -> Image.Image:
          region["x"] + region["width"], region["y"] + region["height"]))
 
 
-def _load_collision(campaign_path: Path) -> tuple[list[str], int, int]:
+def _load_collision(campaign_path: Path) -> tuple[list[str], int, int, int]:
     lines = campaign_path.read_text(encoding="utf-8").splitlines()
     width = height = screen_height = 0
     for line in lines:
@@ -52,7 +48,7 @@ def _load_collision(campaign_path: Path) -> tuple[list[str], int, int]:
             screen_height = int(fields[1])
     grid_start = lines.index("[collision]") + 1
     grid = lines[grid_start:grid_start + height]
-    return grid, screen_height, height
+    return grid, width, screen_height, height
 
 
 def _terrain_tile(castle: Image.Image, grid: dict, col: int, row: int) -> Image.Image:
@@ -69,7 +65,9 @@ def render_asset_smoke(manifest_path: Path, campaign_path: Path, output: Path) -
     idle = manifest["animations"]["idle"]["frames"][0]
     hero = _region(knight, idle)
 
-    grid_rows, screen_height, total_height = _load_collision(campaign_path)
+    grid_rows, screen_width, screen_height, total_height = _load_collision(campaign_path)
+    view_width = screen_width * TILE
+    view_height = screen_height * TILE
     output.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
 
@@ -80,22 +78,22 @@ def render_asset_smoke(manifest_path: Path, campaign_path: Path, output: Path) -
         top_tile = _terrain_tile(castle, grid, 3, 0)
         fill_tile = _terrain_tile(castle, grid, 3, 2)
 
-        scene = Image.new("RGBA", (VIEW_W, VIEW_H), (0, 0, 0, 255))
-        for ty in range(SCREEN_TILES_H):
-            for tx in range(SCREEN_TILES_W):
+        scene = Image.new("RGBA", (view_width, view_height), (0, 0, 0, 255))
+        for ty in range(screen_height):
+            for tx in range(screen_width):
                 scene.alpha_composite(background, (tx * TILE, ty * TILE))
 
         first_row = total_height - screen_number * screen_height
-        for local_y in range(SCREEN_TILES_H):
+        for local_y in range(screen_height):
             row = grid_rows[first_row + local_y]
-            for tx in range(min(SCREEN_TILES_W, len(row))):
+            for tx in range(min(screen_width, len(row))):
                 if row[tx] != "#":
                     continue
                 above_empty = local_y == 0 or grid_rows[first_row + local_y - 1][tx] != "#"
                 tile = top_tile if above_empty else fill_tile
                 scene.alpha_composite(tile, (tx * TILE, local_y * TILE))
 
-        scene.alpha_composite(hero, (VIEW_W // 2 - TILE // 2, VIEW_H // 2))
+        scene.alpha_composite(hero, (view_width // 2 - TILE // 2, view_height // 2))
 
         destination = output / filename
         scene.convert("RGB").save(destination)

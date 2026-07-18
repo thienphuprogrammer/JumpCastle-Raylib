@@ -19,9 +19,9 @@ def test_three_biome_screens_are_nonempty_and_distinct(tmp_path):
     signatures = []
     for name in NAMES:
         image = Image.open(tmp_path / name).convert("RGBA")
-        assert image.size == (512, 288)
+        assert image.size == (448, 576)
         assert alpha_coverage(image) > 0.5
-        assert len(image.getcolors(maxcolors=512 * 288)) > 8
+        assert len(image.getcolors(maxcolors=448 * 576)) > 8
         signatures.append(image.tobytes())
 
     # Every biome must render a visibly different scene from the others.
