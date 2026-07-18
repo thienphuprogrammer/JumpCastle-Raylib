@@ -79,6 +79,13 @@ The always-run `jumpcastle_assets` CMake target synchronizes `assets/generated/`
 `assets/levels/` beside the executable. Deleted runtime images are restored even when the C++
 executable does not need relinking.
 
+At startup the game searches for a valid asset root — a directory containing both
+`generated/manifest.json` and `levels/campaign.level` — in this order: an explicit override, the
+`assets/` directory beside the executable, then the installed data root. Point it at any tree with
+`--asset-root PATH` (or `--asset-root=PATH`); the `JUMPCASTLE_ASSET_ROOT` environment variable is
+used when the flag is absent. If no valid root is found, startup fails with every searched path
+listed.
+
 ## Development and Verification
 
 Tests are enabled by default when JumpCastle is configured as the top-level project:
