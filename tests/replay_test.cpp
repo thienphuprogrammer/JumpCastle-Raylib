@@ -9,8 +9,7 @@
 using namespace jumpcastle;
 
 TEST_CASE("solver trace replays through production physics") {
-    const CampaignWorld world =
-        CampaignWorld::from_world_map(test::reachable_three_screen_world());
+    const CampaignWorld world = test::reachable_three_screen_world();
     const SolverResult solved = ReachabilitySolver{world}.solve_campaign();
     REQUIRE(solved.reachable);
 
@@ -32,8 +31,7 @@ TEST_CASE("trace parser rejects a different fixed step") {
 
 TEST_CASE("committed narrow tower trace parses and its opening replays") {
     const auto root = std::filesystem::path{JUMPCASTLE_SOURCE_DIR};
-    const CampaignWorld world = CampaignWorld::from_world_map(
-        WorldMap::load(root / "assets/levels/campaign.level"));
+    const CampaignWorld world = CampaignWorld::load(root / "assets/levels/screens");
     const SolverTrace trace = read_trace(root / "assets/levels/campaign-route.json");
 
     // The committed trace is a full crown route: one recorded jump per certified

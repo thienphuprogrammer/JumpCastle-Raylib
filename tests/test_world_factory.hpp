@@ -1,6 +1,8 @@
 #pragma once
 
-#include "jumpcastle/world.hpp"
+#include "jumpcastle/campaign_world.hpp"
+#include "jumpcastle/convex.hpp"
+#include "jumpcastle/map_format.hpp"
 
 #include <stdexcept>
 #include <string_view>
@@ -9,133 +11,83 @@
 
 namespace jumpcastle::test {
 
-[[nodiscard]] inline WorldMap make_world(
+// Builds a polygon CampaignWorld straight from ASCII rows ('#' solid, '.' empty),
+// merging horizontal runs of solids per row into rectangle colliders. Biome is
+// not exercised by the solver/replay tests, so every screen is courtyard.
+[[nodiscard]] inline CampaignWorld make_world(
     const std::vector<std::string_view>& rows,
     const int screen_height,
     const Vec2 spawn,
-    const Vec2 goal,
-    std::vector<BiomeRange> biomes) {
+    const Vec2 goal) {
     if (rows.empty() || rows.front().empty()) {
         throw std::invalid_argument("test world rows cannot be empty");
     }
     const int width = static_cast<int>(rows.front().size());
-    std::vector<WorldTile> tiles;
-    tiles.reserve(rows.size() * rows.front().size());
-    for (const std::string_view row : rows) {
-        if (static_cast<int>(row.size()) != width) {
-            throw std::invalid_argument("test world rows must have equal width");
-        }
-        for (const char token : row) {
-            if (token == '.') {
-                tiles.push_back(WorldTile::empty);
-            } else if (token == '#') {
-                tiles.push_back(WorldTile::solid);
-            } else {
-                throw std::invalid_argument("test world contains an unknown token");
+    const int total_height = static_cast<int>(rows.size());
+    const int screen_count = total_height / screen_height;
+
+    std::vector<ScreenMap> screens;
+    screens.reserve(static_cast<std::size_t>(screen_count));
+    for (int s = 0; s < screen_count; ++s) {
+        ScreenMap screen;
+        screen.index = s;
+        screen.width = static_cast<float>(width);
+        screen.height = static_cast<float>(screen_height);
+        screen.biome = "courtyard";
+        for (int ly = 0; ly < screen_height; ++ly) {
+            const std::string_view row =
+                rows[static_cast<std::size_t>(s * screen_height + ly)];
+            if (static_cast<int>(row.size()) != width) {
+                throw std::invalid_argument("test world rows must have equal width");
+            }
+            int x = 0;
+            while (x < width) {
+                if (row[static_cast<std::size_t>(x)] != '#') {
+                    ++x;
+                    continue;
+                }
+                int run = 1;
+                while (x + run < width && row[static_cast<std::size_t>(x + run)] == '#') {
+                    ++run;
+                }
+                const float fx = static_cast<float>(x);
+                const float fy = static_cast<float>(ly);
+                const float fw = static_cast<float>(run);
+                const std::vector<Vec2> points{
+                    {fx, fy}, {fx + fw, fy}, {fx + fw, fy + 1.0F}, {fx, fy + 1.0F}};
+                screen.polygons.push_back(
+                    {points, outward_edge_normals(points), polygon_aabb(points),
+                     ColliderType::solid});
+                x += run;
             }
         }
+        screens.push_back(std::move(screen));
     }
-    return WorldMap{
-        width,
-        static_cast<int>(rows.size()),
-        screen_height,
-        std::move(tiles),
-        spawn,
-        goal,
-        std::move(biomes),
+
+    const auto band_of = [&](const float y) {
+        int band = static_cast<int>(y) / screen_height;
+        if (band < 0) { band = 0; }
+        if (band > screen_count - 1) { band = screen_count - 1; }
+        return band;
     };
+    const int spawn_band = band_of(spawn.y);
+    const int goal_band = band_of(goal.y);
+    screens[static_cast<std::size_t>(spawn_band)].entities.push_back(
+        {EntityType::spawn,
+         {spawn.x, spawn.y - static_cast<float>(spawn_band * screen_height)}});
+    screens[static_cast<std::size_t>(goal_band)].entities.push_back(
+        {EntityType::goal,
+         {goal.x, goal.y - static_cast<float>(goal_band * screen_height)}});
+
+    CampaignWorld world = CampaignWorld::from_screens(screens, screen_height);
+    world.spawn = spawn;
+    world.goal = goal;
+    return world;
 }
 
-[[nodiscard]] inline WorldMap flat_world() {
-    return make_world(
-        {
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "##########",
-        },
-        10,
-        {4.5F, 8.5F},
-        {8.5F, 8.5F},
-        {{1, 1, WorldBiome::courtyard}});
-}
-
-[[nodiscard]] inline WorldMap world_with_ceiling() {
-    return make_world(
-        {
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "..........",
-            "##########",
-            "..........",
-            "..........",
-            "..........",
-            "##########",
-        },
-        10,
-        {4.5F, 8.5F},
-        {8.5F, 8.5F},
-        {{1, 1, WorldBiome::courtyard}});
-}
-
-[[nodiscard]] inline WorldMap three_screen_world() {
-    return make_world(
-        {
-            "..........",
-            "......###.",
-            "..........",
-            "..........",
-            "..........",
-            ".#####....",
-            "..........",
-            "..........",
-            "..........",
-            ".....####.",
-            "..........",
-            "..........",
-            "..........",
-            ".#####....",
-            "..........",
-            "..........",
-            "..........",
-            ".....####.",
-            "..........",
-            "..........",
-            "..........",
-            ".#####....",
-            "..........",
-            "..........",
-            "..........",
-            ".....####.",
-            "..........",
-            "..........",
-            "..........",
-            "##########",
-        },
-        10,
-        {2.5F, 28.5F},
-        {7.5F, 0.5F},
-        {
-            {1, 1, WorldBiome::courtyard},
-            {2, 2, WorldBiome::frosted_keep},
-            {3, 3, WorldBiome::crown_spire},
-        });
-}
-
-[[nodiscard]] inline WorldMap reachable_three_screen_world() {
-    // A side-by-side staircase (2-row rises, non-overlapping left/right
-    // platforms) authored for the polygon SAT solver. The platforms never
-    // overlap in x, so the player always hops across the seam onto a neighbour
-    // and never ascends directly under a ledge (which SAT rejects as an
-    // underside clip) — matching the small-hop style of the real campaign.
+[[nodiscard]] inline CampaignWorld reachable_three_screen_world() {
+    // Side-by-side staircase (2-row rises, non-overlapping left/right platforms)
+    // so the player always hops across the seam onto a neighbour.
     return make_world(
         {
             "..........",
@@ -171,15 +123,10 @@ namespace jumpcastle::test {
         },
         10,
         {2.5F, 28.5F},
-        {7.5F, 1.5F},
-        {
-            {1, 1, WorldBiome::courtyard},
-            {2, 2, WorldBiome::frosted_keep},
-            {3, 3, WorldBiome::crown_spire},
-        });
+        {7.5F, 1.5F});
 }
 
-[[nodiscard]] inline WorldMap unreachable_three_screen_world() {
+[[nodiscard]] inline CampaignWorld unreachable_three_screen_world() {
     return make_world(
         {
             "..........",
@@ -215,12 +162,7 @@ namespace jumpcastle::test {
         },
         10,
         {2.5F, 28.5F},
-        {7.5F, 0.5F},
-        {
-            {1, 1, WorldBiome::courtyard},
-            {2, 2, WorldBiome::frosted_keep},
-            {3, 3, WorldBiome::crown_spire},
-        });
+        {7.5F, 0.5F});
 }
 
 }  // namespace jumpcastle::test
