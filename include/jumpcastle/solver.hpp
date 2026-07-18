@@ -3,8 +3,8 @@
 #include "jumpcastle/simulation.hpp"
 
 #include <array>
-#include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace jumpcastle {
@@ -16,26 +16,27 @@ enum class JumpDirection {
 };
 
 struct SolverConfig {
-    int simulation_hz{60};
-    std::array<int, 9> charge_frames{8, 12, 16, 20, 24, 28, 32, 36, 39};
-    int maximum_air_frames{180};
+    std::array<int, 14> charge_ticks{
+        15, 21, 27, 33, 39, 45, 51, 57, 63, 69, 75, 81, 87, 93};
+    int maximum_air_ticks{480};
     float launch_sample_spacing{0.25F};
-    float state_quantization{0.1F};
+    float state_quantization{0.10F};
 };
 
 struct SolverJump {
     Vec2 start{};
     Vec2 landing{};
     JumpDirection direction{JumpDirection::neutral};
-    int charge_frames{};
-    std::size_t start_room{};
-    std::size_t landing_room{};
+    int charge_ticks{};
+    int start_screen{};
+    int landing_screen{};
 };
 
 struct SolverResult {
     bool reachable{};
     bool tolerance_passed{};
     float maximum_charge_ratio{};
+    int highest_screen{};
     std::vector<SolverJump> jumps;
     std::string failure;
 };
@@ -43,14 +44,13 @@ struct SolverResult {
 class ReachabilitySolver {
 public:
     explicit ReachabilitySolver(
-        const LevelRepository& level,
+        const WorldMap& world,
         SolverConfig config = {});
 
-    [[nodiscard]] SolverResult solve_room(std::size_t room_index) const;
     [[nodiscard]] SolverResult solve_campaign() const;
 
 private:
-    const LevelRepository& level_;
+    const WorldMap& world_;
     SolverConfig config_;
 };
 

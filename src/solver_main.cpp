@@ -1,41 +1,13 @@
 #include "jumpcastle/solver.hpp"
 
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <optional>
 #include <string>
 
 namespace {
 
 constexpr std::string_view usage =
-    "usage: jumpcastle_level_solver --levels DIR (--room N|--campaign) [--trace JSON]\n";
-
-[[nodiscard]] bool write_trace(
-    const std::filesystem::path& path,
-    const jumpcastle::SolverResult& result) {
-    std::ofstream output{path};
-    if (!output) {
-        std::cerr << "unable to write trace: " << path << '\n';
-        return false;
-    }
-
-    output << "{\n  \"reachable\": " << (result.reachable ? "true" : "false")
-           << ",\n  \"tolerance_passed\": " << (result.tolerance_passed ? "true" : "false")
-           << ",\n  \"maximum_charge_ratio\": " << result.maximum_charge_ratio
-           << ",\n  \"jumps\": [";
-    for (std::size_t index = 0; index < result.jumps.size(); ++index) {
-        const auto& jump = result.jumps[index];
-        output << (index == 0 ? "" : ",") << "\n    {\"start\": ["
-               << jump.start.x << ", " << jump.start.y << "], \"landing\": ["
-               << jump.landing.x << ", " << jump.landing.y << "], \"direction\": \""
-               << jumpcastle::to_string(jump.direction) << "\", \"charge_frames\": "
-               << jump.charge_frames << ", \"start_room\": " << jump.start_room + 1
-               << ", \"landing_room\": " << jump.landing_room + 1 << "}";
-    }
-    output << (result.jumps.empty() ? "" : "\n  ") << "]\n}\n";
-    return static_cast<bool>(output);
-}
+    "usage: jumpcastle_solver --level FILE --campaign\n";
 
 void print_result(const jumpcastle::SolverResult& result) {
     if (!result.reachable) {
@@ -43,31 +15,26 @@ void print_result(const jumpcastle::SolverResult& result) {
         return;
     }
     std::cout << "reachable: " << result.jumps.size() << " jumps, max charge "
-              << result.maximum_charge_ratio * 100.0F << "%\n";
+              << result.maximum_charge_ratio * 100.0F << "%, highest screen "
+              << result.highest_screen + 1 << '\n';
     for (const auto& jump : result.jumps) {
-        std::cout << "  room " << jump.start_room + 1 << ": "
+        std::cout << "  screen " << jump.start_screen + 1 << " -> "
+                  << jump.landing_screen + 1 << ": "
                   << jumpcastle::to_string(jump.direction) << ", "
-                  << jump.charge_frames << " charge frames\n";
+                  << jump.charge_ticks << " charge ticks\n";
     }
 }
 
 }  // namespace
 
 int main(int argc, char** argv) {
-    std::filesystem::path levels;
-    std::filesystem::path trace;
-    std::optional<std::size_t> room;
-    bool campaign = false;
+    std::filesystem::path level_path;
+    bool campaign{};
 
     for (int index = 1; index < argc; ++index) {
         const std::string argument = argv[index];
-        if (argument == "--levels" && index + 1 < argc) {
-            levels = argv[++index];
-        } else if (argument == "--room" && index + 1 < argc) {
-            room = static_cast<std::size_t>(std::stoul(argv[++index]));
-            if (*room > 0) --*room;
-        } else if (argument == "--trace" && index + 1 < argc) {
-            trace = argv[++index];
+        if (argument == "--level" && index + 1 < argc) {
+            level_path = argv[++index];
         } else if (argument == "--campaign") {
             campaign = true;
         } else {
@@ -76,20 +43,16 @@ int main(int argc, char** argv) {
         }
     }
 
-    if (levels.empty() || (campaign == room.has_value())) {
+    if (level_path.empty() || !campaign) {
         std::cerr << usage;
         return 2;
     }
 
     try {
-        const jumpcastle::LevelRepository level =
-            jumpcastle::LevelRepository::load(levels);
-        const jumpcastle::ReachabilitySolver solver{level};
-        const auto result = campaign ? solver.solve_campaign() : solver.solve_room(*room);
+        const jumpcastle::WorldMap world = jumpcastle::WorldMap::load(level_path);
+        const jumpcastle::SolverResult result =
+            jumpcastle::ReachabilitySolver{world}.solve_campaign();
         print_result(result);
-        if (!trace.empty() && !write_trace(trace, result)) {
-            return 2;
-        }
         return result.reachable ? 0 : 1;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';

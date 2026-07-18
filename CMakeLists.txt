@@ -68,9 +68,9 @@ endfunction()
 jumpcastle_enable_warnings(jumpcastle)
 jumpcastle_enable_warnings(jumpcastle_core)
 
-add_executable(jumpcastle_level_solver src/solver_main.cpp)
-target_link_libraries(jumpcastle_level_solver PRIVATE jumpcastle_core)
-jumpcastle_enable_warnings(jumpcastle_level_solver)
+add_executable(jumpcastle_solver src/solver_main.cpp)
+target_link_libraries(jumpcastle_solver PRIVATE jumpcastle_core)
+jumpcastle_enable_warnings(jumpcastle_solver)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(JUMPCASTLE_BUILD_TESTS_DEFAULT ON)
@@ -94,7 +94,6 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/camera_test.cpp
     tests/collision_test.cpp
     tests/campaign_test.cpp
-    tests/campaign_reachability_test.cpp
     tests/assets_test.cpp
     tests/assets_manifest_test.cpp
     tests/level_test.cpp
@@ -106,6 +105,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/solver_test.cpp
     tests/tilemap_test.cpp
     tests/world_test.cpp
+    tests/world_reachability_test.cpp
   )
   target_link_libraries(
     jumpcastle_tests PRIVATE jumpcastle_core raylib Catch2::Catch2WithMain
