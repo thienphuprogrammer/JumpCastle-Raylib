@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jumpcastle/assets.hpp"
+#include "jumpcastle/game_config.hpp"
 #include "jumpcastle/player.hpp"
 
 #include "raylib.h"

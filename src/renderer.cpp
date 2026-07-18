@@ -1,5 +1,6 @@
 #include "jumpcastle/renderer.hpp"
 
+#include "jumpcastle/game_config.hpp"
 #include "jumpcastle/player_view.hpp"
 #include "jumpcastle/presentation.hpp"
 

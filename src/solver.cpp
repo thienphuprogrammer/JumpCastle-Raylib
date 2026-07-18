@@ -1,5 +1,7 @@
 #include "jumpcastle/solver.hpp"
 
+#include "jumpcastle/game_config.hpp"
+
 #include <algorithm>
 #include <array>
 #include <cmath>

@@ -45,13 +45,11 @@ add_library(
   src/collision_world.cpp
   src/campaign_world.cpp
   src/editor.cpp
-  src/level.cpp
   src/player.cpp
   src/presentation.cpp
   src/replay.cpp
   src/simulation.cpp
   src/solver.cpp
-  src/tilemap.cpp
   src/world.cpp
   src/world_loader.cpp
 )
@@ -112,7 +110,6 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/asset_root_test.cpp
     tests/assets_test.cpp
     tests/assets_manifest_test.cpp
-    tests/level_test.cpp
     tests/math_test.cpp
     tests/player_test.cpp
     tests/player_view_test.cpp
@@ -121,7 +118,6 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/replay_test.cpp
     tests/simulation_test.cpp
     tests/solver_test.cpp
-    tests/tilemap_test.cpp
     tests/world_test.cpp
     tests/world_reachability_test.cpp
   )

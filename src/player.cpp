@@ -1,5 +1,7 @@
 #include "jumpcastle/player.hpp"
 
+#include "jumpcastle/game_config.hpp"
+
 #include <algorithm>
 #include <cmath>
 
@@ -63,34 +65,6 @@ void integrate_player(PlayerState& player, const float delta) noexcept {
     const Vec2 displacement = player.velocity * delta;
     player.position.x += displacement.x;
     player.position.y += displacement.y;
-}
-
-void update_player(
-    PlayerState& player,
-    const Tilemap& tilemap,
-    const float tilemap_offset_y,
-    const PlayerInput input,
-    const float delta) noexcept {
-    player.velocity.y += config::gravity * delta;
-    player.on_ground = collides_with_tilemap(
-        tilemap,
-        tilemap_offset_y,
-        {player.position.x, player.position.y + config::player_half_size.y},
-        {0.1F, 0.05F});
-
-    if (player.on_ground) {
-        player.mode = player.jump_hold_time > 0.0F
-            ? PlayerMode::charging
-            : PlayerMode::grounded;
-        player.velocity.x = 0.0F;
-        simulate_ground_movement(player, input, delta);
-    } else {
-        player.mode = PlayerMode::airborne;
-        player.jump_hold_time = 0.0F;
-    }
-
-    player.animation_time += delta;
-    integrate_player(player, delta);
 }
 
 namespace {

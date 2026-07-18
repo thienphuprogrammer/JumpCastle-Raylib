@@ -1,5 +1,6 @@
 #pragma once
 
+#include "jumpcastle/game_config.hpp"
 #include "jumpcastle/solver.hpp"
 
 #include <cstddef>

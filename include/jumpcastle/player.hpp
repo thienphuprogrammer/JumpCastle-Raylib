@@ -21,7 +21,7 @@ struct PlayerInput {
 };
 
 struct PlayerState {
-    Vec2 position{starting_player_position()};
+    Vec2 position{8.0F, -6.0F};
     Vec2 velocity{};
     float jump_hold_time{};
     float animation_time{};
@@ -40,13 +40,6 @@ void simulate_ground_movement(
     float delta) noexcept;
 
 void integrate_player(PlayerState& player, float delta) noexcept;
-
-void update_player(
-    PlayerState& player,
-    const Tilemap& tilemap,
-    float tilemap_offset_y,
-    PlayerInput input,
-    float delta) noexcept;
 
 void step_player(
     PlayerState& player,

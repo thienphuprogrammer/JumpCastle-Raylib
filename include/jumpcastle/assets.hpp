@@ -1,13 +1,17 @@
 #pragma once
 
-#include "jumpcastle/level.hpp"
-
 #include <array>
 #include <filesystem>
 #include <string_view>
 #include <vector>
 
 namespace jumpcastle {
+
+enum class Biome {
+    pixel_adventure,
+    kenney,
+    kings_and_pigs,
+};
 
 struct SpriteRegion {
     int x{};

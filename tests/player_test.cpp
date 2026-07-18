@@ -1,6 +1,7 @@
 #include "jumpcastle/player.hpp"
 
 #include "jumpcastle/convex.hpp"
+#include "jumpcastle/game_config.hpp"
 #include "test_world_factory.hpp"
 
 #include <catch2/catch_approx.hpp>
