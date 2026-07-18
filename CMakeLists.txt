@@ -95,6 +95,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/assets_manifest_test.cpp
     tests/level_test.cpp
     tests/player_test.cpp
+    tests/player_view_test.cpp
     tests/resource_traits_test.cpp
     tests/simulation_test.cpp
     tests/solver_test.cpp

@@ -1,5 +1,7 @@
 #include "jumpcastle/renderer.hpp"
 
+#include "jumpcastle/player_view.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -183,18 +185,6 @@ void draw_room(
     }
 }
 
-PlayerAnimation select_animation(
-    const PlayerState& player,
-    const float respawn_animation_time) noexcept {
-    if (respawn_animation_time > 0.0F) return PlayerAnimation::respawn;
-    if (player.on_ground) {
-        if (player.jump_hold_time > 0.001F) return PlayerAnimation::charge;
-        if (std::abs(player.velocity.x) > 0.01F) return PlayerAnimation::run;
-        return PlayerAnimation::idle;
-    }
-    return player.velocity.y < 0.0F ? PlayerAnimation::rise : PlayerAnimation::fall;
-}
-
 void draw_player(
     const PlayerState& player,
     const float screen_offset_y,
@@ -203,23 +193,12 @@ void draw_player(
     const Texture2D texture) {
     const PlayerAnimation state = select_animation(player, respawn_animation_time);
     const AnimationClip& clip = catalog.animation(state);
-    const auto frame = static_cast<std::size_t>(
-        std::floor(player.animation_time * static_cast<float>(clip.fps))) %
-        clip.frames.size();
-    const Vector2 screen_position{
-        player.position.x * static_cast<float>(config::tile_pixels),
-        (player.position.y - screen_offset_y) * static_cast<float>(config::tile_pixels),
-    };
-    constexpr float player_sprite_size = 32.0F;
+    const std::size_t frame = animation_frame_index(
+        player.animation_time, clip.fps, clip.frames.size());
     draw_region(
         texture,
         clip.frames[frame],
-        {
-            screen_position.x - player_sprite_size * 0.5F,
-            screen_position.y - player_sprite_size * 0.5F,
-            player_sprite_size,
-            player_sprite_size,
-        },
+        player_sprite_destination(player.position, screen_offset_y),
         WHITE,
         !player.facing_right);
 }

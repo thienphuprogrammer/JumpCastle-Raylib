@@ -229,6 +229,55 @@ def kings_atlas(archive: zipfile.ZipFile, output: Path) -> dict[str, object]:
     )
 
 
+KING_FRAME = (78, 58)
+STABLE_STATES = frozenset({"idle", "run", "charge", "rise", "fall"})
+
+
+def union_box(
+    frames: list[Image.Image],
+) -> tuple[int, int, int, int] | None:
+    """Return the smallest box covering the opaque content of every frame."""
+    box: tuple[int, int, int, int] | None = None
+    for frame in frames:
+        bounds = frame.getbbox()
+        if bounds is None:
+            continue
+        box = bounds if box is None else (
+            min(box[0], bounds[0]),
+            min(box[1], bounds[1]),
+            max(box[2], bounds[2]),
+            max(box[3], bounds[3]),
+        )
+    return box
+
+
+def register_king_frames(
+    frames: list[Image.Image],
+    box: tuple[int, int, int, int],
+) -> list[Image.Image]:
+    """Crop every frame to a shared content box, then scale and place it
+    bottom-centre inside a PLAYER_CELL square so all King states line up on one
+    anchor: horizontally centred, feet on the cell floor. This keeps the King a
+    constant size, prevents a horizontal jump when the sprite is flipped, and
+    lets the renderer align the sprite's feet to the player's feet."""
+    left, top, right, bottom = box
+    crop_width, crop_height = right - left, bottom - top
+    scale = min(PLAYER_CELL / crop_width, PLAYER_CELL / crop_height)
+    scaled_width = max(1, round(crop_width * scale))
+    scaled_height = max(1, round(crop_height * scale))
+    placed: list[Image.Image] = []
+    for frame in frames:
+        cropped = frame.crop(box).resize(
+            (scaled_width, scaled_height), Image.Resampling.NEAREST)
+        cell = Image.new("RGBA", (PLAYER_CELL, PLAYER_CELL))
+        cell.alpha_composite(
+            cropped,
+            ((PLAYER_CELL - scaled_width) // 2, PLAYER_CELL - scaled_height),
+        )
+        placed.append(cell)
+    return placed
+
+
 def king_player_atlas(
     archive: zipfile.ZipFile,
     output: Path,
@@ -241,16 +290,44 @@ def king_player_atlas(
         ("fall", "Fall (78x58).png"),
         ("respawn", "Dead (78x58).png"),
     )
-    sheets: list[tuple[str, list[Image.Image]]] = []
+    frame_width, frame_height = KING_FRAME
+    raw: list[tuple[str, list[Image.Image]]] = []
     for state, filename in states:
         sheet = open_rgba(archive, f"Sprites/01-King Human/{filename}")
-        if sheet.height != 58 or sheet.width % 78 != 0:
+        if sheet.height != frame_height or sheet.width % frame_width != 0:
             raise RuntimeError(f"unexpected King animation dimensions for {filename}")
         frames = [
-            fitted(sheet.crop((x, 0, x + 78, 58)), PLAYER_CELL)
-            for x in range(0, sheet.width, 78)
+            sheet.crop((x, 0, x + frame_width, frame_height))
+            for x in range(0, sheet.width, frame_width)
         ]
-        sheets.append((state, frames))
+        raw.append((state, frames))
+
+    state_boxes = {state: union_box(frames) for state, frames in raw}
+    if any(box is None for box in state_boxes.values()):
+        raise RuntimeError("a King animation has no opaque frames")
+    stable = [state_boxes[state] for state in STABLE_STATES]
+    horizontal_centre = (
+        min(box[0] for box in stable) + max(box[2] for box in stable)) / 2.0
+    every = list(state_boxes.values())
+    content_left = min(box[0] for box in every)
+    content_right = max(box[2] for box in every)
+    half_width = max(
+        horizontal_centre - content_left, content_right - horizontal_centre)
+    # Put the standing states' feet on the cell floor so the renderer can align
+    # the sprite's feet to the player's feet; the death slump may extend a hair
+    # lower and is clipped rather than lifting every pose off the ground.
+    standing_floor = max(state_boxes[state][3] for state in STABLE_STATES)
+    shared_box = (
+        max(0, round(horizontal_centre - half_width)),
+        min(box[1] for box in every),
+        min(frame_width, round(horizontal_centre + half_width)),
+        standing_floor,
+    )
+
+    sheets = [
+        (state, register_king_frames(frames, shared_box))
+        for state, frames in raw
+    ]
 
     width = max(len(frames) for _, frames in sheets) * PLAYER_CELL
     height = len(sheets) * PLAYER_CELL
