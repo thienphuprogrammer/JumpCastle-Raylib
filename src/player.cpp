@@ -152,7 +152,7 @@ void step_player(
     player.position = player.position + player.velocity * fixed_delta;
     resolve_world_collision(world, previous_position, player);
 
-    if (player.mode != PlayerMode::charging) {
+    if (player.mode == PlayerMode::grounded) {
         const bool supported = collides_with_world(
             world,
             {player.position.x,

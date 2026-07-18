@@ -107,3 +107,16 @@ TEST_CASE("release commits jump and airborne input cannot steer") {
     CHECK(player.mode == PlayerMode::airborne);
     CHECK(player.velocity.x == Approx(committed_x));
 }
+
+TEST_CASE("airborne player does not land before touching a platform") {
+    const WorldMap world = test::flat_world();
+    PlayerState player{
+        .position = {4.5F, 8.49F},
+        .mode = PlayerMode::airborne,
+    };
+
+    step_player(player, world, {}, config::fixed_delta);
+
+    CHECK(player.mode == PlayerMode::airborne);
+    CHECK_FALSE(player.on_ground);
+}

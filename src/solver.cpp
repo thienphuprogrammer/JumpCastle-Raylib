@@ -199,7 +199,10 @@ struct Transition {
         {0.0F, 0}, {0.0F, -2}, {0.0F, 2}, {-0.1F, 0}, {0.1F, 0},
     }};
     int passed = 0;
-    for (const auto [x_delta, tick_delta] : variants) {
+    bool negative_x_passed{};
+    bool positive_x_passed{};
+    for (std::size_t variant = 0; variant < variants.size(); ++variant) {
+        const auto [x_delta, tick_delta] = variants[variant];
         const auto result = simulate_jump(
             world,
             solver_config,
@@ -211,9 +214,11 @@ struct Transition {
             std::max(1, jump.charge_ticks + tick_delta));
         if (result && result->destination == destination) {
             ++passed;
+            negative_x_passed = negative_x_passed || variant == 3;
+            positive_x_passed = positive_x_passed || variant == 4;
         }
     }
-    return passed >= 3;
+    return passed >= 3 && negative_x_passed && positive_x_passed;
 }
 
 }  // namespace
