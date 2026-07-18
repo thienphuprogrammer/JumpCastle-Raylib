@@ -164,6 +164,14 @@ if(JUMPCASTLE_BUILD_TESTS)
   set_tests_properties(asset_render_smoke PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
+  add_test(
+    NAME narrow_campaign_authoring
+    COMMAND ${Python3_EXECUTABLE} -m pytest
+            ${PROJECT_SOURCE_DIR}/tests/test_narrow_campaign.py -q
+  )
+  set_tests_properties(narrow_campaign_authoring PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
 endif()
 
 set(JUMPCASTLE_RUNTIME_ASSETS
