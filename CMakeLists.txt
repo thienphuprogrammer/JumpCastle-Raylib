@@ -180,6 +180,7 @@ set(JUMPCASTLE_RUNTIME_ASSETS
   generated/ui.png
   generated/manifest.json
   levels/campaign.level
+  levels/campaign-route.json
 )
 
 add_custom_target(

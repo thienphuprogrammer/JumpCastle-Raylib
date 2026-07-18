@@ -1,0 +1,2814 @@
+{
+  "fixed_delta": 0.008333333767950535,
+  "jumps": [
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        643.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        1.600000023841858,
+        646.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        640.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        8.850000381469727,
+        643.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        637.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        1.5999999046325684,
+        640.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        634.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        8.850000381469727,
+        637.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        631.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        1.5999999046325684,
+        634.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        628.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        8.850000381469727,
+        631.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        625.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        1.5999999046325684,
+        628.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        622.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        7.600000381469727,
+        625.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        619.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        14.850000381469727,
+        622.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        616.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        7.600000381469727,
+        619.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        613.5999755859375
+      ],
+      "expected_screen": 0,
+      "launch": [
+        13.600000381469727,
+        616.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        610.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        20.849998474121094,
+        613.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        607.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        13.600000381469727,
+        610.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        604.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        20.849998474121094,
+        607.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        601.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        13.600000381469727,
+        604.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        598.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        20.849998474121094,
+        601.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        595.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        14.850000381469727,
+        598.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.356197357177734,
+        592.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        8.850000381469727,
+        595.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 39,
+      "direction": "left",
+      "expected_landing": [
+        2.4272756576538086,
+        591.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        5.100000381469727,
+        592.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 75,
+      "direction": "right",
+      "expected_landing": [
+        6.82542085647583,
+        589.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        1.600000023841858,
+        591.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        586.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        8.850000381469727,
+        589.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        583.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        1.5999999046325684,
+        586.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        580.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        7.600000381469727,
+        583.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        577.5999755859375
+      ],
+      "expected_screen": 1,
+      "launch": [
+        14.850000381469727,
+        580.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        574.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        8.850000381469727,
+        577.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        571.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        1.5999999046325684,
+        574.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        568.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        7.600000381469727,
+        571.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        565.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        14.850000381469727,
+        568.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        562.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        8.850000381469727,
+        565.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        559.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        1.5999999046325684,
+        562.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        556.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        7.600000381469727,
+        559.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        553.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        13.600000381469727,
+        556.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        550.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        20.849998474121094,
+        553.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        547.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        13.600000381469727,
+        550.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        544.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        20.849998474121094,
+        547.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        541.5999755859375
+      ],
+      "expected_screen": 2,
+      "launch": [
+        13.600000381469727,
+        544.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        538.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        20.849998474121094,
+        541.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        535.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        13.600000381469727,
+        538.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        532.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        20.849998474121094,
+        535.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        529.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        14.850000381469727,
+        532.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        526.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        8.850000381469727,
+        529.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        523.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        1.5999999046325684,
+        526.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        520.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        8.850000381469727,
+        523.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        517.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        1.5999999046325684,
+        520.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        514.5999755859375
+      ],
+      "expected_screen": 3,
+      "launch": [
+        8.850000381469727,
+        517.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        511.6000061035156
+      ],
+      "expected_screen": 3,
+      "launch": [
+        1.5999999046325684,
+        514.5999755859375
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        508.6000061035156
+      ],
+      "expected_screen": 3,
+      "launch": [
+        8.850000381469727,
+        511.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        505.6000061035156
+      ],
+      "expected_screen": 3,
+      "launch": [
+        1.5999999046325684,
+        508.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        502.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        8.850000381469727,
+        505.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        499.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        1.5999999046325684,
+        502.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        496.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        8.850000381469727,
+        499.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        493.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        1.5999999046325684,
+        496.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        490.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        7.600000381469727,
+        493.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        487.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        13.600000381469727,
+        490.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        484.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        20.849998474121094,
+        487.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        481.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        13.600000381469727,
+        484.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        478.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        20.849998474121094,
+        481.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        475.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        14.850000381469727,
+        478.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        472.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        8.850000381469727,
+        475.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        469.6000061035156
+      ],
+      "expected_screen": 4,
+      "launch": [
+        1.5999999046325684,
+        472.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        466.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        7.600000381469727,
+        469.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        463.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        13.600000381469727,
+        466.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        460.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        20.849998474121094,
+        463.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        457.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        14.850000381469727,
+        460.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        454.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        8.850000381469727,
+        457.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        451.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        1.5999999046325684,
+        454.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        448.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        7.600000381469727,
+        451.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        445.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        14.850000381469727,
+        448.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        442.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        8.850000381469727,
+        445.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        439.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        1.5999999046325684,
+        442.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        436.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        7.600000381469727,
+        439.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        433.6000061035156
+      ],
+      "expected_screen": 5,
+      "launch": [
+        13.600000381469727,
+        436.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        430.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        20.849998474121094,
+        433.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        427.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        14.850000381469727,
+        430.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        424.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        8.850000381469727,
+        427.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        421.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        1.5999999046325684,
+        424.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        418.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        7.600000381469727,
+        421.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        415.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        13.600000381469727,
+        418.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        412.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        20.849998474121094,
+        415.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        409.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        14.850000381469727,
+        412.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        406.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        8.850000381469727,
+        409.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        403.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        1.5999999046325684,
+        406.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        400.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        7.600000381469727,
+        403.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        397.6000061035156
+      ],
+      "expected_screen": 6,
+      "launch": [
+        13.600000381469727,
+        400.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        394.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        20.849998474121094,
+        397.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        391.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        14.850000381469727,
+        394.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        388.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        7.600000381469727,
+        391.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        385.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        13.600000381469727,
+        388.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        382.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        20.849998474121094,
+        385.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        379.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        13.600000381469727,
+        382.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        376.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        20.849998474121094,
+        379.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        373.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        13.600000381469727,
+        376.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        370.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        20.849998474121094,
+        373.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        367.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        13.600000381469727,
+        370.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        364.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        20.849998474121094,
+        367.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        361.6000061035156
+      ],
+      "expected_screen": 7,
+      "launch": [
+        14.850000381469727,
+        364.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        358.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        7.600000381469727,
+        361.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        355.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        14.850000381469727,
+        358.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        352.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        7.600000381469727,
+        355.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        349.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        13.600000381469727,
+        352.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        346.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        20.849998474121094,
+        349.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        343.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        14.850000381469727,
+        346.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        340.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        8.850000381469727,
+        343.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        337.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        1.5999999046325684,
+        340.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        334.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        8.850000381469727,
+        337.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        331.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        1.5999999046325684,
+        334.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        328.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        8.850000381469727,
+        331.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        325.6000061035156
+      ],
+      "expected_screen": 8,
+      "launch": [
+        1.5999999046325684,
+        328.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        322.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        7.600000381469727,
+        325.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        319.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        14.850000381469727,
+        322.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        316.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        7.600000381469727,
+        319.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        313.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        14.850000381469727,
+        316.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        310.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        7.600000381469727,
+        313.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        307.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        14.850000381469727,
+        310.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        304.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        8.850000381469727,
+        307.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        301.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        1.5999999046325684,
+        304.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        298.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        7.600000381469727,
+        301.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        295.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        13.600000381469727,
+        298.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        292.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        20.849998474121094,
+        295.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        289.6000061035156
+      ],
+      "expected_screen": 9,
+      "launch": [
+        14.850000381469727,
+        292.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        286.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        7.600000381469727,
+        289.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        283.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        14.850000381469727,
+        286.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        280.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        7.600000381469727,
+        283.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        277.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        13.600000381469727,
+        280.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        274.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        20.849998474121094,
+        277.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        271.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        14.850000381469727,
+        274.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        268.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        8.850000381469727,
+        271.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "right",
+      "expected_landing": [
+        6.72990608215332,
+        265.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        5.099999904632568,
+        268.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        262.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        7.600000381469727,
+        265.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        259.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        13.600000381469727,
+        262.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        256.6000061035156
+      ],
+      "expected_screen": 10,
+      "launch": [
+        20.849998474121094,
+        259.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        253.60000610351563
+      ],
+      "expected_screen": 10,
+      "launch": [
+        13.600000381469727,
+        256.6000061035156
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        250.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        20.849998474121094,
+        253.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        247.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        13.600000381469727,
+        250.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        244.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        20.849998474121094,
+        247.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        241.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        13.600000381469727,
+        244.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        238.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        20.849998474121094,
+        241.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        235.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        13.600000381469727,
+        238.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        232.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        20.849998474121094,
+        235.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        229.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        14.850000381469727,
+        232.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        226.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        7.600000381469727,
+        229.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        223.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        13.600000381469727,
+        226.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        220.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        20.849998474121094,
+        223.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        217.60000610351563
+      ],
+      "expected_screen": 11,
+      "launch": [
+        14.850000381469727,
+        220.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        214.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        8.850000381469727,
+        217.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        211.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        1.5999999046325684,
+        214.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        5.805774688720703,
+        208.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        8.850000381469727,
+        211.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 75,
+      "direction": "left",
+      "expected_landing": [
+        7.002769470214844,
+        205.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        5.350000381469727,
+        208.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        202.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        7.600000381469727,
+        205.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        199.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        13.600000381469727,
+        202.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        196.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        20.849998474121094,
+        199.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        193.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        13.600000381469727,
+        196.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        190.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        20.849998474121094,
+        193.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        187.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        14.850000381469727,
+        190.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        184.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        7.600000381469727,
+        187.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        181.60000610351563
+      ],
+      "expected_screen": 12,
+      "launch": [
+        14.850000381469727,
+        184.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        178.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        8.850000381469727,
+        181.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        175.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        1.5999999046325684,
+        178.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        172.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        7.600000381469727,
+        175.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        169.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        13.600000381469727,
+        172.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        166.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        20.849998474121094,
+        169.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        163.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        14.850000381469727,
+        166.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        160.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        7.600000381469727,
+        163.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        157.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        14.850000381469727,
+        160.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        154.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        7.600000381469727,
+        157.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        151.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        13.600000381469727,
+        154.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        148.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        20.849998474121094,
+        151.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        145.60000610351563
+      ],
+      "expected_screen": 13,
+      "launch": [
+        13.600000381469727,
+        148.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        142.60000610351563
+      ],
+      "expected_screen": 14,
+      "launch": [
+        20.849998474121094,
+        145.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        139.60000610351563
+      ],
+      "expected_screen": 14,
+      "launch": [
+        14.850000381469727,
+        142.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        136.60000610351563
+      ],
+      "expected_screen": 14,
+      "launch": [
+        7.600000381469727,
+        139.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        133.60000610351563
+      ],
+      "expected_screen": 14,
+      "launch": [
+        13.600000381469727,
+        136.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        130.60000610351563
+      ],
+      "expected_screen": 14,
+      "launch": [
+        20.849998474121094,
+        133.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        127.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        14.850000381469727,
+        130.60000610351563
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        124.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        8.850000381469727,
+        127.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        121.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        1.5999999046325684,
+        124.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        118.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        8.850000381469727,
+        121.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        115.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        1.5999999046325684,
+        118.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        112.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        7.600000381469727,
+        115.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        109.5999984741211
+      ],
+      "expected_screen": 14,
+      "launch": [
+        14.850000381469727,
+        112.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        106.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        7.600000381469727,
+        109.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        103.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        13.600000381469727,
+        106.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        100.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        20.849998474121094,
+        103.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        97.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        14.850000381469727,
+        100.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        94.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        8.850000381469727,
+        97.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        91.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        1.5999999046325684,
+        94.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        88.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        8.850000381469727,
+        91.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "right",
+      "expected_landing": [
+        6.72990608215332,
+        85.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        5.099999904632568,
+        88.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        82.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        7.600000381469727,
+        85.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        79.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        14.850000381469727,
+        82.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        76.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        7.600000381469727,
+        79.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        73.5999984741211
+      ],
+      "expected_screen": 15,
+      "launch": [
+        13.600000381469727,
+        76.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        70.5999984741211
+      ],
+      "expected_screen": 16,
+      "launch": [
+        20.849998474121094,
+        73.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        67.5999984741211
+      ],
+      "expected_screen": 16,
+      "launch": [
+        13.600000381469727,
+        70.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        64.5999984741211
+      ],
+      "expected_screen": 16,
+      "launch": [
+        20.849998474121094,
+        67.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        61.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        13.600000381469727,
+        64.5999984741211
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        58.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        20.849998474121094,
+        61.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        55.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        14.850000381469727,
+        58.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        52.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        7.600000381469727,
+        55.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        49.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        13.600000381469727,
+        52.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        16.166933059692383,
+        46.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        20.849998474121094,
+        49.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        10.166863441467285,
+        43.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        14.850000381469727,
+        46.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        40.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        8.850000381469727,
+        43.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        37.599998474121094
+      ],
+      "expected_screen": 16,
+      "launch": [
+        1.5999999046325684,
+        40.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        5.805774688720703,
+        34.599998474121094
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.850000381469727,
+        37.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 75,
+      "direction": "left",
+      "expected_landing": [
+        7.002769470214844,
+        31.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        5.350000381469727,
+        34.599998474121094
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        28.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.850000381469727,
+        31.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        25.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        1.5999999046325684,
+        28.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        22.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.850000381469727,
+        25.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        19.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        1.5999999046325684,
+        22.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        5.805774688720703,
+        16.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.850000381469727,
+        19.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 75,
+      "direction": "left",
+      "expected_landing": [
+        7.002769470214844,
+        13.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        5.350000381469727,
+        16.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 81,
+      "direction": "left",
+      "expected_landing": [
+        4.166863441467285,
+        10.600000381469727
+      ],
+      "expected_screen": 17,
+      "launch": [
+        8.850000381469727,
+        13.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        6.880307674407959,
+        7.599999904632568
+      ],
+      "expected_screen": 17,
+      "launch": [
+        1.5999999046325684,
+        10.600000381469727
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        12.880308151245117,
+        4.599999904632568
+      ],
+      "expected_screen": 17,
+      "launch": [
+        7.600000381469727,
+        7.599999904632568
+      ]
+    },
+    {
+      "charge_ticks": 87,
+      "direction": "right",
+      "expected_landing": [
+        18.880308151245117,
+        1.600000023841858
+      ],
+      "expected_screen": 17,
+      "launch": [
+        13.600000381469727,
+        4.599999904632568
+      ]
+    }
+  ],
+  "schema_version": 1
+}
