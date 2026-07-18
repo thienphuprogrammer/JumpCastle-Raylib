@@ -20,4 +20,18 @@ CameraBand select_camera_band(
     };
 }
 
+CameraBand select_camera_band(
+    const CampaignWorld& world,
+    const float player_y) noexcept {
+    const int band_from_top = std::clamp(
+        static_cast<int>(std::floor(player_y / static_cast<float>(world.screen_height))),
+        0,
+        world.screen_count() - 1);
+    return {
+        .screen = band_from_top,
+        .world_top = static_cast<float>(band_from_top * world.screen_height),
+        .biome = world.biome_for_screen(band_from_top),
+    };
+}
+
 }  // namespace jumpcastle

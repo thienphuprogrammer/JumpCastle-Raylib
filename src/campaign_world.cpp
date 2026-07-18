@@ -1,9 +1,26 @@
 #include "jumpcastle/campaign_world.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 
 namespace jumpcastle {
+namespace {
+
+WorldBiome biome_from_string(const std::string& name) noexcept {
+    if (name == "frosted_keep") { return WorldBiome::frosted_keep; }
+    if (name == "crown_spire") { return WorldBiome::crown_spire; }
+    return WorldBiome::courtyard;
+}
+
+}  // namespace
+
+WorldBiome CampaignWorld::biome_for_screen(const int screen) const noexcept {
+    if (screen < 0 || screen >= static_cast<int>(screen_biomes.size())) {
+        return WorldBiome::courtyard;
+    }
+    return screen_biomes[static_cast<std::size_t>(screen)];
+}
 
 CampaignWorld CampaignWorld::from_screens(
     const std::vector<ScreenMap>& screens,
@@ -16,8 +33,12 @@ CampaignWorld CampaignWorld::from_screens(
         max_index = std::max(max_index, screen.index);
     }
     world.height = (max_index + 1) * world.screen_height;
+    world.screen_biomes.assign(
+        static_cast<std::size_t>(max_index) + 1, WorldBiome::courtyard);
 
     for (const ScreenMap& screen : screens) {
+        world.screen_biomes[static_cast<std::size_t>(screen.index)] =
+            biome_from_string(screen.biome);
         const float offset = static_cast<float>(screen.index * world.screen_height);
         for (const MapEntity& entity : screen.entities) {
             const Vec2 world_pos{entity.pos.x, entity.pos.y + offset};
