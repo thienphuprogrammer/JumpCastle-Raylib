@@ -705,6 +705,24 @@ TEST_CASE("hazard overlap is reported without positional resolve") {
 
 ---
 
+## Stage 3b — Solver port to polygon collision (decision 2026-07-18)
+
+> The user chose to **port the solver to polygon collision** rather than retire it. The solver (`src/solver.cpp`, `src/solver_main.cpp`, `include/jumpcastle/solver.hpp`) and replay (`src/replay.cpp`, `verify_trace`) currently reason about the grid `WorldMap` (`solid_at`) to auto-generate and validate beatable campaigns. They MUST move to `CollisionWorld` so the "beatable" guarantee matches real in-game collision. This stage runs after Task 7 (loader) so a polygon world exists to solve against.
+
+### Task 7b: Solver reachability on CollisionWorld
+
+**Files:** Modify `include/jumpcastle/solver.hpp`, `src/solver.cpp`, `src/solver_main.cpp`, `include/jumpcastle/replay.hpp`, `src/replay.cpp`; Tests `tests/solver_test.cpp`, `tests/world_reachability_test.cpp`, `tests/replay_test.cpp`.
+
+**Interfaces:** solver/replay take `const CollisionWorld&` instead of `const WorldMap&`; jump simulation reuses `step_player(PlayerState&, const CollisionWorld&, …)` (already built in Task 6) so the solver simulates with the exact runtime collision.
+
+- [ ] **Step 1:** Change the jump-simulation inner loop in `solver.cpp` to advance a `PlayerState` with the `CollisionWorld` `step_player` overload and read landing from `ResolveResult`/`player.on_ground` (replaces grid `resolve_world_collision`/`solid_at` probing).
+- [ ] **Step 2:** Replace reachability queries (`solid_at`, floor probes) with `CollisionWorld::overlaps_blocking` support probes.
+- [ ] **Step 3:** Update `verify_trace(const CollisionWorld&, …)` to replay against the polygon world.
+- [ ] **Step 4:** Port `solver_test`/`world_reachability_test`/`replay_test` to build `CollisionWorld` from hand-authored `ScreenMap`s; keep them green.
+- [ ] **Step 5:** Commit — `git commit -am "refactor(solver): reason about polygon CollisionWorld"`.
+
+**Note:** because the solver now shares `step_player`+`CollisionWorld` with the runtime, solver guarantees and gameplay collision are the same code path — no drift.
+
 ## Stage 4 — In-game editor
 
 ### Task 10: Editor state model (headless, unit-tested)
