@@ -83,35 +83,22 @@ int render_smoke_screens(
             .executable_directory = executable_directory,
             .installed_root = executable_directory / ".." / "share" / "jumpcastle",
         });
-        const WorldMap world =
-            WorldMap::load(asset_directory / "levels" / "campaign.level");
+        const CampaignWorld world = CampaignWorld::from_world_map(
+            WorldMap::load(asset_directory / "levels" / "campaign.level"));
         const Renderer renderer{asset_directory};
         std::filesystem::create_directories(output_directory);
 
-        const int screen_height = world.screen_height();
-        const int world_height = world.height();
-        // One screen inside each biome band (bottom to top).
-        for (const int zero_based_screen : {2, 8, 14}) {
-            const int first_row = world_height - (zero_based_screen + 1) * screen_height;
-            // Stand the knight on the first platform top in the screen so the
-            // capture shows grounded gameplay rather than a mid-air pose.
-            float stand_x = world.spawn().x;
-            float stand_y = static_cast<float>(first_row) +
+        const int screen_height = world.screen_height;
+        const int screen_count = world.screen_count();
+        // One screen per biome band, spread across the tower (top-down indices).
+        for (const int requested_band : {1, screen_count / 2, screen_count - 2}) {
+            int band = requested_band;
+            if (band < 0) band = 0;
+            if (band > screen_count - 1) band = screen_count - 1;
+            const float stand_y = static_cast<float>(band * screen_height) +
                 static_cast<float>(screen_height) * 0.5F;
-            for (int row = first_row + 1; row < first_row + screen_height; ++row) {
-                bool placed = false;
-                for (int column = 0; column < world.width(); ++column) {
-                    if (world.solid_at(column, row) && !world.solid_at(column, row - 1)) {
-                        stand_x = static_cast<float>(column) + 0.5F;
-                        stand_y = static_cast<float>(row) - config::player_half_size.y;
-                        placed = true;
-                        break;
-                    }
-                }
-                if (placed) break;
-            }
             PlayerState player{};
-            player.position = {stand_x, stand_y};
+            player.position = {world.spawn.x, stand_y};
             player.on_ground = true;
             const CameraBand camera = select_camera_band(world, stand_y);
 
