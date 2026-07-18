@@ -57,9 +57,8 @@ int main(int argc, char** argv) {
     }
 
     try {
-        const jumpcastle::WorldMap grid = jumpcastle::WorldMap::load(level_path);
         const jumpcastle::CampaignWorld world =
-            jumpcastle::CampaignWorld::from_world_map(grid);
+            jumpcastle::CampaignWorld::load(level_path);
         if (!verify_path.empty()) {
             const jumpcastle::ReplayResult replay = jumpcastle::verify_trace(
                 world, jumpcastle::read_trace(verify_path));
