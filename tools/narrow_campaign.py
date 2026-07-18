@@ -79,6 +79,43 @@ COURTYARD = (
     ),
 )
 
+FROSTED_KEEP = (
+    (
+        "Split Shaft",
+        "split_shaft",
+        (SolidRect(0, 18, 1, 10), SolidRect(27, 8, 1, 10)),
+    ),
+    (
+        "Window Steps",
+        "window_steps",
+        (SolidRect(22, 30, 5), SolidRect(0, 18, 5)),
+    ),
+    (
+        "Crossing Chamber",
+        "crossing_chamber",
+        (SolidRect(19, 34, 5), SolidRect(19, 28, 5)),
+    ),
+    (
+        "Reversal Climb",
+        "reversal_climb",
+        (SolidRect(0, 21, 1, 12), SolidRect(27, 7, 1, 12)),
+    ),
+    (
+        "Narrow Gallery",
+        "narrow_gallery",
+        (SolidRect(22, 21, 5, 2), SolidRect(0, 12, 6, 2)),
+    ),
+    (
+        "Bell-Tower Exam",
+        "bell_tower_exam",
+        (
+            SolidRect(0, 23, 1, 10),
+            SolidRect(27, 8, 1, 10),
+            SolidRect(1, 31, 7, 2),
+        ),
+    ),
+)
+
 
 def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
     route = tuple(
@@ -93,6 +130,8 @@ def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
     )
     if screen <= len(COURTYARD):
         name, mechanic, obstacles = COURTYARD[screen - 1]
+    elif screen <= len(COURTYARD) + len(FROSTED_KEEP):
+        name, mechanic, obstacles = FROSTED_KEEP[screen - len(COURTYARD) - 1]
     else:
         name = f"Tower Chamber {screen:02d}"
         mechanic = "tower_spine"

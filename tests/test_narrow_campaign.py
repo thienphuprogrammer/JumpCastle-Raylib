@@ -27,3 +27,14 @@ def test_courtyard_covers_six_training_mechanics():
         "gatehouse_exam",
     }
     assert all(8 <= room.route_jump_count <= 12 for room in CHAMBERS[:6])
+
+
+def test_frosted_keep_covers_midgame_mechanics():
+    assert {room.mechanic for room in CHAMBERS[6:12]} == {
+        "split_shaft",
+        "window_steps",
+        "crossing_chamber",
+        "reversal_climb",
+        "narrow_gallery",
+        "bell_tower_exam",
+    }
