@@ -19,5 +19,9 @@ inline constexpr float gravity = 30.0F;
 inline constexpr float movement_acceleration = 200.0F;
 inline constexpr float jump_strength = 15.0F;
 inline constexpr float horizontal_bounce = 0.45F;
+// Jump King-style wall rebound: fraction of horizontal speed retained (and
+// reversed) when an airborne player strikes a vertical wall in the polygon
+// collision path. Floors and ceilings do not bounce.
+inline constexpr float wall_bounce = 0.8F;
 inline constexpr float maximum_speed = 25.0F;
 }  // namespace jumpcastle::config

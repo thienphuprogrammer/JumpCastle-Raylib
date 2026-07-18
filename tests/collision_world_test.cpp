@@ -25,6 +25,28 @@ ScreenMap floor_screen() {
     return s;
 }
 
+// A tall solid column spanning x=[10,11], y=[8,14]; its left face has outward
+// normal (-1, 0), so a player approaching from the left strikes a vertical wall.
+ScreenMap wall_screen() {
+    ScreenMap s;
+    s.index = 0;
+    s.width = 16;
+    s.height = 15;
+    s.polygons.push_back(make_polygon({{10, 8}, {11, 8}, {11, 14}, {10, 14}}, ColliderType::solid));
+    return s;
+}
+
+// A solid ceiling slab spanning x=[4,12], y=[8,9]; its bottom face has outward
+// normal (0, 1), so a player rising into it bonks a horizontal surface.
+ScreenMap ceiling_screen() {
+    ScreenMap s;
+    s.index = 0;
+    s.width = 16;
+    s.height = 15;
+    s.polygons.push_back(make_polygon({{4, 8}, {12, 8}, {12, 9}, {4, 9}}, ColliderType::solid));
+    return s;
+}
+
 }  // namespace
 
 TEST_CASE("falling player lands on the floor and is grounded") {
@@ -50,6 +72,59 @@ TEST_CASE("hazard overlap is reported without positional resolve") {
     player.position = {8.0F, 12.6F};
     const ResolveResult result = world.resolve({8.0F, 12.0F}, player);
     REQUIRE(result.hit_hazard);
+}
+
+TEST_CASE("airborne player rebounds off a vertical wall like Jump King") {
+    const CollisionWorld world = CollisionWorld::from_screens({wall_screen()}, 15);
+    PlayerState player;
+    player.mode = PlayerMode::airborne;
+    player.position = {10.1F, 12.2F};
+    player.velocity = {5.0F, 3.0F};
+    static_cast<void>(world.resolve({9.4F, 12.0F}, player));
+
+    // Horizontal velocity reverses and keeps 0.8x its magnitude; the downward
+    // fall (y) is untouched, so the player loses horizontal control mid-air.
+    REQUIRE(player.velocity.x == Approx(-5.0F * config::wall_bounce).margin(1e-3));
+    REQUIRE(player.velocity.y == Approx(3.0F).margin(1e-3));
+    REQUIRE(player.position.x + config::player_half_size.x == Approx(10.0F).margin(1e-2));
+}
+
+TEST_CASE("landing on a floor does not bounce the player back up") {
+    const CollisionWorld world = CollisionWorld::from_screens({floor_screen()}, 15);
+    PlayerState player;
+    player.mode = PlayerMode::airborne;
+    player.position = {8.0F, 13.9F};
+    player.velocity = {0.0F, 10.0F};
+    const ResolveResult result = world.resolve({8.0F, 13.0F}, player);
+
+    REQUIRE(result.on_ground);
+    REQUIRE(player.velocity.y == Approx(0.0F).margin(1e-3));  // absorbed, not reversed
+}
+
+TEST_CASE("bonking a ceiling absorbs upward velocity without a wall rebound") {
+    const CollisionWorld world = CollisionWorld::from_screens({ceiling_screen()}, 15);
+    PlayerState player;
+    player.mode = PlayerMode::airborne;
+    player.position = {8.0F, 9.3F};
+    player.velocity = {2.0F, -8.0F};
+    static_cast<void>(world.resolve({8.0F, 9.9F}, player));
+
+    // Upward velocity is killed (slide), horizontal is carried through unchanged
+    // -- a ceiling is not a wall, so no horizontal reversal.
+    REQUIRE(player.velocity.y == Approx(0.0F).margin(1e-3));
+    REQUIRE(player.velocity.x == Approx(2.0F).margin(1e-3));
+}
+
+TEST_CASE("grounded player does not bounce off a wall it walks into") {
+    const CollisionWorld world = CollisionWorld::from_screens({wall_screen()}, 15);
+    PlayerState player;
+    player.mode = PlayerMode::grounded;
+    player.position = {10.1F, 12.2F};
+    player.velocity = {5.0F, 0.0F};
+    static_cast<void>(world.resolve({9.4F, 12.2F}, player));
+
+    // Grounded contact slides to a stop instead of rebounding.
+    REQUIRE(player.velocity.x == Approx(0.0F).margin(1e-3));
 }
 
 TEST_CASE("one-way platform blocks a fall from above but not a rise from below") {

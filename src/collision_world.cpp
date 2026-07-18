@@ -112,7 +112,20 @@ ResolveResult CollisionWorld::resolve(const Vec2 previous_position, PlayerState&
                 player.position = player.position + mtv.normal * mtv.depth;
                 const float velocity_along_normal = dot(player.velocity, mtv.normal);
                 if (velocity_along_normal < 0.0F) {
-                    player.velocity = player.velocity - mtv.normal * velocity_along_normal;
+                    // A vertical wall (mostly-horizontal normal) rebounds an
+                    // airborne player Jump King-style: reverse the into-wall
+                    // velocity and keep a fraction of it, leaving the vertical
+                    // fall untouched so the player loses horizontal control.
+                    // Floors, ceilings and grounded contact simply slide
+                    // (restitution 0 makes the formula the plain slide).
+                    const bool is_wall =
+                        std::abs(mtv.normal.x) > std::abs(mtv.normal.y);
+                    const float restitution =
+                        (is_wall && player.mode == PlayerMode::airborne)
+                            ? config::wall_bounce
+                            : 0.0F;
+                    player.velocity = player.velocity -
+                        mtv.normal * (velocity_along_normal * (1.0F + restitution));
                 }
                 if (mtv.normal.y < kGroundNormalY) { result.on_ground = true; }
             }
