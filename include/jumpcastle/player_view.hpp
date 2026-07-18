@@ -11,10 +11,11 @@
 namespace jumpcastle {
 
 // Gloomy Knight frames are registered in square cells with the sprite centred
-// horizontally and its feet on the cell floor. Two logical tiles keep the
-// 16-pixel source readable without overpowering the platforms.
+// horizontally and its feet on the cell floor. One and a half logical tiles
+// keep the visible knight close to its collision footprint so it hugs platform
+// edges and walls instead of overhanging them, while staying readable.
 inline constexpr float player_sprite_display =
-    2.0F * static_cast<float>(config::tile_pixels);
+    1.5F * static_cast<float>(config::tile_pixels);
 
 // raylib flips a source rectangle when its width is negative. Keep x anchored
 // to the selected atlas cell; shifting x would sample the following frame.
