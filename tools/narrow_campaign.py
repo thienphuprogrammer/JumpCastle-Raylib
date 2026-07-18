@@ -160,13 +160,28 @@ CROWN_SPIRE = (
 )
 
 
+def route_width(screen: int) -> int:
+    """Landing-platform width per biome. Narrower = more precise landings.
+
+    Reachability of these widths depends on the solver's charge/launch sampling
+    density (see SolverConfig); the spawn floor and goal ledge are special-cased
+    in _base_chamber and are not governed by this policy.
+    """
+    if screen <= len(COURTYARD):  # Courtyard 1-6
+        return 4
+    if screen <= len(COURTYARD) + len(FROSTED_KEEP):  # Frosted Keep 7-12
+        return 5
+    return 5  # Crown Spire 13-18
+
+
 def _base_chamber(screen: int, route_x: tuple[int, ...]) -> Chamber:
+    width = route_width(screen)
     route = tuple(
         SolidRect(
             0 if screen == 1 and y == BAND_HEIGHT - 1 else x,
             y,
             WIDTH if screen == 1 and y == BAND_HEIGHT - 1 else (
-                6 if screen == SCREEN_COUNT and y == ROUTE_Y[-1] else 5
+                6 if screen == SCREEN_COUNT and y == ROUTE_Y[-1] else width
             ),
         )
         for x, y in zip(route_x, ROUTE_Y, strict=True)
