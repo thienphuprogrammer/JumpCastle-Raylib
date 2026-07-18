@@ -2,7 +2,7 @@
   "animations": {
     "charge": {
       "atlas": "knight",
-      "fps": 3,
+      "fps": 1,
       "frames": [
         {
           "height": 16,
@@ -14,7 +14,7 @@
     },
     "fall": {
       "atlas": "knight",
-      "fps": 6,
+      "fps": 1,
       "frames": [
         {
           "height": 16,
@@ -26,7 +26,7 @@
     },
     "idle": {
       "atlas": "knight",
-      "fps": 3,
+      "fps": 4,
       "frames": [
         {
           "height": 16,
@@ -44,7 +44,7 @@
     },
     "respawn": {
       "atlas": "knight",
-      "fps": 10,
+      "fps": 1,
       "frames": [
         {
           "height": 16,
@@ -56,7 +56,7 @@
     },
     "rise": {
       "atlas": "knight",
-      "fps": 6,
+      "fps": 1,
       "frames": [
         {
           "height": 16,
@@ -68,7 +68,7 @@
     },
     "run": {
       "atlas": "knight",
-      "fps": 8,
+      "fps": 10,
       "frames": [
         {
           "height": 16,
@@ -208,7 +208,7 @@
       },
       "file": "castle.png",
       "height": 96,
-      "sha256": "ec47fab4d507a52ff8eb4fefa580e3c9e15e4960ea7e9d07189581ca1ad3750c",
+      "sha256": "0bd216a196e35d5337621a69ddea12425af08d8f8bbcbad10eba9c5a218e3f12",
       "width": 336
     },
     "knight": {
@@ -246,7 +246,7 @@
           "y": 0
         }
       },
-      "sha256": "96ebef2c09d7807c8de61ff82214058355e0691567f4b0cbe5c866ae89e1cb60",
+      "sha256": "0d1b22bd51971c404f5193e7c8e1b2a2c25bd611ca51b0762802560af2a1bcad",
       "width": 64
     }
   },
@@ -296,6 +296,38 @@
       "id": "kenney_ui",
       "license": "CC0-1.0",
       "url": "https://kenney.nl/assets/ui-pack-pixel-adventure"
+    },
+    {
+      "creator": "ansimuz",
+      "files": [
+        {
+          "name": "sunnyland winter forest files.zip",
+          "sha256": "63adce10f83d31d5ed05ddf0cb94ba8936ea2782c386a8b9f9707783164a0616"
+        },
+        {
+          "name": "winter_tileset.png",
+          "sha256": "81b54e37164e409497ae2dbe6bf8d9d4facdf7364237f13efac84eaec03de83a"
+        }
+      ],
+      "id": "sunnyland_winter",
+      "license": "CC0-1.0",
+      "url": "https://ansimuz.itch.io/sunnyland-forest"
+    },
+    {
+      "creator": "ansimuz",
+      "files": [
+        {
+          "name": "Gothicvania Swamp files.zip",
+          "sha256": "962daea4efab6252a9847ec23ace8834eb1e8d1ae9ff6216c4a3f3591200fd56"
+        },
+        {
+          "name": "gothic_tileset.png",
+          "sha256": "b5ea388a414ce2731e2424888ca70b4915330275b92819881feacf3bb864b187"
+        }
+      ],
+      "id": "gothicvania_swamp",
+      "license": "CC0-1.0",
+      "url": "https://ansimuz.itch.io/gothicvania-swamp"
     }
   ]
 }

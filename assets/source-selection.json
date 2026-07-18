@@ -111,214 +111,214 @@
     },
     "frosted_keep": {
       "top_left": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 16,
-        "y": 960,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "top": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 32,
-        "y": 960,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "top_right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 960,
+        "file": "winter_tileset.png",
+        "x": 48,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "left": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 16,
-        "y": 976,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "center": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 32,
-        "y": 976,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 48,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "bottom_left": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 16,
-        "y": 976,
+        "y": 48,
         "width": 16,
         "height": 16
       },
       "bottom": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 32,
-        "y": 976,
+        "y": 48,
         "width": 16,
         "height": 16
       },
       "bottom_right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 48,
+        "y": 48,
         "width": 16,
         "height": 16
       },
       "isolated": {
-        "file": "castle_tileset_part1.png",
-        "x": 96,
-        "y": 960,
-        "width": 16,
-        "height": 16
-      },
-      "standable_rim": {
-        "file": "castle_tileset_part1.png",
+        "file": "winter_tileset.png",
         "x": 32,
-        "y": 960,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "inner_corner_tl": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 32,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "inner_corner_tr": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 32,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "inner_corner_bl": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 32,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "inner_corner_br": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 976,
+        "file": "winter_tileset.png",
+        "x": 32,
+        "y": 32,
+        "width": 16,
+        "height": 16
+      },
+      "standable_rim": {
+        "file": "winter_tileset.png",
+        "x": 32,
+        "y": 16,
         "width": 16,
         "height": 16
       }
     },
     "crown_spire": {
       "top_left": {
-        "file": "castle_tileset_part1.png",
-        "x": 16,
-        "y": 1152,
+        "file": "gothic_tileset.png",
+        "x": 32,
+        "y": 0,
         "width": 16,
         "height": 16
       },
       "top": {
-        "file": "castle_tileset_part1.png",
-        "x": 32,
-        "y": 1152,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 0,
         "width": 16,
         "height": 16
       },
       "top_right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 1152,
+        "file": "gothic_tileset.png",
+        "x": 96,
+        "y": 0,
         "width": 16,
         "height": 16
       },
       "left": {
-        "file": "castle_tileset_part1.png",
-        "x": 16,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 32,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "center": {
-        "file": "castle_tileset_part1.png",
-        "x": 32,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 96,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "bottom_left": {
-        "file": "castle_tileset_part1.png",
-        "x": 16,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 32,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "bottom": {
-        "file": "castle_tileset_part1.png",
-        "x": 32,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "bottom_right": {
-        "file": "castle_tileset_part1.png",
-        "x": 64,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 96,
+        "y": 32,
         "width": 16,
         "height": 16
       },
       "isolated": {
-        "file": "castle_tileset_part1.png",
-        "x": 96,
-        "y": 1152,
-        "width": 16,
-        "height": 16
-      },
-      "standable_rim": {
-        "file": "castle_tileset_part1.png",
-        "x": 32,
-        "y": 1152,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "inner_corner_tl": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "inner_corner_tr": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "inner_corner_bl": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
         "width": 16,
         "height": 16
       },
       "inner_corner_br": {
-        "file": "castle_tileset_part1.png",
-        "x": 48,
-        "y": 1168,
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 16,
+        "width": 16,
+        "height": 16
+      },
+      "standable_rim": {
+        "file": "gothic_tileset.png",
+        "x": 64,
+        "y": 0,
         "width": 16,
         "height": 16
       }

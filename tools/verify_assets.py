@@ -15,6 +15,8 @@ APPROVED_SOURCES = {
     "castle_tileset": "https://opengameart.org/content/pixel-art-castle-tileset",
     "gloomy_knight": "https://loveosstudio.itch.io/gloomy-knight-16x16",
     "kenney_ui": "https://kenney.nl/assets/ui-pack-pixel-adventure",
+    "sunnyland_winter": "https://ansimuz.itch.io/sunnyland-forest",
+    "gothicvania_swamp": "https://ansimuz.itch.io/gothicvania-swamp",
 }
 EXPECTED_ATLASES = {"castle", "knight", "ui"}
 EXPECTED_BIOMES = {"courtyard", "frosted_keep", "crown_spire"}

@@ -54,6 +54,26 @@ SOURCE_RECORDS = (
             {"name": "kenney_ui-pack-pixel-adventure.zip", "sha256": "0b0ed4802ebcfff5e44e370f394baa1d751862a5a4a7612ac4ce84e85faa0627"}
         ],
     },
+    {
+        "id": "sunnyland_winter",
+        "creator": "ansimuz",
+        "url": "https://ansimuz.itch.io/sunnyland-forest",
+        "license": "CC0-1.0",
+        "files": [
+            {"name": "sunnyland winter forest files.zip", "sha256": "63adce10f83d31d5ed05ddf0cb94ba8936ea2782c386a8b9f9707783164a0616"},
+            {"name": "winter_tileset.png", "sha256": "81b54e37164e409497ae2dbe6bf8d9d4facdf7364237f13efac84eaec03de83a"},
+        ],
+    },
+    {
+        "id": "gothicvania_swamp",
+        "creator": "ansimuz",
+        "url": "https://ansimuz.itch.io/gothicvania-swamp",
+        "license": "CC0-1.0",
+        "files": [
+            {"name": "Gothicvania Swamp files.zip", "sha256": "962daea4efab6252a9847ec23ace8834eb1e8d1ae9ff6216c4a3f3591200fd56"},
+            {"name": "gothic_tileset.png", "sha256": "b5ea388a414ce2731e2424888ca70b4915330275b92819881feacf3bb864b187"},
+        ],
+    },
 )
 
 
@@ -134,11 +154,11 @@ def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
 
 def terrain_layout() -> tuple[tuple[str, ...], ...]:
     return (
-        ("top_left", "top", "top_right", "isolated", "inner_corner_top_left", "top", "inner_corner_top_right"),
+        ("top_left", "top", "top_right", "isolated", "inner_corner_tl", "top", "inner_corner_tr"),
         ("left", "center", "right", "isolated", "left", "center", "right"),
-        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bottom_left", "bottom", "inner_corner_bottom_right"),
-        ("top_left", "top", "top_right", "isolated", "inner_corner_top_left", "top", "inner_corner_top_right"),
-        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bottom_left", "bottom", "inner_corner_bottom_right"),
+        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bl", "bottom", "inner_corner_br"),
+        ("top_left", "top", "top_right", "isolated", "inner_corner_tl", "top", "inner_corner_tr"),
+        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bl", "bottom", "inner_corner_br"),
     )
 
 
@@ -165,7 +185,7 @@ def build_castle(
             ("spike", props["torch"]),
             ("checkpoint", props["banner"]),
             ("exit", props["crown"]),
-            ("background", regions["background"]),
+            ("background", regions["isolated"]),
         )
         for column, (name, source_region) in enumerate(specials):
             x = origin_x + column * TILE
