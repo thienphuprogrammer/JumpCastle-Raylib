@@ -9,10 +9,15 @@ def test_tower_has_eighteen_distinct_authored_chambers():
 
 def test_rendered_campaign_has_approved_dimensions():
     text = render_campaign(CHAMBERS)
-    rows = text.split("[collision]\n", 1)[1].splitlines()
+    collision = (
+        text.split("[collision]\n", 1)[1].split("[decoration]\n", 1)[0].splitlines()
+    )
+    decoration = text.split("[decoration]\n", 1)[1].splitlines()
 
-    assert len(rows) == 648
-    assert {len(row) for row in rows} == {28}
+    assert len(collision) == 648
+    assert len(decoration) == 648
+    assert {len(row) for row in collision} == {28}
+    assert {len(row) for row in decoration} == {28}
     assert "size 28 648" in text
     assert "screen_height 36" in text
 
