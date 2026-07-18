@@ -63,7 +63,8 @@ TEST_CASE("wall collision reflects horizontal velocity") {
     resolve_tilemap_collision(map, 0.0F, center, velocity, config::player_half_size);
 
     CHECK(center.x == Approx(5.7F));
-    CHECK(velocity.x == Approx(-4.5F));
+    // Reflected velocity tracks the configured horizontal bounce (input 10.0).
+    CHECK(velocity.x == Approx(-10.0F * config::horizontal_bounce));
 }
 
 TEST_CASE("collision query distinguishes solid and empty regions") {

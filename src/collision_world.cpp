@@ -18,6 +18,14 @@ Aabb player_box(const Vec2 center) noexcept {
     return {center - config::player_half_size, center + config::player_half_size};
 }
 
+// Cheap broad-phase: two AABBs overlap. If they don't, the full SAT cannot
+// report an overlap either, so this safely skips the expensive projection for
+// the many polygons a moving player is nowhere near (the solver's hot path).
+bool aabb_overlap(const Aabb& a, const Aabb& b) noexcept {
+    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
+           a.min.y <= b.max.y && a.max.y >= b.min.y;
+}
+
 }  // namespace
 
 CollisionWorld CollisionWorld::from_screens(
@@ -63,6 +71,7 @@ bool CollisionWorld::overlaps_blocking(const Aabb& box) const noexcept {
         if (polygons == nullptr) { continue; }
         for (const ConvexPolygon& polygon : *polygons) {
             if (polygon.type == ColliderType::hazard) { continue; }
+            if (!aabb_overlap(box, polygon.aabb)) { continue; }
             if (aabb_vs_convex(box, polygon.points, polygon.edge_normals).overlapping) {
                 return true;
             }
@@ -93,6 +102,7 @@ ResolveResult CollisionWorld::resolve(const Vec2 previous_position, PlayerState&
 
             for (const ConvexPolygon& polygon : *polygons) {
                 const Aabb box = player_box(player.position);
+                if (!aabb_overlap(box, polygon.aabb)) { continue; }
                 const Mtv mtv = aabb_vs_convex(box, polygon.points, polygon.edge_normals);
                 if (!mtv.overlapping) { continue; }
 
