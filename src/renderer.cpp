@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 namespace jumpcastle {
 namespace {
@@ -305,8 +306,81 @@ void draw_completion(const CampaignState& campaign) {
     DrawText("Press ENTER to restart", 63, 112, 10, LIGHTGRAY);
 }
 
+// ---- Polygon-world rendering (tinted polygon terrain) ----
+
+::Vector2 world_to_screen(const Vec2 world_point, const float world_top) noexcept {
+    return {
+        world_point.x * static_cast<float>(config::tile_pixels),
+        (world_point.y - world_top) * static_cast<float>(config::tile_pixels),
+    };
+}
+
+Color polygon_fill_color(const ColliderType type, const WorldBiome biome) noexcept {
+    switch (type) {
+    case ColliderType::solid: return biome_terrain_tint(biome);
+    case ColliderType::oneway: return scale_rgb(biome_terrain_tint(biome), 0.72F);
+    case ColliderType::hazard: return {206, 74, 74, 255};
+    }
+    return biome_terrain_tint(biome);
+}
+
+void draw_convex_polygon(
+    const ConvexPolygon& polygon, const float world_top, const Color fill) {
+    std::vector<::Vector2> points;
+    points.reserve(polygon.points.size());
+    for (const Vec2 point : polygon.points) {
+        points.push_back(world_to_screen(point, world_top));
+    }
+    // raylib's triangle fill expects a consistent winding; normalize it
+    // (screen space is y-down).
+    float area = 0.0F;
+    for (std::size_t i = 0; i < points.size(); ++i) {
+        const ::Vector2 a = points[i];
+        const ::Vector2 b = points[(i + 1) % points.size()];
+        area += a.x * b.y - b.x * a.y;
+    }
+    if (area > 0.0F) {
+        std::reverse(points.begin(), points.end());
+    }
+    DrawTriangleFan(points.data(), static_cast<int>(points.size()), fill);
+    const Color outline = scale_rgb(fill, 0.5F);
+    for (std::size_t i = 0; i < points.size(); ++i) {
+        DrawLineV(points[i], points[(i + 1) % points.size()], outline);
+    }
+}
+
+void draw_world_polygons(
+    const CampaignWorld& world,
+    const CameraBand& camera,
+    const BiomeAssets& assets,
+    const Texture2D texture) {
+    const std::vector<ConvexPolygon>* polygons =
+        world.collision.polygons_for_screen(camera.screen);
+    if (polygons != nullptr) {
+        for (const ConvexPolygon& polygon : *polygons) {
+            draw_convex_polygon(
+                polygon, camera.world_top,
+                polygon_fill_color(polygon.type, camera.biome));
+        }
+    }
+
+    const Vec2 goal = world.goal;
+    if (goal.y >= camera.world_top &&
+        goal.y < camera.world_top + static_cast<float>(world.screen_height)) {
+        draw_region(
+            texture,
+            assets.exit,
+            {
+                std::floor(goal.x) * config::tile_pixels,
+                std::floor(goal.y - camera.world_top) * config::tile_pixels,
+                static_cast<float>(config::tile_pixels),
+                static_cast<float>(config::tile_pixels),
+            });
+    }
+}
+
 void draw_debug_overlay(
-    const WorldMap& world,
+    const int screen_count,
     const CameraBand& camera,
     const PlayerState& player,
     const CampaignState& campaign,
@@ -322,7 +396,7 @@ void draw_debug_overlay(
         font_size * 6 + 8,
         Fade(BLACK, 0.78F));
     DrawText(
-        TextFormat("Screen %i/%i", camera.screen + 1, world.screen_count()),
+        TextFormat("Screen %i/%i", camera.screen + 1, screen_count),
         x, y, font_size, RAYWHITE);
     DrawText(
         TextFormat("Biome: %s", biome_name(camera.biome).data()),
@@ -489,7 +563,8 @@ void Renderer::draw(
         WHITE);
 
     if (debug_enabled) {
-        draw_debug_overlay(world, camera, player, campaign, layout.scale, offset);
+        draw_debug_overlay(
+            world.screen_count(), camera, player, campaign, layout.scale, offset);
     }
 
     EndDrawing();
@@ -510,6 +585,75 @@ Image Renderer::capture_screen(
     EndTextureMode();
 
     // Render textures are stored bottom-up; flip so the PNG is upright.
+    Image image = LoadImageFromTexture(pixelart_target_.get().texture);
+    ImageFlipVertical(&image);
+    return image;
+}
+
+void Renderer::draw(
+    const CampaignWorld& world,
+    const CameraBand& camera,
+    const PlayerState& player,
+    const CampaignState& campaign,
+    const float respawn_animation_time,
+    const bool debug_enabled) const {
+    const Biome biome = asset_biome(camera.biome);
+    const BiomeAssets& assets = catalog_.biome(biome);
+    const Texture2D& biome_texture = castle_texture_.get();
+
+    BeginTextureMode(pixelart_target_.get());
+    draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
+    draw_world_polygons(world, camera, assets, biome_texture);
+    draw_player(
+        player,
+        camera.world_top,
+        respawn_animation_time,
+        catalog_,
+        player_texture_.get());
+    if (campaign.complete) draw_completion(campaign);
+    EndTextureMode();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    const float window_width = static_cast<float>(GetScreenWidth());
+    const float window_height = static_cast<float>(GetScreenHeight());
+    const PresentationLayout layout = fit_presentation(
+        static_cast<int>(window_width), static_cast<int>(window_height));
+
+    const Texture2D& target_texture = pixelart_target_.get().texture;
+    DrawTexturePro(
+        target_texture,
+        {0.0F, 0.0F, static_cast<float>(target_texture.width),
+         -static_cast<float>(target_texture.height)},
+        {layout.offset_x, layout.offset_y, layout.width, layout.height},
+        {},
+        0.0F,
+        WHITE);
+
+    if (debug_enabled) {
+        draw_debug_overlay(
+            world.screen_count(), camera, player, campaign, layout.scale,
+            {layout.offset_x, layout.offset_y});
+    }
+
+    EndDrawing();
+}
+
+Image Renderer::capture_screen(
+    const CampaignWorld& world,
+    const CameraBand& camera,
+    const PlayerState& player) const {
+    const Biome biome = asset_biome(camera.biome);
+    const BiomeAssets& assets = catalog_.biome(biome);
+    const Texture2D& biome_texture = castle_texture_.get();
+
+    BeginTextureMode(pixelart_target_.get());
+    draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
+    draw_world_polygons(world, camera, assets, biome_texture);
+    draw_player(player, camera.world_top, 0.0F, catalog_, player_texture_.get());
+    EndTextureMode();
+
     Image image = LoadImageFromTexture(pixelart_target_.get().texture);
     ImageFlipVertical(&image);
     return image;

@@ -34,6 +34,13 @@ public:
     // Used for resting-contact / support probes, where SAT penetration is zero.
     [[nodiscard]] bool overlaps_blocking(const Aabb& box) const noexcept;
 
+    // World-space polygons for a screen index (nullptr if out of range).
+    // Exposed for rendering; points are already offset into world coordinates.
+    [[nodiscard]] const std::vector<ConvexPolygon>* polygons_for_screen(
+        int screen_index) const noexcept {
+        return screen_polygons(screen_index);
+    }
+
 private:
     [[nodiscard]] const std::vector<ConvexPolygon>* screen_polygons(int screen_index) const noexcept;
 
