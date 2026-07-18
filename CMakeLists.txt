@@ -43,6 +43,7 @@ add_library(
   src/sat.cpp
   src/map_format.cpp
   src/collision_world.cpp
+  src/campaign_world.cpp
   src/level.cpp
   src/player.cpp
   src/presentation.cpp

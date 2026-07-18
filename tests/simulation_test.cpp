@@ -1,6 +1,7 @@
 #include "jumpcastle/simulation.hpp"
 #include "jumpcastle/fixed_step.hpp"
 
+#include "jumpcastle/convex.hpp"
 #include "test_level_factory.hpp"
 #include "test_world_factory.hpp"
 
@@ -8,6 +9,55 @@
 #include <catch2/catch_test_macros.hpp>
 
 using namespace jumpcastle;
+
+TEST_CASE("step_world over a polygon campaign world lands, dies, and completes") {
+    ScreenMap screen;
+    screen.index = 0;
+    screen.width = 16;
+    screen.height = 15;
+    const std::vector<Vec2> floor{{0, 14}, {16, 14}, {16, 15}, {0, 15}};
+    screen.polygons.push_back(
+        {floor, outward_edge_normals(floor), polygon_aabb(floor), ColliderType::solid});
+    const std::vector<Vec2> spike{{7, 13}, {9, 13}, {8, 12.5F}};
+    screen.polygons.push_back(
+        {spike, outward_edge_normals(spike), polygon_aabb(spike), ColliderType::hazard});
+    screen.entities.push_back({EntityType::spawn, {2.0F, 13.0F}});
+    screen.entities.push_back({EntityType::goal, {13.0F, 13.0F}});
+    const CampaignWorld world = CampaignWorld::from_screens({screen}, 15);
+
+    REQUIRE(world.spawn == Vec2{2.0F, 13.0F});
+    REQUIRE(world.goal == Vec2{13.0F, 13.0F});
+    REQUIRE(world.height == 15);
+
+    SECTION("falling onto the floor away from the spike stays alive") {
+        PlayerState player;
+        player.position = {2.0F, 8.0F};
+        player.mode = PlayerMode::airborne;
+        CampaignState campaign;
+        campaign.spawn = world.spawn;
+        CampaignEvent last = CampaignEvent::none;
+        for (int tick = 0; tick < 600; ++tick) {
+            last = step_world(player, campaign, world, PlayerInput{});
+            if (last == CampaignEvent::respawned) { break; }
+        }
+        REQUIRE(last != CampaignEvent::respawned);
+        REQUIRE(player.on_ground);
+    }
+
+    SECTION("landing on the spike respawns") {
+        PlayerState player;
+        player.position = {8.0F, 11.5F};
+        player.mode = PlayerMode::airborne;
+        CampaignState campaign;
+        campaign.spawn = world.spawn;
+        CampaignEvent last = CampaignEvent::none;
+        for (int tick = 0; tick < 200; ++tick) {
+            last = step_world(player, campaign, world, PlayerInput{});
+            if (last == CampaignEvent::respawned) { break; }
+        }
+        REQUIRE(last == CampaignEvent::respawned);
+    }
+}
 
 TEST_CASE("frame chunking produces identical fixed steps") {
     FixedStepClock one;
