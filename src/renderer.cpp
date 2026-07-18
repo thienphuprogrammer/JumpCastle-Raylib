@@ -368,4 +368,24 @@ void Renderer::draw(
     EndDrawing();
 }
 
+Image Renderer::capture_screen(
+    const WorldMap& world,
+    const CameraBand& camera,
+    const PlayerState& player) const {
+    const Biome biome = asset_biome(camera.biome);
+    const BiomeAssets& assets = catalog_.biome(biome);
+    const Texture2D& biome_texture = castle_texture_.get();
+
+    BeginTextureMode(pixelart_target_.get());
+    draw_background(biome_texture, assets, camera.biome);
+    draw_world(world, camera, assets, biome_texture);
+    draw_player(player, camera.world_top, 0.0F, catalog_, player_texture_.get());
+    EndTextureMode();
+
+    // Render textures are stored bottom-up; flip so the PNG is upright.
+    Image image = LoadImageFromTexture(pixelart_target_.get().texture);
+    ImageFlipVertical(&image);
+    return image;
+}
+
 }  // namespace jumpcastle

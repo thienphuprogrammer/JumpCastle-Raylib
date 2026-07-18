@@ -55,6 +55,14 @@ public:
         float respawn_animation_time,
         bool debug_enabled) const;
 
+    // Render one biome screen into the offscreen pixel-art target and return it
+    // as a CPU Image (exactly view_width by view_height). Used by headless
+    // smoke capture so results never depend on window presentation.
+    [[nodiscard]] Image capture_screen(
+        const WorldMap& world,
+        const CameraBand& camera,
+        const PlayerState& player) const;
+
 private:
     AssetCatalog catalog_;
     TextureResource player_texture_;
