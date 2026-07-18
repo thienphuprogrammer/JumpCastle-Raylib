@@ -92,12 +92,28 @@ int render_smoke_screens(
         const int world_height = world.height();
         // One screen inside each biome band (bottom to top).
         for (const int zero_based_screen : {2, 8, 14}) {
-            const float sample_y =
-                static_cast<float>(world_height - (zero_based_screen + 1) * screen_height) +
+            const int first_row = world_height - (zero_based_screen + 1) * screen_height;
+            // Stand the knight on the first platform top in the screen so the
+            // capture shows grounded gameplay rather than a mid-air pose.
+            float stand_x = world.spawn().x;
+            float stand_y = static_cast<float>(first_row) +
                 static_cast<float>(screen_height) * 0.5F;
+            for (int row = first_row + 1; row < first_row + screen_height; ++row) {
+                bool placed = false;
+                for (int column = 0; column < world.width(); ++column) {
+                    if (world.solid_at(column, row) && !world.solid_at(column, row - 1)) {
+                        stand_x = static_cast<float>(column) + 0.5F;
+                        stand_y = static_cast<float>(row) - config::player_half_size.y;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (placed) break;
+            }
             PlayerState player{};
-            player.position = {world.spawn().x, sample_y};
-            const CameraBand camera = select_camera_band(world, sample_y);
+            player.position = {stand_x, stand_y};
+            player.on_ground = true;
+            const CameraBand camera = select_camera_band(world, stand_y);
 
             Image frame = renderer.capture_screen(world, camera, player);
             const std::filesystem::path destination =
