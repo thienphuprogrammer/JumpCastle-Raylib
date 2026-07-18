@@ -73,11 +73,14 @@ jobs:
       - name: Prove campaign route
         shell: bash
         run: |
-          solver="build/cmake/jumpcastle_level_solver"
+          solver="build/cmake/jumpcastle_solver"
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            solver="build/cmake/Release/jumpcastle_level_solver.exe"
+            solver="build/cmake/Release/jumpcastle_solver.exe"
           fi
           "$solver" \
-            --levels assets/levels \
+            --level assets/levels/campaign.level \
             --campaign \
             --trace build/campaign-route.json
+          "$solver" \
+            --level assets/levels/campaign.level \
+            --verify-trace build/campaign-route.json
