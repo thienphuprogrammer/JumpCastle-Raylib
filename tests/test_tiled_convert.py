@@ -256,3 +256,42 @@ def test_untyped_and_polyline_objects_are_ignored():
     screen = tiled_to_screen_map(tmj, index=1)
     assert screen["colliders"] == []  # untyped rect, and polyline (not a shape)
     assert screen["entities"] == []  # 'decoration' is not an entity class
+
+
+def test_seed_collision_merges_solid_tiles_into_rects():
+    from tiled_convert import seed_collision
+    tmj = {
+        "width": 4, "height": 3, "nextobjectid": 1,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 4, "height": 3,
+             "data": [0, 0, 0, 0,
+                      1, 1, 1, 0,
+                      1, 1, 1, 0]},
+            {"type": "objectgroup", "name": "collision", "objects": []},
+        ],
+    }
+    changed, count = seed_collision(tmj)
+    assert changed is True
+    assert count == 1  # the 3x2 solid block merges to ONE rectangle
+    collision = next(l for l in tmj["layers"] if l["name"] == "collision")
+    obj = collision["objects"][0]
+    assert obj["type"] == "solid"
+    # (col1,row1) .. 3 wide x 2 tall @16px
+    assert (obj["x"], obj["y"], obj["width"], obj["height"]) == (0, 16, 48, 32)
+
+
+def test_seed_collision_is_no_clobber_without_force():
+    from tiled_convert import seed_collision
+    tmj = {
+        "width": 2, "height": 1, "nextobjectid": 5,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 2, "height": 1, "data": [1, 1]},
+            {"type": "objectgroup", "name": "collision",
+             "objects": [{"id": 1, "type": "solid", "x": 0, "y": 0, "width": 16, "height": 16}]},
+        ],
+    }
+    changed, count = seed_collision(tmj)                 # existing objects -> skip
+    assert changed is False
+    assert len(next(l for l in tmj["layers"] if l["name"] == "collision")["objects"]) == 1
+    changed2, _ = seed_collision(tmj, force=True)         # force -> replace
+    assert changed2 is True

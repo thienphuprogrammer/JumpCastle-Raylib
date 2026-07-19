@@ -289,6 +289,95 @@ def screen_map_to_tiled(
 
 
 # --------------------------------------------------------------------------
+# Auto-seed collision from painted terrain (author-time convenience)
+# --------------------------------------------------------------------------
+def _solid_rects_from_terrain(
+    terrain: dict[str, Any], width: int, height: int
+) -> list[tuple[int, int, int, int]]:
+    """Greedy-merge non-zero terrain cells into maximal (x, y, w, h) tile rects."""
+    data = terrain.get("data", []) or []
+    solid = [
+        [(int(data[r * width + c]) & 0x1FFFFFFF) != 0 for c in range(width)]
+        for r in range(height)
+    ]
+    used = [[False] * width for _ in range(height)]
+    rects: list[tuple[int, int, int, int]] = []
+    for y in range(height):
+        for x in range(width):
+            if not solid[y][x] or used[y][x]:
+                continue
+            w = 1
+            while x + w < width and solid[y][x + w] and not used[y][x + w]:
+                w += 1
+            h = 1
+            while y + h < height and all(
+                solid[y + h][x + i] and not used[y + h][x + i] for i in range(w)
+            ):
+                h += 1
+            for yy in range(y, y + h):
+                for xx in range(x, x + w):
+                    used[yy][xx] = True
+            rects.append((x, y, w, h))
+    return rects
+
+
+def seed_collision(
+    tmj: dict[str, Any], *, tile_size: int = TILE_SIZE, force: bool = False
+) -> tuple[bool, int]:
+    """Fill the collision objectgroup from solid terrain tiles (in place).
+
+    Returns (changed, rect_count). No-op if there is no terrain/collision layer,
+    or if the collision layer already has objects and force is False.
+    """
+    width = int(tmj.get("width", 0))
+    height = int(tmj.get("height", 0))
+    terrain = None
+    collision = None
+    for layer in tmj.get("layers", []):
+        if layer.get("type") == "tilelayer" and layer.get("name") == "terrain":
+            terrain = layer
+        elif layer.get("type") == "objectgroup" and layer.get("name") == "collision":
+            collision = layer
+    if terrain is None or collision is None or width <= 0 or height <= 0:
+        return (False, 0)
+    if collision.get("objects") and not force:
+        return (False, 0)
+
+    rects = _solid_rects_from_terrain(terrain, width, height)
+    obj_id = int(tmj.get("nextobjectid", 1))
+    objects: list[dict[str, Any]] = []
+    for (x, y, w, h) in rects:
+        objects.append(
+            {
+                "id": obj_id,
+                "name": "",
+                "type": "solid",
+                "x": x * tile_size,
+                "y": y * tile_size,
+                "width": w * tile_size,
+                "height": h * tile_size,
+                "rotation": 0,
+                "visible": True,
+            }
+        )
+        obj_id += 1
+    collision["objects"] = objects
+    tmj["nextobjectid"] = obj_id
+    return (True, len(rects))
+
+
+def convert_seed_collision(input_dir: Path, tile_size: int, force: bool) -> int:
+    count = 0
+    for tmj_path in sorted(input_dir.glob("screen-*.tmj")):
+        tmj = json.loads(tmj_path.read_text(encoding="utf-8"))
+        changed, _ = seed_collision(tmj, tile_size=tile_size, force=force)
+        if changed:
+            _write_json(tmj_path, tmj)
+            count += 1
+    return count
+
+
+# --------------------------------------------------------------------------
 # CLI: batch-convert a directory of screens
 # --------------------------------------------------------------------------
 def _screen_index_from_name(path: Path, tmj: dict[str, Any]) -> int:
@@ -333,19 +422,26 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "direction",
-        choices=("to-tiled", "from-tiled"),
-        help="to-tiled: .map.json -> .tmj ; from-tiled: .tmj -> .map.json",
+        choices=("to-tiled", "from-tiled", "seed-collision"),
+        help="to-tiled / from-tiled / seed-collision (fill collision from solid tiles, in place)",
     )
     parser.add_argument("--input-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=False)
     parser.add_argument("--tile-size", type=int, default=TILE_SIZE)
+    parser.add_argument("--force", action="store_true",
+                        help="seed-collision: overwrite an existing collision layer")
     args = parser.parse_args()
 
+    if args.direction in ("to-tiled", "from-tiled"):
+        if args.output_dir is None:
+            parser.error(f"{args.direction} requires --output-dir")
     if args.direction == "to-tiled":
         written = convert_to_tiled(args.input_dir, args.output_dir, args.tile_size)
-    else:
+    elif args.direction == "from-tiled":
         written = convert_from_tiled(args.input_dir, args.output_dir, args.tile_size)
-    print(f"{args.direction}: wrote {written} file(s) to {args.output_dir}")
+    else:  # seed-collision
+        written = convert_seed_collision(args.input_dir, args.tile_size, args.force)
+    print(f"{args.direction}: wrote {written} file(s)")
 
 
 if __name__ == "__main__":
