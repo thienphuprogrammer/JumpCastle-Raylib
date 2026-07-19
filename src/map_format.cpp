@@ -184,7 +184,7 @@ ScreenMap parse_screen_map_file(const std::filesystem::path& path) {
 
 std::string serialize_screen_map(const ScreenMap& map) {
     Json root;
-    root["schema_version"] = 1;
+    root["schema_version"] = map.terrain.gids.empty() ? 1 : 2;
     root["screen"] = {{"index", map.index}, {"width", map.width}, {"height", map.height}};
     root["biome"] = map.biome;
 
@@ -211,6 +211,24 @@ std::string serialize_screen_map(const ScreenMap& map) {
         });
     }
     root["entities"] = entities;
+
+    if (!map.terrain.gids.empty()) {
+        root["tileset"] = {
+            {"name", "castle"},
+            {"columns", map.tileset_columns},
+            {"tile_size", map.tileset_tile_size},
+        };
+        Json terrain = Json::array();
+        for (int r = 0; r < map.terrain.rows; ++r) {
+            Json row = Json::array();
+            for (int c = 0; c < map.terrain.columns; ++c) {
+                row.push_back(
+                    map.terrain.gids[static_cast<std::size_t>(r) * map.terrain.columns + c]);
+            }
+            terrain.push_back(row);
+        }
+        root["tiles"] = {{"terrain", terrain}};
+    }
 
     return root.dump(2);
 }

@@ -108,3 +108,26 @@ TEST_CASE("parse of a v1 map leaves terrain empty", "[map_format]") {
     CHECK(map.terrain.columns == 0);
     CHECK(map.terrain.rows == 0);
 }
+
+TEST_CASE("serialize round-trips a terrain layer incl. flip bits", "[map_format]") {
+    jumpcastle::ScreenMap map;
+    map.index = 4;
+    map.width = 2;
+    map.height = 2;
+    map.biome = "frosted_keep";
+    map.tileset_columns = 21;
+    map.tileset_tile_size = 16;
+    map.terrain.columns = 2;
+    map.terrain.rows = 2;
+    map.terrain.gids = {0u, 5u, 0x80000000u | 6u, 3u};  // one horizontally-flipped GID
+
+    const std::string json = jumpcastle::serialize_screen_map(map);
+    const jumpcastle::ScreenMap back = jumpcastle::parse_screen_map(json, "roundtrip");
+
+    CHECK(back.terrain.columns == 2);
+    CHECK(back.terrain.rows == 2);
+    REQUIRE(back.terrain.gids.size() == 4);
+    CHECK(back.terrain.gids[2] == (0x80000000u | 6u));  // flip bit preserved
+    CHECK(back.terrain.gids[1] == 5u);
+    CHECK(back.tileset_columns == 21);
+}
