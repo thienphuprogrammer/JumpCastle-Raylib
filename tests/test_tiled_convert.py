@@ -140,6 +140,38 @@ def test_class_key_is_accepted_as_alias_for_type():
     assert screen["entities"] == [{"type": "spawn", "pos": [3, 35]}]
 
 
+def test_round_trip_preserves_tiles_incl_flip():
+    screen = {
+        "schema_version": 2,
+        "screen": {"index": 4, "width": 2, "height": 2},
+        "biome": "frosted_keep",
+        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tiles": {"terrain": [[0, 5], [0x80000000 | 6, 3]]},  # one H-flipped GID
+        "colliders": [],
+        "entities": [],
+    }
+    tmj = screen_map_to_tiled(screen)
+    restored = tiled_to_screen_map(tmj, index=4)
+    assert restored["schema_version"] == 2
+    assert restored["tiles"]["terrain"] == [[0, 5], [0x80000000 | 6, 3]]
+
+
+def test_round_trip_tileless_screen_stays_v1():
+    screen = {
+        "schema_version": 1,
+        "screen": {"index": 7, "width": 4, "height": 3},
+        "biome": "courtyard",
+        "colliders": [{"id": 1, "type": "solid", "points": [[0, 2], [4, 2], [4, 3], [0, 3]]}],
+        "entities": [{"type": "spawn", "pos": [1, 1]}],
+    }
+    tmj = screen_map_to_tiled(screen)
+    restored = tiled_to_screen_map(tmj, index=7)
+    assert restored["schema_version"] == 1
+    assert "tiles" not in restored
+    assert restored["colliders"][0]["points"] == [[0, 2], [4, 2], [4, 3], [0, 3]]
+    assert restored["entities"] == [{"type": "spawn", "pos": [1, 1]}]
+
+
 def test_tiled_to_screen_reads_terrain_layer():
     tmj = {
         "width": 3,
