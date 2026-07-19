@@ -13,8 +13,13 @@ from PIL import Image
 
 
 TILE = 16
-TERRAIN_COLUMNS = 7
-TERRAIN_ROWS = 5
+# Per-biome terrain region: 8 columns x 8 rows (P0 atlas enrichment). The
+# top-left 3x3 (cols 0-2, rows 0-2) is a hard contract with the game: it is
+# read as the 9-slice, and `terrain_fill_region` derives the solid "center"
+# fill from cell (1, 1). Everything else in the 8x8 grid is this pipeline's
+# choice to place as it sees fit.
+TERRAIN_COLUMNS = 8
+TERRAIN_ROWS = 8
 BIOME_ORDER = ("courtyard", "frosted_keep", "crown_spire")
 ANIMATION_NAMES = {
     "idle": "idle",
@@ -152,46 +157,117 @@ def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
     return result
 
 
-def terrain_layout() -> tuple[tuple[str, ...], ...]:
-    return (
-        ("top_left", "top", "top_right", "isolated", "inner_corner_tl", "top", "inner_corner_tr"),
-        ("left", "center", "right", "isolated", "left", "center", "right"),
-        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bl", "bottom", "inner_corner_br"),
-        ("top_left", "top", "top_right", "isolated", "inner_corner_tl", "top", "inner_corner_tr"),
-        ("bottom_left", "bottom", "bottom_right", "isolated", "inner_corner_bl", "bottom", "inner_corner_br"),
-    )
+# The 9-slice occupies the hard-contract top-left 3x3 of every biome's 8x8
+# terrain region. Everything else is enrichment: inner corners, platforms, a
+# ledge, a pillar, an isolated accent, two decor details, and a hazard tile,
+# each recorded in the manifest as its own named region so the Tiled painting
+# palette (and any future tooling) can address them individually.
+CORE_9SLICE_POSITIONS: dict[str, tuple[int, int]] = {
+    "top_left": (0, 0), "top": (0, 1), "top_right": (0, 2),
+    "left": (1, 0), "center": (1, 1), "right": (1, 2),
+    "bottom_left": (2, 0), "bottom": (2, 1), "bottom_right": (2, 2),
+}
+EXTRA_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    "inner_corner_tl": (0, 3), "inner_corner_tr": (0, 4),
+    "platform_left": (0, 5), "platform_mid": (0, 6), "platform_right": (0, 7),
+    "inner_corner_bl": (1, 3), "inner_corner_br": (1, 4),
+    "ledge": (1, 5), "pillar": (1, 6), "isolated": (1, 7),
+    "detail_1": (2, 3), "detail_2": (2, 4), "hazard": (2, 5),
+}
+NAMED_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    **CORE_9SLICE_POSITIONS,
+    **EXTRA_SLOT_POSITIONS,
+}
+# checkpoint/exit are painted from the shared `props` icons (not a per-biome
+# terrain source region), so they reserve two grid cells rather than taking a
+# name out of `selection["biomes"][biome]`.
+RESERVED_SPECIAL_POSITIONS: dict[str, tuple[int, int]] = {
+    "checkpoint": (2, 6),
+    "exit": (2, 7),
+}
+# Cells not claimed by a named slot or a reserved special are filled by
+# cycling this list so every atlas cell is painted (no dead/transparent holes
+# in the Tiled tile picker). Order is arbitrary but must stay deterministic.
+# Deliberately excludes top_left/top/top_right: those are the exposed-edge
+# row of the 9-slice and, in every biome's source art, carry a partial-alpha
+# silhouette (grass/snow fringe against open air). Repeating them mid-grid
+# would scatter that fringe across cells meant to read as solid floor.
+FILLER_CYCLE = (
+    "left", "center", "right",
+    "bottom_left", "bottom", "bottom_right",
+    "isolated",
+)
+
+
+def terrain_layout() -> tuple[tuple[str | None, ...], ...]:
+    """Deterministic 8x8 per-biome name grid.
+
+    Rows/cols 0-2 are the 9-slice (a hard contract with the game). The
+    remaining named slots (inner corners, platforms, ledge, pillar, isolated,
+    decor details, hazard) sit at fixed positions alongside it. The two cells
+    reserved for checkpoint/exit are left as `None` (painted separately from
+    `props`, not from a named terrain region). Every other cell repeats a
+    useful auto-tile name so the whole grid is painted.
+    """
+    grid: list[list[str | None]] = [
+        [None] * TERRAIN_COLUMNS for _ in range(TERRAIN_ROWS)
+    ]
+    for name, (row, column) in NAMED_SLOT_POSITIONS.items():
+        grid[row][column] = name
+    filler_index = 0
+    for row in range(TERRAIN_ROWS):
+        for column in range(TERRAIN_COLUMNS):
+            if grid[row][column] is not None:
+                continue
+            if (row, column) in RESERVED_SPECIAL_POSITIONS.values():
+                continue
+            grid[row][column] = FILLER_CYCLE[filler_index % len(FILLER_CYCLE)]
+            filler_index += 1
+    return tuple(tuple(row) for row in grid)
 
 
 def build_castle(
     selection: dict[str, Any], sources: SourceImages, output: Path
 ) -> dict[str, Any]:
     biome_width = TERRAIN_COLUMNS * TILE
-    atlas = Image.new("RGBA", (len(BIOME_ORDER) * biome_width, 6 * TILE))
+    biome_height = TERRAIN_ROWS * TILE
+    atlas = Image.new("RGBA", (len(BIOME_ORDER) * biome_width, biome_height))
     biome_records: dict[str, Any] = {}
     props = selection["props"]
+    layout = terrain_layout()
 
     for biome_index, biome_name in enumerate(BIOME_ORDER):
         origin_x = biome_index * biome_width
         regions = selection["biomes"][biome_name]
-        for row, names in enumerate(terrain_layout()):
+        for row, names in enumerate(layout):
             for column, name in enumerate(names):
+                if name is None:
+                    continue  # reserved for checkpoint/exit below
                 atlas.alpha_composite(
                     fitted_tile(sources.crop(regions[name])),
                     (origin_x + column * TILE, row * TILE),
                 )
 
+        named_regions: dict[str, dict[str, int]] = {
+            name: rect(origin_x + column * TILE, row * TILE)
+            for name, (row, column) in NAMED_SLOT_POSITIONS.items()
+        }
+
         special_regions: dict[str, dict[str, int]] = {}
-        specials = (
-            ("spike", props["torch"]),
+        for name, source_region in (
             ("checkpoint", props["banner"]),
             ("exit", props["crown"]),
-            ("background", regions["isolated"]),
-        )
-        for column, (name, source_region) in enumerate(specials):
+        ):
+            row, column = RESERVED_SPECIAL_POSITIONS[name]
             x = origin_x + column * TILE
-            y = TERRAIN_ROWS * TILE
+            y = row * TILE
             atlas.alpha_composite(fitted_tile(sources.crop(source_region)), (x, y))
             special_regions[name] = rect(x, y)
+        # `spike` is now the biome's own curated hazard tile (previously a
+        # torch-flame placeholder shared by all three biomes); `background`
+        # reuses the isolated accent. Both alias an already-painted cell.
+        special_regions["spike"] = named_regions["hazard"]
+        special_regions["background"] = named_regions["isolated"]
 
         biome_records[biome_name] = {
             "terrain_grid": {
@@ -201,7 +277,7 @@ def build_castle(
                 "columns": TERRAIN_COLUMNS,
                 "rows": TERRAIN_ROWS,
             },
-            "regions": special_regions,
+            "regions": {**named_regions, **special_regions},
         }
 
     path = output / "castle.png"

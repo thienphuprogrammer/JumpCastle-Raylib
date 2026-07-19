@@ -105,31 +105,163 @@
             "background": {
               "height": 16,
               "width": 16,
-              "x": 48,
-              "y": 80
+              "x": 112,
+              "y": 16
+            },
+            "bottom": {
+              "height": 16,
+              "width": 16,
+              "x": 16,
+              "y": 32
+            },
+            "bottom_left": {
+              "height": 16,
+              "width": 16,
+              "x": 0,
+              "y": 32
+            },
+            "bottom_right": {
+              "height": 16,
+              "width": 16,
+              "x": 32,
+              "y": 32
+            },
+            "center": {
+              "height": 16,
+              "width": 16,
+              "x": 16,
+              "y": 16
             },
             "checkpoint": {
               "height": 16,
               "width": 16,
-              "x": 16,
-              "y": 80
+              "x": 96,
+              "y": 32
+            },
+            "detail_1": {
+              "height": 16,
+              "width": 16,
+              "x": 48,
+              "y": 32
+            },
+            "detail_2": {
+              "height": 16,
+              "width": 16,
+              "x": 64,
+              "y": 32
             },
             "exit": {
               "height": 16,
               "width": 16,
+              "x": 112,
+              "y": 32
+            },
+            "hazard": {
+              "height": 16,
+              "width": 16,
+              "x": 80,
+              "y": 32
+            },
+            "inner_corner_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 48,
+              "y": 16
+            },
+            "inner_corner_br": {
+              "height": 16,
+              "width": 16,
+              "x": 64,
+              "y": 16
+            },
+            "inner_corner_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 48,
+              "y": 0
+            },
+            "inner_corner_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 64,
+              "y": 0
+            },
+            "isolated": {
+              "height": 16,
+              "width": 16,
+              "x": 112,
+              "y": 16
+            },
+            "ledge": {
+              "height": 16,
+              "width": 16,
+              "x": 80,
+              "y": 16
+            },
+            "left": {
+              "height": 16,
+              "width": 16,
+              "x": 0,
+              "y": 16
+            },
+            "pillar": {
+              "height": 16,
+              "width": 16,
+              "x": 96,
+              "y": 16
+            },
+            "platform_left": {
+              "height": 16,
+              "width": 16,
+              "x": 80,
+              "y": 0
+            },
+            "platform_mid": {
+              "height": 16,
+              "width": 16,
+              "x": 96,
+              "y": 0
+            },
+            "platform_right": {
+              "height": 16,
+              "width": 16,
+              "x": 112,
+              "y": 0
+            },
+            "right": {
+              "height": 16,
+              "width": 16,
               "x": 32,
-              "y": 80
+              "y": 16
             },
             "spike": {
               "height": 16,
               "width": 16,
+              "x": 80,
+              "y": 32
+            },
+            "top": {
+              "height": 16,
+              "width": 16,
+              "x": 16,
+              "y": 0
+            },
+            "top_left": {
+              "height": 16,
+              "width": 16,
               "x": 0,
-              "y": 80
+              "y": 0
+            },
+            "top_right": {
+              "height": 16,
+              "width": 16,
+              "x": 32,
+              "y": 0
             }
           },
           "terrain_grid": {
-            "columns": 7,
-            "rows": 5,
+            "columns": 8,
+            "rows": 8,
             "tile_size": 16,
             "x": 0,
             "y": 0
@@ -140,33 +272,165 @@
             "background": {
               "height": 16,
               "width": 16,
+              "x": 368,
+              "y": 16
+            },
+            "bottom": {
+              "height": 16,
+              "width": 16,
               "x": 272,
-              "y": 80
+              "y": 32
+            },
+            "bottom_left": {
+              "height": 16,
+              "width": 16,
+              "x": 256,
+              "y": 32
+            },
+            "bottom_right": {
+              "height": 16,
+              "width": 16,
+              "x": 288,
+              "y": 32
+            },
+            "center": {
+              "height": 16,
+              "width": 16,
+              "x": 272,
+              "y": 16
             },
             "checkpoint": {
               "height": 16,
               "width": 16,
-              "x": 240,
-              "y": 80
+              "x": 352,
+              "y": 32
+            },
+            "detail_1": {
+              "height": 16,
+              "width": 16,
+              "x": 304,
+              "y": 32
+            },
+            "detail_2": {
+              "height": 16,
+              "width": 16,
+              "x": 320,
+              "y": 32
             },
             "exit": {
               "height": 16,
               "width": 16,
+              "x": 368,
+              "y": 32
+            },
+            "hazard": {
+              "height": 16,
+              "width": 16,
+              "x": 336,
+              "y": 32
+            },
+            "inner_corner_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 304,
+              "y": 16
+            },
+            "inner_corner_br": {
+              "height": 16,
+              "width": 16,
+              "x": 320,
+              "y": 16
+            },
+            "inner_corner_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 304,
+              "y": 0
+            },
+            "inner_corner_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 320,
+              "y": 0
+            },
+            "isolated": {
+              "height": 16,
+              "width": 16,
+              "x": 368,
+              "y": 16
+            },
+            "ledge": {
+              "height": 16,
+              "width": 16,
+              "x": 336,
+              "y": 16
+            },
+            "left": {
+              "height": 16,
+              "width": 16,
               "x": 256,
-              "y": 80
+              "y": 16
+            },
+            "pillar": {
+              "height": 16,
+              "width": 16,
+              "x": 352,
+              "y": 16
+            },
+            "platform_left": {
+              "height": 16,
+              "width": 16,
+              "x": 336,
+              "y": 0
+            },
+            "platform_mid": {
+              "height": 16,
+              "width": 16,
+              "x": 352,
+              "y": 0
+            },
+            "platform_right": {
+              "height": 16,
+              "width": 16,
+              "x": 368,
+              "y": 0
+            },
+            "right": {
+              "height": 16,
+              "width": 16,
+              "x": 288,
+              "y": 16
             },
             "spike": {
               "height": 16,
               "width": 16,
-              "x": 224,
-              "y": 80
+              "x": 336,
+              "y": 32
+            },
+            "top": {
+              "height": 16,
+              "width": 16,
+              "x": 272,
+              "y": 0
+            },
+            "top_left": {
+              "height": 16,
+              "width": 16,
+              "x": 256,
+              "y": 0
+            },
+            "top_right": {
+              "height": 16,
+              "width": 16,
+              "x": 288,
+              "y": 0
             }
           },
           "terrain_grid": {
-            "columns": 7,
-            "rows": 5,
+            "columns": 8,
+            "rows": 8,
             "tile_size": 16,
-            "x": 224,
+            "x": 256,
             "y": 0
           }
         },
@@ -175,41 +439,173 @@
             "background": {
               "height": 16,
               "width": 16,
+              "x": 240,
+              "y": 16
+            },
+            "bottom": {
+              "height": 16,
+              "width": 16,
+              "x": 144,
+              "y": 32
+            },
+            "bottom_left": {
+              "height": 16,
+              "width": 16,
+              "x": 128,
+              "y": 32
+            },
+            "bottom_right": {
+              "height": 16,
+              "width": 16,
               "x": 160,
-              "y": 80
+              "y": 32
+            },
+            "center": {
+              "height": 16,
+              "width": 16,
+              "x": 144,
+              "y": 16
             },
             "checkpoint": {
               "height": 16,
               "width": 16,
-              "x": 128,
-              "y": 80
+              "x": 224,
+              "y": 32
+            },
+            "detail_1": {
+              "height": 16,
+              "width": 16,
+              "x": 176,
+              "y": 32
+            },
+            "detail_2": {
+              "height": 16,
+              "width": 16,
+              "x": 192,
+              "y": 32
             },
             "exit": {
               "height": 16,
               "width": 16,
-              "x": 144,
-              "y": 80
+              "x": 240,
+              "y": 32
+            },
+            "hazard": {
+              "height": 16,
+              "width": 16,
+              "x": 208,
+              "y": 32
+            },
+            "inner_corner_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 176,
+              "y": 16
+            },
+            "inner_corner_br": {
+              "height": 16,
+              "width": 16,
+              "x": 192,
+              "y": 16
+            },
+            "inner_corner_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 176,
+              "y": 0
+            },
+            "inner_corner_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 192,
+              "y": 0
+            },
+            "isolated": {
+              "height": 16,
+              "width": 16,
+              "x": 240,
+              "y": 16
+            },
+            "ledge": {
+              "height": 16,
+              "width": 16,
+              "x": 208,
+              "y": 16
+            },
+            "left": {
+              "height": 16,
+              "width": 16,
+              "x": 128,
+              "y": 16
+            },
+            "pillar": {
+              "height": 16,
+              "width": 16,
+              "x": 224,
+              "y": 16
+            },
+            "platform_left": {
+              "height": 16,
+              "width": 16,
+              "x": 208,
+              "y": 0
+            },
+            "platform_mid": {
+              "height": 16,
+              "width": 16,
+              "x": 224,
+              "y": 0
+            },
+            "platform_right": {
+              "height": 16,
+              "width": 16,
+              "x": 240,
+              "y": 0
+            },
+            "right": {
+              "height": 16,
+              "width": 16,
+              "x": 160,
+              "y": 16
             },
             "spike": {
               "height": 16,
               "width": 16,
-              "x": 112,
-              "y": 80
+              "x": 208,
+              "y": 32
+            },
+            "top": {
+              "height": 16,
+              "width": 16,
+              "x": 144,
+              "y": 0
+            },
+            "top_left": {
+              "height": 16,
+              "width": 16,
+              "x": 128,
+              "y": 0
+            },
+            "top_right": {
+              "height": 16,
+              "width": 16,
+              "x": 160,
+              "y": 0
             }
           },
           "terrain_grid": {
-            "columns": 7,
-            "rows": 5,
+            "columns": 8,
+            "rows": 8,
             "tile_size": 16,
-            "x": 112,
+            "x": 128,
             "y": 0
           }
         }
       },
       "file": "castle.png",
-      "height": 96,
-      "sha256": "0bd216a196e35d5337621a69ddea12425af08d8f8bbcbad10eba9c5a218e3f12",
-      "width": 336
+      "height": 128,
+      "sha256": "2a199ffbd9618f7f88c193274e06a5155b4bdccd312c2b0c5cc0ed6bf3fd63ef",
+      "width": 384
     },
     "knight": {
       "file": "knight.png",
