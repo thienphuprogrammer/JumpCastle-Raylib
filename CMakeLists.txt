@@ -50,8 +50,6 @@ add_library(
   src/replay.cpp
   src/simulation.cpp
   src/solver.cpp
-  src/world.cpp
-  src/world_loader.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)

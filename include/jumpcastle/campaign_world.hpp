@@ -10,8 +10,8 @@
 
 namespace jumpcastle {
 
-// The polygon-collision analog of WorldMap: the runtime collision plus the
-// campaign metadata (spawn, goal, total height, per-screen biome) derived from
+// The runtime campaign: the polygon collision world plus the campaign
+// metadata (spawn, goal, total height, per-screen biome) derived from
 // per-screen maps.
 struct CampaignWorld {
     CollisionWorld collision;
@@ -29,16 +29,6 @@ struct CampaignWorld {
     [[nodiscard]] static CampaignWorld from_screens(
         const std::vector<ScreenMap>& screens,
         int screen_height);
-
-    // Bridge: convert the legacy grid WorldMap into a polygon campaign world by
-    // greedily merging runs of solid tiles into rectangles (merged rects avoid
-    // the player snagging on seams between adjacent unit tiles).
-    [[nodiscard]] static CampaignWorld from_world_map(const WorldMap& grid);
-
-    // The per-screen, screen-local polygon maps a grid converts to. Exposed so a
-    // one-time export can materialize campaign.level as screen-NN.map.json files.
-    [[nodiscard]] static std::vector<ScreenMap> screen_maps_from_world_map(
-        const WorldMap& grid);
 
     // Loads every screen-NN.map.json in a directory into one campaign world.
     // screen_height <= 0 derives the band height from the loaded screens, so the
