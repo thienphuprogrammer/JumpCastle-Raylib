@@ -108,11 +108,23 @@ def tiled_to_screen_map(
 ) -> dict[str, Any]:
     """Convert a parsed Tiled map into a JumpCastle screen-map dict."""
     resolved_biome = biome or _map_property(tmj, "biome") or DEFAULT_BIOME
+    width = int(tmj.get("width", 0))
+    height = int(tmj.get("height", 0))
     colliders: list[dict[str, Any]] = []
     entities: list[dict[str, Any]] = []
+    terrain_grid: list[list[int]] | None = None
 
     for layer in tmj.get("layers", []):
-        if layer.get("type") != "objectgroup":
+        layer_type = layer.get("type")
+        if layer_type == "tilelayer" and layer.get("name") == "terrain":
+            data = layer.get("data", []) or []
+            if width > 0 and any(int(gid) != 0 for gid in data):
+                terrain_grid = [
+                    [int(gid) for gid in data[row * width:(row + 1) * width]]
+                    for row in range(height)
+                ]
+            continue
+        if layer_type != "objectgroup":
             continue
         for obj in layer.get("objects", []):
             cls = object_class(obj)
@@ -136,17 +148,21 @@ def tiled_to_screen_map(
                 {"id": len(colliders) + 1, "type": cls, "points": points}
             )
 
-    return {
-        "schema_version": 1,
-        "screen": {
-            "index": index,
-            "width": float(tmj.get("width", 0)),
-            "height": float(tmj.get("height", 0)),
-        },
+    result: dict[str, Any] = {
+        "schema_version": 2 if terrain_grid is not None else 1,
+        "screen": {"index": index, "width": float(width), "height": float(height)},
         "biome": resolved_biome,
-        "colliders": colliders,
-        "entities": entities,
     }
+    if terrain_grid is not None:
+        result["tileset"] = {
+            "name": "castle",
+            "columns": TILESET_IMAGE_WIDTH // tile_size,
+            "tile_size": tile_size,
+        }
+        result["tiles"] = {"terrain": terrain_grid}
+    result["colliders"] = colliders
+    result["entities"] = entities
+    return result
 
 
 # --------------------------------------------------------------------------

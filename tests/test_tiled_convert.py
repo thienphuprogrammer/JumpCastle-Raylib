@@ -140,6 +140,37 @@ def test_class_key_is_accepted_as_alias_for_type():
     assert screen["entities"] == [{"type": "spawn", "pos": [3, 35]}]
 
 
+def test_tiled_to_screen_reads_terrain_layer():
+    tmj = {
+        "width": 3,
+        "height": 2,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 3, "height": 2,
+             "data": [0, 1, 0, 2, 0, 3]},
+        ],
+    }
+    screen = tiled_to_screen_map(tmj, index=2)
+    assert screen["schema_version"] == 2
+    assert screen["tiles"]["terrain"] == [[0, 1, 0], [2, 0, 3]]
+    assert screen["tileset"]["columns"] == 21
+    assert screen["tileset"]["tile_size"] == 16
+
+
+def test_all_zero_terrain_layer_yields_no_tiles():
+    tmj = {
+        "width": 3,
+        "height": 2,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 3, "height": 2,
+             "data": [0, 0, 0, 0, 0, 0]},
+        ],
+    }
+    screen = tiled_to_screen_map(tmj, index=0)
+    assert screen["schema_version"] == 1
+    assert "tiles" not in screen
+    assert "tileset" not in screen
+
+
 def test_screen_to_tiled_emits_terrain_tilelayer():
     screen = {
         "schema_version": 2,
