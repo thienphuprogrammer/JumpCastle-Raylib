@@ -118,6 +118,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/solver_test.cpp
     tests/world_test.cpp
     tests/world_reachability_test.cpp
+    tests/tile_view_test.cpp
   )
   target_link_libraries(
     jumpcastle_tests PRIVATE jumpcastle_core raylib Catch2::Catch2WithMain
