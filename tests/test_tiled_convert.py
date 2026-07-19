@@ -140,6 +140,19 @@ def test_class_key_is_accepted_as_alias_for_type():
     assert screen["entities"] == [{"type": "spawn", "pos": [3, 35]}]
 
 
+def test_castle_tsx_matches_the_atlas():
+    tsx = (
+        Path(__file__).resolve().parents[1]
+        / "assets" / "levels" / "tiled" / "castle.tsx"
+    ).read_text(encoding="utf-8")
+    assert 'name="castle"' in tsx
+    assert 'columns="21"' in tsx
+    assert 'tilecount="126"' in tsx
+    assert 'tilewidth="16"' in tsx and 'tileheight="16"' in tsx
+    assert 'source="../../generated/castle.png"' in tsx
+    assert 'width="336"' in tsx and 'height="96"' in tsx
+
+
 def test_untyped_and_polyline_objects_are_ignored():
     tmj = {
         "width": 28,
