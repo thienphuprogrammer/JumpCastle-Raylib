@@ -2,6 +2,7 @@
 
 #include "jumpcastle/convex.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 
@@ -60,6 +61,43 @@ void EditorState::cancel_polygon() {
     draft_points_.clear();
 }
 
+void EditorState::begin_rectangle(
+    const ColliderType type, const Vec2 origin, const bool snap) {
+    drafting_ = true;
+    draft_type_ = type;
+    rect_origin_ = snap ? snap_to_grid(origin) : origin;
+    draft_points_ = {rect_origin_};
+}
+
+void EditorState::update_rectangle(const Vec2 corner, const bool snap) {
+    if (!drafting_) { return; }
+    const Vec2 far_corner = snap ? snap_to_grid(corner) : corner;
+    const float x0 = std::min(rect_origin_.x, far_corner.x);
+    const float x1 = std::max(rect_origin_.x, far_corner.x);
+    const float y0 = std::min(rect_origin_.y, far_corner.y);
+    const float y1 = std::max(rect_origin_.y, far_corner.y);
+    draft_points_ = {{x0, y0}, {x1, y0}, {x1, y1}, {x0, y1}};
+}
+
+bool EditorState::commit_rectangle() {
+    if (!drafting_ || draft_points_.size() != 4) {
+        cancel_polygon();
+        return false;
+    }
+    const Vec2 low = draft_points_[0];
+    const Vec2 high = draft_points_[2];
+    // Reject a rectangle thinner than one snap step in either axis: a click
+    // without a real drag should not stamp a degenerate sliver.
+    if (high.x - low.x < snap_step || high.y - low.y < snap_step) {
+        cancel_polygon();
+        return false;
+    }
+    polygons_.push_back({draft_points_, draft_type_});
+    drafting_ = false;
+    draft_points_.clear();
+    return true;
+}
+
 bool EditorState::select_vertex(const Vec2 world_pos, const float radius) {
     selected_polygon_ = -1;
     selected_vertex_ = -1;
@@ -108,9 +146,35 @@ void EditorState::delete_selected_polygon() {
     selected_vertex_ = -1;
 }
 
+void EditorState::move_selected_polygon(const Vec2 delta) {
+    if (selected_polygon_ < 0 ||
+        selected_polygon_ >= static_cast<int>(polygons_.size())) {
+        return;
+    }
+    for (Vec2& point :
+         polygons_[static_cast<std::size_t>(selected_polygon_)].points) {
+        point = point + delta;
+    }
+}
+
 void EditorState::place_entity(
     const EntityType type, const Vec2 world_pos, const bool snap) {
     entities_.push_back({type, snap ? snap_to_grid(world_pos) : world_pos});
+}
+
+void EditorState::load_screen(const ScreenMap& screen) {
+    screen_index_ = screen.index;
+    width_ = screen.width;
+    height_ = screen.height;
+    polygons_.clear();
+    for (const ConvexPolygon& polygon : screen.polygons) {
+        polygons_.push_back({polygon.points, polygon.type});
+    }
+    entities_ = screen.entities;
+    drafting_ = false;
+    draft_points_.clear();
+    selected_polygon_ = -1;
+    selected_vertex_ = -1;
 }
 
 ScreenMap EditorState::to_screen_map() const {

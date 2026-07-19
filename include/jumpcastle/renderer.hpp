@@ -77,7 +77,8 @@ public:
         const CameraBand& camera,
         int screen_height,
         bool snap_enabled,
-        ColliderType current_type) const;
+        ColliderType current_type,
+        bool rect_mode) const;
 
 private:
     AssetCatalog catalog_;
