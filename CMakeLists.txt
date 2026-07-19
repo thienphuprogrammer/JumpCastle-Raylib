@@ -178,7 +178,22 @@ if(JUMPCASTLE_BUILD_TESTS)
   set_tests_properties(narrow_campaign_authoring PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
+  add_test(
+    NAME tiled_convert
+    COMMAND ${Python3_EXECUTABLE} -m pytest
+            ${PROJECT_SOURCE_DIR}/tests/test_tiled_convert.py -q
+  )
+  set_tests_properties(tiled_convert PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
 endif()
+
+# The polygon world is a directory of per-screen maps; SyncAssets copies files
+# by name, so enumerate the screen maps at configure time and sync each one.
+# (Re-run CMake configure after adding a new screen file.)
+file(GLOB JUMPCASTLE_SCREEN_MAPS
+     RELATIVE ${PROJECT_SOURCE_DIR}/assets
+     ${PROJECT_SOURCE_DIR}/assets/levels/screens/*.map.json)
 
 set(JUMPCASTLE_RUNTIME_ASSETS
   generated/castle.png
@@ -187,6 +202,7 @@ set(JUMPCASTLE_RUNTIME_ASSETS
   generated/manifest.json
   levels/campaign.level
   levels/campaign-route.json
+  ${JUMPCASTLE_SCREEN_MAPS}
 )
 
 add_custom_target(
