@@ -145,7 +145,7 @@ def test_round_trip_preserves_tiles_incl_flip():
         "schema_version": 2,
         "screen": {"index": 4, "width": 2, "height": 2},
         "biome": "frosted_keep",
-        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tileset": {"name": "castle", "columns": 24, "tile_size": 16},
         "tiles": {"terrain": [[0, 5], [0x80000000 | 6, 3]]},  # one H-flipped GID
         "colliders": [],
         "entities": [],
@@ -184,7 +184,7 @@ def test_tiled_to_screen_reads_terrain_layer():
     screen = tiled_to_screen_map(tmj, index=2)
     assert screen["schema_version"] == 2
     assert screen["tiles"]["terrain"] == [[0, 1, 0], [2, 0, 3]]
-    assert screen["tileset"]["columns"] == 21
+    assert screen["tileset"]["columns"] == 24
     assert screen["tileset"]["tile_size"] == 16
 
 
@@ -208,7 +208,7 @@ def test_screen_to_tiled_emits_terrain_tilelayer():
         "schema_version": 2,
         "screen": {"index": 2, "width": 3, "height": 2},
         "biome": "courtyard",
-        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tileset": {"name": "castle", "columns": 24, "tile_size": 16},
         "tiles": {"terrain": [[0, 1, 0], [2, 0, 3]]},
         "colliders": [],
         "entities": [],
@@ -229,11 +229,11 @@ def test_castle_tsx_matches_the_atlas():
         / "assets" / "levels" / "tiled" / "castle.tsx"
     ).read_text(encoding="utf-8")
     assert 'name="castle"' in tsx
-    assert 'columns="21"' in tsx
-    assert 'tilecount="126"' in tsx
+    assert 'columns="24"' in tsx
+    assert 'tilecount="192"' in tsx
     assert 'tilewidth="16"' in tsx and 'tileheight="16"' in tsx
     assert 'source="../../generated/castle.png"' in tsx
-    assert 'width="336"' in tsx and 'height="96"' in tsx
+    assert 'width="384"' in tsx and 'height="128"' in tsx
 
 
 def test_untyped_and_polyline_objects_are_ignored():

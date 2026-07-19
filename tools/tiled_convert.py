@@ -47,8 +47,8 @@ SCREEN_INDEX_PATTERN = re.compile(r"screen-(\d+)")
 # is relative to a .tmj under assets/levels/tiled/. Dimensions match
 # assets/generated/castle.png.
 TILESET_IMAGE = "../../generated/castle.png"
-TILESET_IMAGE_WIDTH = 336
-TILESET_IMAGE_HEIGHT = 96
+TILESET_IMAGE_WIDTH = 384
+TILESET_IMAGE_HEIGHT = 128
 TILESET_SOURCE = "castle.tsx"  # external tileset shared by every screen .tmj
 
 
