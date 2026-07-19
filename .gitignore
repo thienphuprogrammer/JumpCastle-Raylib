@@ -11,6 +11,7 @@ cmake-build-*/
 out/
 intermediate/
 assets/sources/downloads/
+assets/downloads/
 
 *.exe
 *.pdb

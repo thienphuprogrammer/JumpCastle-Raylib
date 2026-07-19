@@ -73,3 +73,74 @@ TEST_CASE("parse_screen_map_file throws on a missing file") {
         parse_screen_map_file("/nonexistent/jumpcastle/does-not-exist.map.json"),
         std::runtime_error);
 }
+
+TEST_CASE("parse reads a v2 tiles.terrain grid", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 2,
+        "screen": {"index": 1, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tiles": {"terrain": [[0, 1, 0], [2, 0, 3]]},
+        "colliders": [],
+        "entities": []
+    })";
+    const jumpcastle::ScreenMap map = jumpcastle::parse_screen_map(json, "v2");
+    CHECK(map.terrain.columns == 3);
+    CHECK(map.terrain.rows == 2);
+    REQUIRE(map.terrain.gids.size() == 6);
+    CHECK(map.terrain.gids[1] == 1u);   // row 0, col 1
+    CHECK(map.terrain.gids[3] == 2u);   // row 1, col 0
+    CHECK(map.terrain.gids[5] == 3u);   // row 1, col 2
+    CHECK(map.tileset_columns == 21);
+    CHECK(map.tileset_tile_size == 16);
+}
+
+TEST_CASE("parse of a v1 map leaves terrain empty", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 1,
+        "screen": {"index": 0, "width": 16, "height": 12},
+        "biome": "courtyard",
+        "colliders": [],
+        "entities": []
+    })";
+    const jumpcastle::ScreenMap map = jumpcastle::parse_screen_map(json, "v1");
+    CHECK(map.terrain.gids.empty());
+    CHECK(map.terrain.columns == 0);
+    CHECK(map.terrain.rows == 0);
+}
+
+TEST_CASE("serialize round-trips a terrain layer incl. flip bits", "[map_format]") {
+    jumpcastle::ScreenMap map;
+    map.index = 4;
+    map.width = 2;
+    map.height = 2;
+    map.biome = "frosted_keep";
+    map.tileset_columns = 21;
+    map.tileset_tile_size = 16;
+    map.terrain.columns = 2;
+    map.terrain.rows = 2;
+    map.terrain.gids = {0u, 5u, 0x80000000u | 6u, 3u};  // one horizontally-flipped GID
+
+    const std::string json = jumpcastle::serialize_screen_map(map);
+    const jumpcastle::ScreenMap back = jumpcastle::parse_screen_map(json, "roundtrip");
+
+    CHECK(back.terrain.columns == 2);
+    CHECK(back.terrain.rows == 2);
+    REQUIRE(back.terrain.gids.size() == 4);
+    CHECK(back.terrain.gids[2] == (0x80000000u | 6u));  // flip bit preserved
+    CHECK(back.terrain.gids[1] == 5u);
+    CHECK(back.tileset_columns == 21);
+}
+
+TEST_CASE("parse rejects a terrain grid with the wrong dimensions", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 2,
+        "screen": {"index": 0, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tiles": {"terrain": [[0, 1, 0]]},
+        "colliders": [],
+        "entities": []
+    })";
+    CHECK_THROWS_AS(
+        jumpcastle::parse_screen_map(json, "bad-grid"), std::runtime_error);
+}

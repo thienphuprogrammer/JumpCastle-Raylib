@@ -2,6 +2,7 @@
 
 #include "jumpcastle/math.hpp"
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -24,6 +25,12 @@ struct MapEntity {
     Vec2 pos{};
 };
 
+struct TileLayer {
+    int columns{};
+    int rows{};
+    std::vector<std::uint32_t> gids;  // row-major, size == columns*rows; 0 == empty
+};
+
 struct ScreenMap {
     int index{};
     float width{};
@@ -31,6 +38,9 @@ struct ScreenMap {
     std::string biome;
     std::vector<ConvexPolygon> polygons;
     std::vector<MapEntity> entities;
+    TileLayer terrain{};          // empty when the map is v1 / has no painted tiles
+    int tileset_columns{21};      // tiles per atlas row; renderer re-derives from the texture
+    int tileset_tile_size{16};    // px per tile
 };
 
 // Parses a `.map.json` screen. Validates, splits concave colliders into convex

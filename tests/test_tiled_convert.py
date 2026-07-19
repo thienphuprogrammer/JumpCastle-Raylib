@@ -140,6 +140,102 @@ def test_class_key_is_accepted_as_alias_for_type():
     assert screen["entities"] == [{"type": "spawn", "pos": [3, 35]}]
 
 
+def test_round_trip_preserves_tiles_incl_flip():
+    screen = {
+        "schema_version": 2,
+        "screen": {"index": 4, "width": 2, "height": 2},
+        "biome": "frosted_keep",
+        "tileset": {"name": "castle", "columns": 24, "tile_size": 16},
+        "tiles": {"terrain": [[0, 5], [0x80000000 | 6, 3]]},  # one H-flipped GID
+        "colliders": [],
+        "entities": [],
+    }
+    tmj = screen_map_to_tiled(screen)
+    restored = tiled_to_screen_map(tmj, index=4)
+    assert restored["schema_version"] == 2
+    assert restored["tiles"]["terrain"] == [[0, 5], [0x80000000 | 6, 3]]
+
+
+def test_round_trip_tileless_screen_stays_v1():
+    screen = {
+        "schema_version": 1,
+        "screen": {"index": 7, "width": 4, "height": 3},
+        "biome": "courtyard",
+        "colliders": [{"id": 1, "type": "solid", "points": [[0, 2], [4, 2], [4, 3], [0, 3]]}],
+        "entities": [{"type": "spawn", "pos": [1, 1]}],
+    }
+    tmj = screen_map_to_tiled(screen)
+    restored = tiled_to_screen_map(tmj, index=7)
+    assert restored["schema_version"] == 1
+    assert "tiles" not in restored
+    assert restored["colliders"][0]["points"] == [[0, 2], [4, 2], [4, 3], [0, 3]]
+    assert restored["entities"] == [{"type": "spawn", "pos": [1, 1]}]
+
+
+def test_tiled_to_screen_reads_terrain_layer():
+    tmj = {
+        "width": 3,
+        "height": 2,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 3, "height": 2,
+             "data": [0, 1, 0, 2, 0, 3]},
+        ],
+    }
+    screen = tiled_to_screen_map(tmj, index=2)
+    assert screen["schema_version"] == 2
+    assert screen["tiles"]["terrain"] == [[0, 1, 0], [2, 0, 3]]
+    assert screen["tileset"]["columns"] == 24
+    assert screen["tileset"]["tile_size"] == 16
+
+
+def test_all_zero_terrain_layer_yields_no_tiles():
+    tmj = {
+        "width": 3,
+        "height": 2,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 3, "height": 2,
+             "data": [0, 0, 0, 0, 0, 0]},
+        ],
+    }
+    screen = tiled_to_screen_map(tmj, index=0)
+    assert screen["schema_version"] == 1
+    assert "tiles" not in screen
+    assert "tileset" not in screen
+
+
+def test_screen_to_tiled_emits_terrain_tilelayer():
+    screen = {
+        "schema_version": 2,
+        "screen": {"index": 2, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tileset": {"name": "castle", "columns": 24, "tile_size": 16},
+        "tiles": {"terrain": [[0, 1, 0], [2, 0, 3]]},
+        "colliders": [],
+        "entities": [],
+    }
+    tmj = screen_map_to_tiled(screen)
+    terrain = next(l for l in tmj["layers"] if l["name"] == "terrain")
+    assert terrain["type"] == "tilelayer"
+    assert terrain["width"] == 3 and terrain["height"] == 2
+    assert terrain["data"] == [0, 1, 0, 2, 0, 3]  # row-major flatten
+    assert tmj["tilesets"] == [{"firstgid": 1, "source": "castle.tsx"}]
+    # collision/entities object layers are still present
+    assert {l["name"] for l in tmj["layers"]} == {"terrain", "collision", "entities"}
+
+
+def test_castle_tsx_matches_the_atlas():
+    tsx = (
+        Path(__file__).resolve().parents[1]
+        / "assets" / "levels" / "tiled" / "castle.tsx"
+    ).read_text(encoding="utf-8")
+    assert 'name="castle"' in tsx
+    assert 'columns="24"' in tsx
+    assert 'tilecount="192"' in tsx
+    assert 'tilewidth="16"' in tsx and 'tileheight="16"' in tsx
+    assert 'source="../../generated/castle.png"' in tsx
+    assert 'width="384"' in tsx and 'height="128"' in tsx
+
+
 def test_untyped_and_polyline_objects_are_ignored():
     tmj = {
         "width": 28,
@@ -160,3 +256,42 @@ def test_untyped_and_polyline_objects_are_ignored():
     screen = tiled_to_screen_map(tmj, index=1)
     assert screen["colliders"] == []  # untyped rect, and polyline (not a shape)
     assert screen["entities"] == []  # 'decoration' is not an entity class
+
+
+def test_seed_collision_merges_solid_tiles_into_rects():
+    from tiled_convert import seed_collision
+    tmj = {
+        "width": 4, "height": 3, "nextobjectid": 1,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 4, "height": 3,
+             "data": [0, 0, 0, 0,
+                      1, 1, 1, 0,
+                      1, 1, 1, 0]},
+            {"type": "objectgroup", "name": "collision", "objects": []},
+        ],
+    }
+    changed, count = seed_collision(tmj)
+    assert changed is True
+    assert count == 1  # the 3x2 solid block merges to ONE rectangle
+    collision = next(l for l in tmj["layers"] if l["name"] == "collision")
+    obj = collision["objects"][0]
+    assert obj["type"] == "solid"
+    # (col1,row1) .. 3 wide x 2 tall @16px
+    assert (obj["x"], obj["y"], obj["width"], obj["height"]) == (0, 16, 48, 32)
+
+
+def test_seed_collision_is_no_clobber_without_force():
+    from tiled_convert import seed_collision
+    tmj = {
+        "width": 2, "height": 1, "nextobjectid": 5,
+        "layers": [
+            {"type": "tilelayer", "name": "terrain", "width": 2, "height": 1, "data": [1, 1]},
+            {"type": "objectgroup", "name": "collision",
+             "objects": [{"id": 1, "type": "solid", "x": 0, "y": 0, "width": 16, "height": 16}]},
+        ],
+    }
+    changed, count = seed_collision(tmj)                 # existing objects -> skip
+    assert changed is False
+    assert len(next(l for l in tmj["layers"] if l["name"] == "collision")["objects"]) == 1
+    changed2, _ = seed_collision(tmj, force=True)         # force -> replace
+    assert changed2 is True

@@ -41,32 +41,15 @@ ENTITY_CLASSES = ("spawn", "checkpoint", "goal")
 DEFAULT_BIOME = "courtyard"
 SCREEN_INDEX_PATTERN = re.compile(r"screen-(\d+)")
 
-# The runtime terrain atlas, attached to generated maps purely as a *visual
-# reference* so Tiled's Tilesets panel shows the biome bricks. The game still
-# auto-tiles from the collider geometry, so a painted tile layer (if any) is
-# cosmetic and is ignored by the Tiled -> JumpCastle direction. Path is relative
-# to a .tmj under assets/levels/tiled/. Dimensions match assets/generated/castle.png.
+# The runtime terrain atlas. Every generated .tmj references the shared external
+# tileset (assets/levels/tiled/castle.tsx) so Tiled's Tilesets panel shows the
+# biome bricks and the painted "terrain" tile layer resolves to real art. Path
+# is relative to a .tmj under assets/levels/tiled/. Dimensions match
+# assets/generated/castle.png.
 TILESET_IMAGE = "../../generated/castle.png"
-TILESET_IMAGE_WIDTH = 336
-TILESET_IMAGE_HEIGHT = 96
-
-
-def _reference_tileset(tile_size: int) -> dict[str, Any]:
-    columns = TILESET_IMAGE_WIDTH // tile_size
-    rows = TILESET_IMAGE_HEIGHT // tile_size
-    return {
-        "firstgid": 1,
-        "name": "castle",
-        "image": TILESET_IMAGE,
-        "imagewidth": TILESET_IMAGE_WIDTH,
-        "imageheight": TILESET_IMAGE_HEIGHT,
-        "tilewidth": tile_size,
-        "tileheight": tile_size,
-        "columns": columns,
-        "tilecount": columns * rows,
-        "margin": 0,
-        "spacing": 0,
-    }
+TILESET_IMAGE_WIDTH = 384
+TILESET_IMAGE_HEIGHT = 128
+TILESET_SOURCE = "castle.tsx"  # external tileset shared by every screen .tmj
 
 
 # --------------------------------------------------------------------------
@@ -125,11 +108,23 @@ def tiled_to_screen_map(
 ) -> dict[str, Any]:
     """Convert a parsed Tiled map into a JumpCastle screen-map dict."""
     resolved_biome = biome or _map_property(tmj, "biome") or DEFAULT_BIOME
+    width = int(tmj.get("width", 0))
+    height = int(tmj.get("height", 0))
     colliders: list[dict[str, Any]] = []
     entities: list[dict[str, Any]] = []
+    terrain_grid: list[list[int]] | None = None
 
     for layer in tmj.get("layers", []):
-        if layer.get("type") != "objectgroup":
+        layer_type = layer.get("type")
+        if layer_type == "tilelayer" and layer.get("name") == "terrain":
+            data = layer.get("data", []) or []
+            if width > 0 and any(int(gid) != 0 for gid in data):
+                terrain_grid = [
+                    [int(gid) for gid in data[row * width:(row + 1) * width]]
+                    for row in range(height)
+                ]
+            continue
+        if layer_type != "objectgroup":
             continue
         for obj in layer.get("objects", []):
             cls = object_class(obj)
@@ -153,17 +148,21 @@ def tiled_to_screen_map(
                 {"id": len(colliders) + 1, "type": cls, "points": points}
             )
 
-    return {
-        "schema_version": 1,
-        "screen": {
-            "index": index,
-            "width": float(tmj.get("width", 0)),
-            "height": float(tmj.get("height", 0)),
-        },
+    result: dict[str, Any] = {
+        "schema_version": 2 if terrain_grid is not None else 1,
+        "screen": {"index": index, "width": float(width), "height": float(height)},
         "biome": resolved_biome,
-        "colliders": colliders,
-        "entities": entities,
     }
+    if terrain_grid is not None:
+        result["tileset"] = {
+            "name": "castle",
+            "columns": TILESET_IMAGE_WIDTH // tile_size,
+            "tile_size": tile_size,
+        }
+        result["tiles"] = {"terrain": terrain_grid}
+    result["colliders"] = colliders
+    result["entities"] = entities
+    return result
 
 
 # --------------------------------------------------------------------------
@@ -182,6 +181,28 @@ def _objectgroup(
         "x": 0,
         "y": 0,
         "objects": objects,
+    }
+
+
+def _tilelayer(
+    layer_id: int, name: str, width: int, height: int, grid: list[list[int]]
+) -> dict[str, Any]:
+    """A Tiled tile layer with flat row-major GID data (all zeros if grid empty)."""
+    if grid:
+        data = [int(gid) for row in grid for gid in row]
+    else:
+        data = [0] * (width * height)
+    return {
+        "id": layer_id,
+        "name": name,
+        "type": "tilelayer",
+        "width": width,
+        "height": height,
+        "visible": True,
+        "opacity": 1,
+        "x": 0,
+        "y": 0,
+        "data": data,
     }
 
 
@@ -236,6 +257,11 @@ def screen_map_to_tiled(
         next_object_id += 1
 
     screen_meta = screen.get("screen", {})
+    width = int(screen_meta.get("width", 0))
+    height = int(screen_meta.get("height", 0))
+    tiles = screen.get("tiles") or {}
+    terrain_grid = tiles.get("terrain", []) if isinstance(tiles, dict) else []
+
     return {
         "type": "map",
         "version": "1.10",
@@ -243,22 +269,112 @@ def screen_map_to_tiled(
         "orientation": "orthogonal",
         "renderorder": "right-down",
         "infinite": False,
-        "width": int(screen_meta.get("width", 0)),
-        "height": int(screen_meta.get("height", 0)),
+        "width": width,
+        "height": height,
         "tilewidth": tile_size,
         "tileheight": tile_size,
-        "nextlayerid": 3,
+        "nextlayerid": 4,
         "nextobjectid": next_object_id,
-        "tilesets": [_reference_tileset(tile_size)],
+        "tilesets": [{"firstgid": 1, "source": TILESET_SOURCE}],
         "properties": [
             {"name": "index", "type": "int", "value": int(screen_meta.get("index", 0))},
             {"name": "biome", "type": "string", "value": screen.get("biome", DEFAULT_BIOME)},
         ],
         "layers": [
-            _objectgroup(1, "collision", collider_objects),
-            _objectgroup(2, "entities", entity_objects),
+            _tilelayer(1, "terrain", width, height, terrain_grid),
+            _objectgroup(2, "collision", collider_objects),
+            _objectgroup(3, "entities", entity_objects),
         ],
     }
+
+
+# --------------------------------------------------------------------------
+# Auto-seed collision from painted terrain (author-time convenience)
+# --------------------------------------------------------------------------
+def _solid_rects_from_terrain(
+    terrain: dict[str, Any], width: int, height: int
+) -> list[tuple[int, int, int, int]]:
+    """Greedy-merge non-zero terrain cells into maximal (x, y, w, h) tile rects."""
+    data = terrain.get("data", []) or []
+    solid = [
+        [(int(data[r * width + c]) & 0x1FFFFFFF) != 0 for c in range(width)]
+        for r in range(height)
+    ]
+    used = [[False] * width for _ in range(height)]
+    rects: list[tuple[int, int, int, int]] = []
+    for y in range(height):
+        for x in range(width):
+            if not solid[y][x] or used[y][x]:
+                continue
+            w = 1
+            while x + w < width and solid[y][x + w] and not used[y][x + w]:
+                w += 1
+            h = 1
+            while y + h < height and all(
+                solid[y + h][x + i] and not used[y + h][x + i] for i in range(w)
+            ):
+                h += 1
+            for yy in range(y, y + h):
+                for xx in range(x, x + w):
+                    used[yy][xx] = True
+            rects.append((x, y, w, h))
+    return rects
+
+
+def seed_collision(
+    tmj: dict[str, Any], *, tile_size: int = TILE_SIZE, force: bool = False
+) -> tuple[bool, int]:
+    """Fill the collision objectgroup from solid terrain tiles (in place).
+
+    Returns (changed, rect_count). No-op if there is no terrain/collision layer,
+    or if the collision layer already has objects and force is False.
+    """
+    width = int(tmj.get("width", 0))
+    height = int(tmj.get("height", 0))
+    terrain = None
+    collision = None
+    for layer in tmj.get("layers", []):
+        if layer.get("type") == "tilelayer" and layer.get("name") == "terrain":
+            terrain = layer
+        elif layer.get("type") == "objectgroup" and layer.get("name") == "collision":
+            collision = layer
+    if terrain is None or collision is None or width <= 0 or height <= 0:
+        return (False, 0)
+    if collision.get("objects") and not force:
+        return (False, 0)
+
+    rects = _solid_rects_from_terrain(terrain, width, height)
+    obj_id = int(tmj.get("nextobjectid", 1))
+    objects: list[dict[str, Any]] = []
+    for (x, y, w, h) in rects:
+        objects.append(
+            {
+                "id": obj_id,
+                "name": "",
+                "type": "solid",
+                "x": x * tile_size,
+                "y": y * tile_size,
+                "width": w * tile_size,
+                "height": h * tile_size,
+                "rotation": 0,
+                "visible": True,
+            }
+        )
+        obj_id += 1
+    collision["objects"] = objects
+    tmj["nextobjectid"] = obj_id
+    return (True, len(rects))
+
+
+def convert_seed_collision(input_dir: Path, tile_size: int, force: bool) -> int:
+    count = 0
+    for tmj_path in sorted(input_dir.glob("screen-*.tmj")):
+        tmj = json.loads(tmj_path.read_text(encoding="utf-8"))
+        changed, _ = seed_collision(tmj, tile_size=tile_size, force=force)
+        if changed:
+            _write_json(tmj_path, tmj)
+            count += 1
+    return count
 
 
 # --------------------------------------------------------------------------
@@ -306,19 +422,26 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "direction",
-        choices=("to-tiled", "from-tiled"),
-        help="to-tiled: .map.json -> .tmj ; from-tiled: .tmj -> .map.json",
+        choices=("to-tiled", "from-tiled", "seed-collision"),
+        help="to-tiled / from-tiled / seed-collision (fill collision from solid tiles, in place)",
     )
     parser.add_argument("--input-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=False)
     parser.add_argument("--tile-size", type=int, default=TILE_SIZE)
+    parser.add_argument("--force", action="store_true",
+                        help="seed-collision: overwrite an existing collision layer")
     args = parser.parse_args()
 
+    if args.direction in ("to-tiled", "from-tiled"):
+        if args.output_dir is None:
+            parser.error(f"{args.direction} requires --output-dir")
     if args.direction == "to-tiled":
         written = convert_to_tiled(args.input_dir, args.output_dir, args.tile_size)
-    else:
+    elif args.direction == "from-tiled":
         written = convert_from_tiled(args.input_dir, args.output_dir, args.tile_size)
-    print(f"{args.direction}: wrote {written} file(s) to {args.output_dir}")
+    else:  # seed-collision
+        written = convert_seed_collision(args.input_dir, args.tile_size, args.force)
+    print(f"{args.direction}: wrote {written} file(s)")
 
 
 if __name__ == "__main__":

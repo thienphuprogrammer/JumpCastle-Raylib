@@ -92,12 +92,38 @@ MapEntity parse_entity(const Json& value, std::size_t index) {
     return entity;
 }
 
+TileLayer parse_tile_layer(
+    const Json& grid, const int width, const int height, const std::string& label) {
+    if (!grid.is_array()) {
+        throw std::runtime_error(label + " must be an array of rows");
+    }
+    if (static_cast<int>(grid.size()) != height) {
+        throw std::runtime_error(label + " row count must equal screen height");
+    }
+    TileLayer layer;
+    layer.columns = width;
+    layer.rows = height;
+    layer.gids.reserve(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
+    for (std::size_t r = 0; r < grid.size(); ++r) {
+        const Json& row = grid.at(r);
+        if (!row.is_array() || static_cast<int>(row.size()) != width) {
+            throw std::runtime_error(
+                label + " row " + std::to_string(r) + " length must equal screen width");
+        }
+        for (const auto& cell : row) {
+            layer.gids.push_back(cell.get<std::uint32_t>());
+        }
+    }
+    return layer;
+}
+
 }  // namespace
 
 ScreenMap parse_screen_map(const std::string_view json, const std::string_view label) {
     try {
         const Json root = Json::parse(json);
-        if (required(root, "schema_version", "map") != 1) {
+        const int version = required(root, "schema_version", "map").get<int>();
+        if (version != 1 && version != 2) {
             throw std::runtime_error("unsupported map schema_version");
         }
         const Json& screen = required(root, "screen", "map");
@@ -122,6 +148,24 @@ ScreenMap parse_screen_map(const std::string_view json, const std::string_view l
         for (std::size_t i = 0; i < entities.size(); ++i) {
             map.entities.push_back(parse_entity(entities.at(i), i));
         }
+
+        if (root.contains("tileset") && root.at("tileset").is_object()) {
+            const Json& tileset = root.at("tileset");
+            if (tileset.contains("columns")) {
+                map.tileset_columns = tileset.at("columns").get<int>();
+            }
+            if (tileset.contains("tile_size")) {
+                map.tileset_tile_size = tileset.at("tile_size").get<int>();
+            }
+        }
+        if (root.contains("tiles") && root.at("tiles").is_object()) {
+            const Json& tiles = root.at("tiles");
+            if (tiles.contains("terrain")) {
+                map.terrain = parse_tile_layer(
+                    tiles.at("terrain"), static_cast<int>(map.width),
+                    static_cast<int>(map.height), "map.tiles.terrain");
+            }
+        }
         return map;
     } catch (const std::exception& error) {
         throw std::runtime_error(std::string{label} + ": " + error.what());
@@ -140,7 +184,7 @@ ScreenMap parse_screen_map_file(const std::filesystem::path& path) {
 
 std::string serialize_screen_map(const ScreenMap& map) {
     Json root;
-    root["schema_version"] = 1;
+    root["schema_version"] = map.terrain.gids.empty() ? 1 : 2;
     root["screen"] = {{"index", map.index}, {"width", map.width}, {"height", map.height}};
     root["biome"] = map.biome;
 
@@ -167,6 +211,24 @@ std::string serialize_screen_map(const ScreenMap& map) {
         });
     }
     root["entities"] = entities;
+
+    if (!map.terrain.gids.empty()) {
+        root["tileset"] = {
+            {"name", "castle"},
+            {"columns", map.tileset_columns},
+            {"tile_size", map.tileset_tile_size},
+        };
+        Json terrain = Json::array();
+        for (int r = 0; r < map.terrain.rows; ++r) {
+            Json row = Json::array();
+            for (int c = 0; c < map.terrain.columns; ++c) {
+                row.push_back(
+                    map.terrain.gids[static_cast<std::size_t>(r) * map.terrain.columns + c]);
+            }
+            terrain.push_back(row);
+        }
+        root["tiles"] = {{"terrain", terrain}};
+    }
 
     return root.dump(2);
 }

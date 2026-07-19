@@ -3,6 +3,7 @@
 #include "jumpcastle/game_config.hpp"
 #include "jumpcastle/player_view.hpp"
 #include "jumpcastle/presentation.hpp"
+#include "jumpcastle/tile_view.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -257,6 +258,28 @@ void draw_textured_rect(
     }
 }
 
+// Draws the goal exit sprite when the goal falls within the visible band.
+// Extracted so both the tile path and the polygon fallback draw it once.
+void draw_goal(
+    const CampaignWorld& world,
+    const CameraBand& camera,
+    const BiomeAssets& assets,
+    const Texture2D texture) {
+    const Vec2 goal = world.goal;
+    if (goal.y >= camera.world_top &&
+        goal.y < camera.world_top + static_cast<float>(world.screen_height)) {
+        draw_region(
+            texture,
+            assets.exit,
+            {
+                std::floor(goal.x) * config::tile_pixels,
+                std::floor(goal.y - camera.world_top) * config::tile_pixels,
+                static_cast<float>(config::tile_pixels),
+                static_cast<float>(config::tile_pixels),
+            });
+    }
+}
+
 void draw_world_polygons(
     const CampaignWorld& world,
     const CameraBand& camera,
@@ -281,18 +304,56 @@ void draw_world_polygons(
         }
     }
 
-    const Vec2 goal = world.goal;
-    if (goal.y >= camera.world_top &&
-        goal.y < camera.world_top + static_cast<float>(world.screen_height)) {
-        draw_region(
-            texture,
-            assets.exit,
-            {
-                std::floor(goal.x) * config::tile_pixels,
-                std::floor(goal.y - camera.world_top) * config::tile_pixels,
-                static_cast<float>(config::tile_pixels),
-                static_cast<float>(config::tile_pixels),
-            });
+    draw_goal(world, camera, assets, texture);
+}
+
+// Blit each painted tile from the atlas at its screen-local cell, no tint
+// (true WYSIWYG). Empty cells (masked id 0) are skipped. Flip bits become a
+// negative source width/height, matching raylib's mirroring convention.
+void draw_tile_layer(
+    const TileLayer& layer,
+    const int atlas_columns,
+    const int atlas_tile_size,
+    const Texture2D texture) {
+    const float dst_tile = static_cast<float>(config::tile_pixels);
+    const float src_tile = static_cast<float>(atlas_tile_size);
+    for (int row = 0; row < layer.rows; ++row) {
+        for (int col = 0; col < layer.columns; ++col) {
+            const std::uint32_t gid =
+                layer.gids[static_cast<std::size_t>(row) * layer.columns + col];
+            if ((gid & 0x1FFFFFFFu) == 0u) { continue; }  // empty cell
+            const TileCell cell = tile_source_cell(gid, atlas_columns, atlas_tile_size);
+            const Rectangle source = {
+                static_cast<float>(cell.src_x),
+                static_cast<float>(cell.src_y),
+                cell.flip_h ? -src_tile : src_tile,
+                cell.flip_v ? -src_tile : src_tile,
+            };
+            const Rectangle destination = {
+                static_cast<float>(col) * dst_tile,
+                static_cast<float>(row) * dst_tile,
+                dst_tile,
+                dst_tile,
+            };
+            DrawTexturePro(texture, source, destination, {}, 0.0F, WHITE);
+        }
+    }
+}
+
+// Draw the terrain for the current band: painted tiles when the screen has
+// them, otherwise the procedural polygon texturing. Goal sprite drawn once.
+void draw_terrain(
+    const CampaignWorld& world,
+    const CameraBand& camera,
+    const BiomeAssets& assets,
+    const Texture2D texture) {
+    const ScreenMap* screen = world.screen_map(camera.screen);
+    if (screen != nullptr && !screen->terrain.gids.empty()) {
+        draw_tile_layer(
+            screen->terrain, screen->tileset_columns, screen->tileset_tile_size, texture);
+        draw_goal(world, camera, assets, texture);
+    } else {
+        draw_world_polygons(world, camera, assets, texture);  // already draws the goal
     }
 }
 
@@ -443,7 +504,7 @@ void Renderer::draw(
 
     BeginTextureMode(pixelart_target_.get());
     draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
-    draw_world_polygons(world, camera, assets, biome_texture);
+    draw_terrain(world, camera, assets, biome_texture);
     draw_player(
         player,
         camera.world_top,
@@ -490,7 +551,7 @@ Image Renderer::capture_screen(
 
     BeginTextureMode(pixelart_target_.get());
     draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
-    draw_world_polygons(world, camera, assets, biome_texture);
+    draw_terrain(world, camera, assets, biome_texture);
     draw_player(player, camera.world_top, 0.0F, catalog_, player_texture_.get());
     EndTextureMode();
 
