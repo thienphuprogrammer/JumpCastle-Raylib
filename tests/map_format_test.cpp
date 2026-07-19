@@ -131,3 +131,16 @@ TEST_CASE("serialize round-trips a terrain layer incl. flip bits", "[map_format]
     CHECK(back.terrain.gids[1] == 5u);
     CHECK(back.tileset_columns == 21);
 }
+
+TEST_CASE("parse rejects a terrain grid with the wrong dimensions", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 2,
+        "screen": {"index": 0, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tiles": {"terrain": [[0, 1, 0]]},
+        "colliders": [],
+        "entities": []
+    })";
+    CHECK_THROWS_AS(
+        jumpcastle::parse_screen_map(json, "bad-grid"), std::runtime_error);
+}
