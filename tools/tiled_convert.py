@@ -41,32 +41,15 @@ ENTITY_CLASSES = ("spawn", "checkpoint", "goal")
 DEFAULT_BIOME = "courtyard"
 SCREEN_INDEX_PATTERN = re.compile(r"screen-(\d+)")
 
-# The runtime terrain atlas, attached to generated maps purely as a *visual
-# reference* so Tiled's Tilesets panel shows the biome bricks. The game still
-# auto-tiles from the collider geometry, so a painted tile layer (if any) is
-# cosmetic and is ignored by the Tiled -> JumpCastle direction. Path is relative
-# to a .tmj under assets/levels/tiled/. Dimensions match assets/generated/castle.png.
+# The runtime terrain atlas. Every generated .tmj references the shared external
+# tileset (assets/levels/tiled/castle.tsx) so Tiled's Tilesets panel shows the
+# biome bricks and the painted "terrain" tile layer resolves to real art. Path
+# is relative to a .tmj under assets/levels/tiled/. Dimensions match
+# assets/generated/castle.png.
 TILESET_IMAGE = "../../generated/castle.png"
 TILESET_IMAGE_WIDTH = 336
 TILESET_IMAGE_HEIGHT = 96
-
-
-def _reference_tileset(tile_size: int) -> dict[str, Any]:
-    columns = TILESET_IMAGE_WIDTH // tile_size
-    rows = TILESET_IMAGE_HEIGHT // tile_size
-    return {
-        "firstgid": 1,
-        "name": "castle",
-        "image": TILESET_IMAGE,
-        "imagewidth": TILESET_IMAGE_WIDTH,
-        "imageheight": TILESET_IMAGE_HEIGHT,
-        "tilewidth": tile_size,
-        "tileheight": tile_size,
-        "columns": columns,
-        "tilecount": columns * rows,
-        "margin": 0,
-        "spacing": 0,
-    }
+TILESET_SOURCE = "castle.tsx"  # external tileset shared by every screen .tmj
 
 
 # --------------------------------------------------------------------------
@@ -185,6 +168,28 @@ def _objectgroup(
     }
 
 
+def _tilelayer(
+    layer_id: int, name: str, width: int, height: int, grid: list[list[int]]
+) -> dict[str, Any]:
+    """A Tiled tile layer with flat row-major GID data (all zeros if grid empty)."""
+    if grid:
+        data = [int(gid) for row in grid for gid in row]
+    else:
+        data = [0] * (width * height)
+    return {
+        "id": layer_id,
+        "name": name,
+        "type": "tilelayer",
+        "width": width,
+        "height": height,
+        "visible": True,
+        "opacity": 1,
+        "x": 0,
+        "y": 0,
+        "data": data,
+    }
+
+
 def screen_map_to_tiled(
     screen: dict[str, Any], *, tile_size: int = TILE_SIZE
 ) -> dict[str, Any]:
@@ -236,6 +241,11 @@ def screen_map_to_tiled(
         next_object_id += 1
 
     screen_meta = screen.get("screen", {})
+    width = int(screen_meta.get("width", 0))
+    height = int(screen_meta.get("height", 0))
+    tiles = screen.get("tiles") or {}
+    terrain_grid = tiles.get("terrain", []) if isinstance(tiles, dict) else []
+
     return {
         "type": "map",
         "version": "1.10",
@@ -243,20 +253,21 @@ def screen_map_to_tiled(
         "orientation": "orthogonal",
         "renderorder": "right-down",
         "infinite": False,
-        "width": int(screen_meta.get("width", 0)),
-        "height": int(screen_meta.get("height", 0)),
+        "width": width,
+        "height": height,
         "tilewidth": tile_size,
         "tileheight": tile_size,
-        "nextlayerid": 3,
+        "nextlayerid": 4,
         "nextobjectid": next_object_id,
-        "tilesets": [_reference_tileset(tile_size)],
+        "tilesets": [{"firstgid": 1, "source": TILESET_SOURCE}],
         "properties": [
             {"name": "index", "type": "int", "value": int(screen_meta.get("index", 0))},
             {"name": "biome", "type": "string", "value": screen.get("biome", DEFAULT_BIOME)},
         ],
         "layers": [
-            _objectgroup(1, "collision", collider_objects),
-            _objectgroup(2, "entities", entity_objects),
+            _tilelayer(1, "terrain", width, height, terrain_grid),
+            _objectgroup(2, "collision", collider_objects),
+            _objectgroup(3, "entities", entity_objects),
         ],
     }
 

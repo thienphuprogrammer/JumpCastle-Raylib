@@ -140,6 +140,26 @@ def test_class_key_is_accepted_as_alias_for_type():
     assert screen["entities"] == [{"type": "spawn", "pos": [3, 35]}]
 
 
+def test_screen_to_tiled_emits_terrain_tilelayer():
+    screen = {
+        "schema_version": 2,
+        "screen": {"index": 2, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tiles": {"terrain": [[0, 1, 0], [2, 0, 3]]},
+        "colliders": [],
+        "entities": [],
+    }
+    tmj = screen_map_to_tiled(screen)
+    terrain = next(l for l in tmj["layers"] if l["name"] == "terrain")
+    assert terrain["type"] == "tilelayer"
+    assert terrain["width"] == 3 and terrain["height"] == 2
+    assert terrain["data"] == [0, 1, 0, 2, 0, 3]  # row-major flatten
+    assert tmj["tilesets"] == [{"firstgid": 1, "source": "castle.tsx"}]
+    # collision/entities object layers are still present
+    assert {l["name"] for l in tmj["layers"]} == {"terrain", "collision", "entities"}
+
+
 def test_castle_tsx_matches_the_atlas():
     tsx = (
         Path(__file__).resolve().parents[1]
