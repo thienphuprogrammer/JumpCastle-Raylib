@@ -94,3 +94,17 @@ TEST_CASE("parse reads a v2 tiles.terrain grid", "[map_format]") {
     CHECK(map.tileset_columns == 21);
     CHECK(map.tileset_tile_size == 16);
 }
+
+TEST_CASE("parse of a v1 map leaves terrain empty", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 1,
+        "screen": {"index": 0, "width": 16, "height": 12},
+        "biome": "courtyard",
+        "colliders": [],
+        "entities": []
+    })";
+    const jumpcastle::ScreenMap map = jumpcastle::parse_screen_map(json, "v1");
+    CHECK(map.terrain.gids.empty());
+    CHECK(map.terrain.columns == 0);
+    CHECK(map.terrain.rows == 0);
+}
