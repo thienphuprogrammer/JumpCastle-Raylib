@@ -74,6 +74,9 @@ PlayerInput Game::sample_input() noexcept {
 void Game::update_frame(const float frame_delta) {
     if (IsKeyPressed(KEY_F1)) {
         editor_mode_ = !editor_mode_;
+        if (editor_mode_) {
+            enter_editor();
+        }
     }
     if (editor_mode_) {
         update_editor();
@@ -144,11 +147,44 @@ void Game::update_editor() {
             : editor_type_ == ColliderType::oneway ? ColliderType::hazard
             : ColliderType::solid;
     }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        if (!editor_.is_drafting()) {
-            editor_.begin_polygon(editor_type_);
+    if (IsKeyPressed(KEY_R)) {
+        editor_rect_mode_ = !editor_rect_mode_;
+        editor_.cancel_polygon();
+        dragging_vertex_ = false;
+    }
+    if (editor_rect_mode_) {
+        // Rectangle stamp: press-drag-release makes one rectangular platform,
+        // no per-vertex clicking. The draft previews as it is dragged.
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            editor_.begin_rectangle(editor_type_, world, editor_snap_);
+        } else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && editor_.is_drafting()) {
+            editor_.update_rectangle(world, editor_snap_);
         }
-        editor_.add_vertex(world, editor_snap_);
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && editor_.is_drafting()) {
+            editor_.commit_rectangle();
+        }
+    } else {
+        // Left button: while drafting, each press appends a vertex. Otherwise a
+        // press near an existing vertex grabs it for dragging; a press on empty
+        // space starts a new polygon and drops its first vertex.
+        constexpr float grab_radius = 0.75F;
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (!editor_.is_drafting() &&
+                editor_.select_vertex(world, grab_radius)) {
+                dragging_vertex_ = true;
+            } else {
+                if (!editor_.is_drafting()) {
+                    editor_.begin_polygon(editor_type_);
+                }
+                editor_.add_vertex(world, editor_snap_);
+            }
+        }
+        if (dragging_vertex_ && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            editor_.move_selected_vertex(world, editor_snap_);
+        }
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            dragging_vertex_ = false;
+        }
     }
     if (IsKeyPressed(KEY_ENTER)) {
         editor_.close_polygon();
@@ -156,8 +192,16 @@ void Game::update_editor() {
     if (IsKeyPressed(KEY_ESCAPE)) {
         editor_.cancel_polygon();
     }
+    // Right button: press selects a polygon; holding then moving drags the
+    // whole shape by the per-frame cursor delta.
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
         editor_.select_polygon(world);
+        drag_anchor_ = world;
+    }
+    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) &&
+        editor_.selected_polygon() >= 0) {
+        editor_.move_selected_polygon(world - drag_anchor_);
+        drag_anchor_ = world;
     }
     if (IsKeyPressed(KEY_DELETE) || IsKeyPressed(KEY_BACKSPACE)) {
         editor_.delete_selected_polygon();
@@ -177,12 +221,27 @@ void Game::update_editor() {
     }
 }
 
+void Game::enter_editor() {
+    const int screen = camera_ ? camera_->screen : 0;
+    if (const ScreenMap* map = world_->screen_map(screen)) {
+        editor_.load_screen(*map);
+    } else {
+        editor_ = EditorState{
+            screen,
+            static_cast<float>(config::tilemap_width),
+            static_cast<float>(world_->screen_height)};
+    }
+}
+
 void Game::save_editor_screen() const {
     const ScreenMap screen = editor_.to_screen_map();
     const std::string filename = "screen-" +
         (screen.index < 10 ? std::string{"0"} : std::string{}) +
         std::to_string(screen.index) + ".map.json";
-    const std::filesystem::path path = asset_directory_ / "levels" / filename;
+    const std::filesystem::path directory =
+        asset_directory_ / "levels" / "screens";
+    std::filesystem::create_directories(directory);
+    const std::filesystem::path path = directory / filename;
     std::ofstream out{path};
     if (out) {
         out << serialize_screen_map(screen);
@@ -194,7 +253,8 @@ void Game::run() {
         update_frame(GetFrameTime());
         if (editor_mode_) {
             renderer_->draw_editor(
-                editor_, *camera_, world_->screen_height, editor_snap_, editor_type_);
+                editor_, *camera_, world_->screen_height, editor_snap_, editor_type_,
+                editor_rect_mode_);
         } else {
             renderer_->draw(
                 *world_,

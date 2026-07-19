@@ -24,6 +24,13 @@ WorldBiome CampaignWorld::biome_for_screen(const int screen) const noexcept {
     return screen_biomes[static_cast<std::size_t>(screen)];
 }
 
+const ScreenMap* CampaignWorld::screen_map(const int screen) const noexcept {
+    for (const ScreenMap& map : screens) {
+        if (map.index == screen) { return &map; }
+    }
+    return nullptr;
+}
+
 CampaignWorld CampaignWorld::from_screens(
     const std::vector<ScreenMap>& screens,
     const int screen_height) {
@@ -53,6 +60,7 @@ CampaignWorld CampaignWorld::from_screens(
     }
 
     world.collision = CollisionWorld::from_screens(screens, world.screen_height);
+    world.screens = screens;  // retained for the in-game editor (lossless round-trip)
     return world;
 }
 
