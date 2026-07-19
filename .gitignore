@@ -25,3 +25,8 @@ assets/zip/
 
 # Superpowers brainstorm server artifacts
 .superpowers/
+
+# Session audit logs are ephemeral (see .claude/docs/directory-structure.md);
+# keep the directory, ignore its contents.
+production/session-logs/*
+!production/session-logs/.gitkeep
