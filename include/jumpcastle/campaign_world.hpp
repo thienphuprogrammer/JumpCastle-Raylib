@@ -20,11 +20,16 @@ struct CampaignWorld {
     int height{};         // total tower height in tiles
     int screen_height{1};
     std::vector<WorldBiome> screen_biomes;  // indexed by screen index
+    // The source screen maps (screen-local tile coords, with entities) retained
+    // so the in-game editor can load a whole screen and save it back losslessly.
+    std::vector<ScreenMap> screens;
 
     [[nodiscard]] int screen_count() const noexcept {
         return height / screen_height;
     }
     [[nodiscard]] WorldBiome biome_for_screen(int screen) const noexcept;
+    // The retained source map for a screen index, or nullptr if none.
+    [[nodiscard]] const ScreenMap* screen_map(int screen) const noexcept;
 
     [[nodiscard]] static CampaignWorld from_screens(
         const std::vector<ScreenMap>& screens,

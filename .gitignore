@@ -18,3 +18,10 @@ assets/sources/downloads/
 *.user
 *.vcxproj*
 assets/zip/
+
+# Tiled auto-created project/session files (open a screen-NN.tmj instead)
+*.tiled-project
+*.tiled-session
+
+# Superpowers brainstorm server artifacts
+.superpowers/

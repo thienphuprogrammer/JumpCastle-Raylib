@@ -24,6 +24,15 @@ public:
     // convex pieces at export). Returns whether a polygon was committed.
     bool close_polygon();
     void cancel_polygon();
+
+    // --- Rectangle stamp: drag one corner to the opposite one ---
+    // begin_rectangle anchors a rectangular draft at origin; update_rectangle
+    // rebuilds its four corners as the cursor moves; commit_rectangle finalises
+    // it, rejecting a near-zero-area rectangle (returns whether it committed).
+    void begin_rectangle(ColliderType type, Vec2 origin, bool snap);
+    void update_rectangle(Vec2 corner, bool snap);
+    bool commit_rectangle();
+
     [[nodiscard]] bool is_drafting() const noexcept { return drafting_; }
     [[nodiscard]] const std::vector<Vec2>& draft_points() const noexcept {
         return draft_points_;
@@ -37,12 +46,18 @@ public:
     // Selects a committed polygon containing world_pos; returns whether found.
     bool select_polygon(Vec2 world_pos);
     void delete_selected_polygon();
+    // Translates every vertex of the selected polygon by delta (drag-to-move).
+    void move_selected_polygon(Vec2 delta);
     [[nodiscard]] int selected_polygon() const noexcept { return selected_polygon_; }
     [[nodiscard]] std::size_t polygon_count() const noexcept { return polygons_.size(); }
 
     // --- Entities ---
     void place_entity(EntityType type, Vec2 world_pos, bool snap);
     [[nodiscard]] std::size_t entity_count() const noexcept { return entities_.size(); }
+
+    // Replaces all editor state with an existing screen's polygons + entities
+    // (screen-local coords) so the current map is visible and editable on entry.
+    void load_screen(const ScreenMap& screen);
 
     // Exports the authored screen (polygons split to convex + precomputed).
     [[nodiscard]] ScreenMap to_screen_map() const;
@@ -63,6 +78,7 @@ private:
     bool drafting_{};
     ColliderType draft_type_{ColliderType::solid};
     std::vector<Vec2> draft_points_;
+    Vec2 rect_origin_{};
 
     int selected_polygon_{-1};
     int selected_vertex_{-1};

@@ -81,6 +81,138 @@ TEST_CASE("deleting a selected polygon removes it") {
     CHECK(editor.polygon_count() == 0);
 }
 
+TEST_CASE("stamping a rectangle commits one four-corner polygon") {
+    EditorState editor{0, 16.0F, 12.0F};
+    editor.begin_rectangle(ColliderType::solid, {2.0F, 2.0F}, false);
+    editor.update_rectangle({6.0F, 5.0F}, false);  // drag to opposite corner
+    REQUIRE(editor.commit_rectangle());
+    REQUIRE(editor.polygon_count() == 1);
+
+    const ScreenMap map = editor.to_screen_map();
+    bool has_top_left = false;
+    bool has_bottom_right = false;
+    for (const ConvexPolygon& polygon : map.polygons) {
+        for (const Vec2 point : polygon.points) {
+            if (point.x == Approx(2.0F) && point.y == Approx(2.0F)) { has_top_left = true; }
+            if (point.x == Approx(6.0F) && point.y == Approx(5.0F)) { has_bottom_right = true; }
+        }
+    }
+    CHECK(has_top_left);
+    CHECK(has_bottom_right);
+}
+
+TEST_CASE("a rectangle drag corners commit regardless of drag direction") {
+    EditorState editor{0, 16.0F, 12.0F};
+    // Drag up-left (opposite corner has smaller coords) — must normalise.
+    editor.begin_rectangle(ColliderType::solid, {8.0F, 8.0F}, false);
+    editor.update_rectangle({4.0F, 3.0F}, false);
+    REQUIRE(editor.commit_rectangle());
+    CHECK(editor.polygon_count() == 1);
+}
+
+TEST_CASE("a zero-area rectangle click is not committed") {
+    EditorState editor{0, 16.0F, 12.0F};
+    editor.begin_rectangle(ColliderType::solid, {3.0F, 3.0F}, false);
+    editor.update_rectangle({3.0F, 3.0F}, false);  // no drag
+    CHECK_FALSE(editor.commit_rectangle());
+    CHECK(editor.polygon_count() == 0);
+    CHECK_FALSE(editor.is_drafting());
+}
+
+TEST_CASE("dragging a selected polygon translates every vertex") {
+    EditorState editor{0, 16.0F, 12.0F};
+    editor.begin_polygon(ColliderType::solid);
+    editor.add_vertex({0, 0}, false);
+    editor.add_vertex({4, 0}, false);
+    editor.add_vertex({4, 4}, false);
+    editor.add_vertex({0, 4}, false);
+    editor.close_polygon();
+
+    REQUIRE(editor.select_polygon({2.0F, 2.0F}));
+    editor.move_selected_polygon({3.0F, -1.0F});
+
+    const ScreenMap map = editor.to_screen_map();
+    bool found_shifted_corner = false;
+    for (const ConvexPolygon& polygon : map.polygons) {
+        for (const Vec2 point : polygon.points) {
+            // The original (0,0) corner must now sit at (3,-1).
+            if (point.x == Approx(3.0F) && point.y == Approx(-1.0F)) {
+                found_shifted_corner = true;
+            }
+        }
+    }
+    CHECK(found_shifted_corner);
+}
+
+TEST_CASE("moving a polygon with no selection is a no-op") {
+    EditorState editor{0, 16.0F, 12.0F};
+    editor.begin_polygon(ColliderType::solid);
+    editor.add_vertex({0, 0}, false);
+    editor.add_vertex({4, 0}, false);
+    editor.add_vertex({4, 4}, false);
+    editor.close_polygon();
+
+    editor.move_selected_polygon({5.0F, 5.0F});  // nothing selected
+
+    const ScreenMap map = editor.to_screen_map();
+    bool untouched = false;
+    for (const ConvexPolygon& polygon : map.polygons) {
+        for (const Vec2 point : polygon.points) {
+            if (point.x == Approx(0.0F) && point.y == Approx(0.0F)) {
+                untouched = true;
+            }
+        }
+    }
+    CHECK(untouched);
+}
+
+TEST_CASE("load_screen makes an existing map visible and editable") {
+    // Author a screen (one polygon + a spawn), export it, then load it back
+    // into a fresh editor as if entering edit mode on that screen.
+    EditorState authored{7, 20.0F, 15.0F};
+    authored.begin_polygon(ColliderType::solid);
+    authored.add_vertex({1, 1}, false);
+    authored.add_vertex({5, 1}, false);
+    authored.add_vertex({5, 5}, false);
+    authored.add_vertex({1, 5}, false);
+    authored.close_polygon();
+    authored.place_entity(EntityType::spawn, {2, 4}, false);
+    const ScreenMap source = authored.to_screen_map();
+
+    EditorState loaded;
+    loaded.load_screen(source);
+
+    // The map is now populated (not a blank canvas) and re-exports losslessly.
+    CHECK(loaded.polygon_count() == 1);
+    CHECK(loaded.entity_count() == 1);
+    const ScreenMap round_trip = loaded.to_screen_map();
+    CHECK(round_trip.index == 7);
+    CHECK(round_trip.width == Approx(20.0F));
+    CHECK(round_trip.polygons.size() == source.polygons.size());
+    REQUIRE(round_trip.entities.size() == 1);
+    CHECK(round_trip.entities[0].type == EntityType::spawn);
+}
+
+TEST_CASE("load_screen replaces any prior editor state") {
+    EditorState editor{0, 16.0F, 12.0F};
+    editor.begin_polygon(ColliderType::solid);
+    editor.add_vertex({0, 0}, false);
+    editor.add_vertex({2, 0}, false);
+    editor.add_vertex({2, 2}, false);
+    editor.close_polygon();
+    REQUIRE(editor.polygon_count() == 1);
+
+    ScreenMap empty;
+    empty.index = 3;
+    empty.width = 16.0F;
+    empty.height = 12.0F;
+    editor.load_screen(empty);
+
+    CHECK(editor.polygon_count() == 0);
+    CHECK(editor.entity_count() == 0);
+    CHECK(editor.to_screen_map().index == 3);
+}
+
 TEST_CASE("placing an entity records it in the exported screen") {
     EditorState editor{3, 16.0F, 12.0F};
     editor.place_entity(EntityType::spawn, {2.13F, 5.0F}, true);

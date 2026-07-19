@@ -504,30 +504,52 @@ void Renderer::draw_editor(
     const CameraBand& camera,
     const int screen_height,
     const bool snap_enabled,
-    const ColliderType current_type) const {
+    const ColliderType current_type,
+    const bool rect_mode) const {
     const Biome biome = asset_biome(camera.biome);
     const BiomeAssets& assets = catalog_.biome(biome);
     const Texture2D& biome_texture = castle_texture_.get();
+    const ScreenMap screen = editor.to_screen_map();
     const CampaignWorld authored =
-        CampaignWorld::from_screens({editor.to_screen_map()}, screen_height);
+        CampaignWorld::from_screens({screen}, screen_height);
 
     BeginTextureMode(pixelart_target_.get());
     draw_parallax_background(biome_texture, assets, camera.biome, camera.world_top);
     draw_world_polygons(authored, camera, assets, biome_texture);
 
-    const Color grid_color = Fade(RAYWHITE, 0.08F);
-    for (int x = 0; x <= config::view_width; x += config::tile_pixels) {
-        DrawLine(x, 0, x, config::view_height, grid_color);
+    // Preview the knight at this screen's spawn (if it has one) so the editor
+    // reads like the live scene instead of bare geometry.
+    for (const MapEntity& entity : screen.entities) {
+        if (entity.type == EntityType::spawn) {
+            PlayerState preview{};
+            preview.position = entity.pos;
+            draw_player(
+                preview, camera.world_top, 0.0F, catalog_, player_texture_.get());
+            break;
+        }
     }
-    for (int y = 0; y <= config::view_height; y += config::tile_pixels) {
-        DrawLine(0, y, config::view_width, y, grid_color);
+
+    // A faint snap grid, drawn only while snapping is on, so the biome backdrop
+    // reads clearly when snap is off.
+    if (snap_enabled) {
+        const Color grid_color = Fade(RAYWHITE, 0.05F);
+        for (int x = 0; x <= config::view_width; x += config::tile_pixels) {
+            DrawLine(x, 0, x, config::view_height, grid_color);
+        }
+        for (int y = 0; y <= config::view_height; y += config::tile_pixels) {
+            DrawLine(0, y, config::view_width, y, grid_color);
+        }
     }
 
     const std::vector<Vec2>& draft = editor.draft_points();
+    // Close the outline once it is a shape (>=3 points) so a rectangle stamp
+    // previews as a full box rather than three open sides.
+    const bool close_draft = draft.size() >= 3;
     for (std::size_t i = 0; i < draft.size(); ++i) {
         const ::Vector2 point = world_to_screen(draft[i], camera.world_top);
-        if (i + 1 < draft.size()) {
-            DrawLineV(point, world_to_screen(draft[i + 1], camera.world_top), YELLOW);
+        if (i + 1 < draft.size() || close_draft) {
+            const std::size_t next = (i + 1) % draft.size();
+            DrawLineV(point, world_to_screen(draft[next], camera.world_top), YELLOW);
         }
         DrawCircleV(point, 2.0F, YELLOW);
     }
@@ -552,13 +574,17 @@ void Renderer::draw_editor(
         : "HAZARD";
     DrawRectangle(4, 4, config::view_width - 8, 26, Fade(BLACK, 0.75F));
     DrawText(
-        TextFormat("EDITOR  type:%s  snap:%s  polys:%d", type_name,
+        TextFormat("EDITOR  mode:%s  type:%s  snap:%s  polys:%d",
+                   rect_mode ? "RECT" : "POLY", type_name,
                    snap_enabled ? "on" : "off",
                    static_cast<int>(editor.polygon_count())),
         10, 8, 10, RAYWHITE);
     DrawText(
-        "[LMB]add [Enter]close [Esc]cancel [T]type [G]snap [RMB+Del]erase "
-        "[1/2/3]spawn/cp/goal [Ctrl+S]save [F1]exit",
+        rect_mode
+            ? "[LMB drag]stamp rect [T]type [G]snap [R]poly-mode [RMB]select "
+              "[Del]erase [1/2/3]spawn/cp/goal [Ctrl+S]save [F1]exit"
+            : "[LMB]add vtx [Enter]close [Esc]cancel [T]type [G]snap "
+              "[R]rect-mode [RMB drag]move [Del]erase [Ctrl+S]save [F1]exit",
         10, 20, 8, LIGHTGRAY);
     EndDrawing();
 }
