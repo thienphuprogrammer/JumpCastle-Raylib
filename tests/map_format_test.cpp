@@ -73,3 +73,24 @@ TEST_CASE("parse_screen_map_file throws on a missing file") {
         parse_screen_map_file("/nonexistent/jumpcastle/does-not-exist.map.json"),
         std::runtime_error);
 }
+
+TEST_CASE("parse reads a v2 tiles.terrain grid", "[map_format]") {
+    const std::string json = R"({
+        "schema_version": 2,
+        "screen": {"index": 1, "width": 3, "height": 2},
+        "biome": "courtyard",
+        "tileset": {"name": "castle", "columns": 21, "tile_size": 16},
+        "tiles": {"terrain": [[0, 1, 0], [2, 0, 3]]},
+        "colliders": [],
+        "entities": []
+    })";
+    const jumpcastle::ScreenMap map = jumpcastle::parse_screen_map(json, "v2");
+    CHECK(map.terrain.columns == 3);
+    CHECK(map.terrain.rows == 2);
+    REQUIRE(map.terrain.gids.size() == 6);
+    CHECK(map.terrain.gids[1] == 1u);   // row 0, col 1
+    CHECK(map.terrain.gids[3] == 2u);   // row 1, col 0
+    CHECK(map.terrain.gids[5] == 3u);   // row 1, col 2
+    CHECK(map.tileset_columns == 21);
+    CHECK(map.tileset_tile_size == 16);
+}
