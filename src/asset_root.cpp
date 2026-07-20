@@ -31,7 +31,7 @@ std::filesystem::path resolve_asset_root(const AssetSearchOptions& options) {
 
     std::string message = "unable to locate JumpCastle assets; searched:";
     for (const auto& candidate : candidates) {
-        message += "\n  " + candidate.string();
+        message += "\n  " + candidate.generic_string();
     }
     throw std::runtime_error(message);
 }

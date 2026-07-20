@@ -78,6 +78,6 @@ jobs:
             solver="build/cmake/Release/jumpcastle_solver.exe"
           fi
           "$solver" \
-            --level assets/levels/campaign.level \
+            --level assets/levels/screens \
             --campaign \
             --trace build/campaign-route.json

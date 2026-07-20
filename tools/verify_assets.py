@@ -22,6 +22,18 @@ EXPECTED_ATLASES = {"castle", "knight", "ui"}
 EXPECTED_BIOMES = {"courtyard", "frosted_keep", "crown_spire"}
 EXPECTED_ANIMATIONS = {"idle", "run", "charge", "rise", "fall", "respawn"}
 EXPECTED_UI = {"panel", "button", "button_pressed", "keycap"}
+# Mirrors NAMED_SLOT_POSITIONS in tools/build_assets.py (the 3x3 nine-slice
+# hard contract plus the enrichment slots) and the four semantic aliases the
+# game resolves directly (spike/background alias hazard/isolated cells).
+EXPECTED_TERRAIN_REGIONS = {
+    "top_left", "top", "top_right",
+    "left", "center", "right",
+    "bottom_left", "bottom", "bottom_right",
+    "inner_corner_tl", "inner_corner_tr", "inner_corner_bl", "inner_corner_br",
+    "platform_left", "platform_mid", "platform_right",
+    "ledge", "pillar", "isolated", "detail_1", "detail_2", "hazard",
+    "spike", "checkpoint", "exit", "background",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -95,7 +107,7 @@ def verify(manifest_path: Path) -> None:
         grid = biome.get("terrain_grid")
         require(isinstance(grid, dict), f"{biome_name} has no terrain grid")
         require(grid.get("tile_size") == 16, f"{biome_name} tile size must be 16")
-        require(grid.get("columns") == 7 and grid.get("rows") == 5,
+        require(grid.get("columns") == 8 and grid.get("rows") == 8,
                 f"{biome_name} terrain grid changed unexpectedly")
         check_rect({
             "x": grid.get("x"),
@@ -105,8 +117,8 @@ def verify(manifest_path: Path) -> None:
         }, castle_width, castle_height, f"{biome_name}.terrain_grid")
         regions = biome.get("regions")
         require(isinstance(regions, dict) and
-                set(regions) == {"spike", "checkpoint", "exit", "background"},
-                f"{biome_name} semantic regions are incomplete")
+                set(regions) == EXPECTED_TERRAIN_REGIONS,
+                f"{biome_name} terrain regions are incomplete")
         for name, region in regions.items():
             check_rect(region, castle_width, castle_height, f"{biome_name}.{name}")
 
