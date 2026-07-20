@@ -133,6 +133,11 @@ if(JUMPCASTLE_BUILD_TESTS)
   include(Catch)
   catch_discover_tests(jumpcastle_tests)
 
+  # Prefer the repo virtualenv (pytest + PIL for the Python-based tests)
+  # unless the caller overrides Python3_EXECUTABLE explicitly.
+  if(NOT DEFINED Python3_EXECUTABLE AND EXISTS ${PROJECT_SOURCE_DIR}/.venv/bin/python)
+    set(Python3_EXECUTABLE ${PROJECT_SOURCE_DIR}/.venv/bin/python)
+  endif()
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
   add_test(
     NAME asset_manifest
