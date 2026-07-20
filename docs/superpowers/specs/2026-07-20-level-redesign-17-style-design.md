@@ -1,7 +1,7 @@
 # Campaign Level Redesign in the Screen-17 Style — Design Spec
 
 - **Date:** 2026-07-20
-- **Status:** Approved by user (approach C3, biome batches, entities fixed, minimal 17 fix)
+- **Status:** Approved by user (approach C3, biome batches, entities fixed, screen-17 untouched)
 - **Author:** pair session (design approved in Vietnamese; spec in English per repo convention)
 - **Related:** `docs/superpowers/specs/2026-07-20-tiled-wysiwyg-tile-painting-design.md`,
   `tools/gen_terrain.py`, `tools/tiled_convert.py`, `src/solver.cpp`,
@@ -15,8 +15,8 @@ real thick collision masses — replacing the current skeletal auto-generated
 look (thin `ledge` outlines over floating planks).
 
 This project redesigns **collision layout AND tiles** for screens 00–16 in the
-visual and structural language of screen-17, plus a **minimal climbability fix
-for screen-17 itself**, while keeping the campaign provably completable via the
+visual and structural language of screen-17 — leaving screen-17 itself
+untouched (§7) — while keeping the campaign provably completable via the
 existing reachability solver after every single screen change.
 
 Style fingerprint measured from the user's screen-17 vs the auto screens:
@@ -45,9 +45,10 @@ Style fingerprint measured from the user's screen-17 vs the auto screens:
 - Preserve each screen's hazard intent (same hazard collider count ±0, may be
   reshaped to fit the new masses).
 - Deliver in three user-approved batches with rendered previews:
-  courtyard 12–16 (+17 fix) → frosted_keep 06–11 → crown_spire 00–05.
+  courtyard 12–16 → frosted_keep 06–11 → crown_spire 00–05.
 - Finish with a regenerated `assets/levels/campaign-route.json` and the full
-  C++/Python suites green, including the currently-red tests 73 and 80.
+  C++/Python suites green, with tests 73 and 80 staying green at every batch
+  boundary (route regen per batch, §8).
 
 ### Non-Goals (YAGNI)
 - No atlas/art changes; the enriched 24×8 atlas is used as-is.
