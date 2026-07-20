@@ -36,8 +36,10 @@ Style fingerprint measured from the user's screen-17 vs the auto screens:
   full campaign after each screen is swapped in.
 - Repaint all redesigned screens with a deterministic painter tool (§6) that
   reproduces screen-17's visual grammar (§5).
-- Fix screen-17's unclimbable upper section with ≤3 small added ledges; nothing
-  of the user's design is moved or removed (§7).
+- Screen-17 needs no climbability fix anymore: commit cd8dada (merged via PR #4)
+  restored the solver-provable collision while keeping the painted tiles. The
+  redesign leaves screen-17 untouched by default; §7 covers the optional
+  art/collision reconciliation.
 - Keep every `spawn` / `checkpoint` / `goal` entity **byte-identical**; each
   must have a supporting surface in the new layout.
 - Preserve each screen's hazard intent (same hazard collider count ±0, may be
@@ -52,9 +54,8 @@ Style fingerprint measured from the user's screen-17 vs the auto screens:
 - No `background` decor tile layer; tiles are painted only where collision (or
   a hazard) exists — no misleading "ghost stone".
 - No entity moves, no difficulty redesign beyond grammar compliance.
-- No fix for CI's stale `assets/levels/campaign.level` (its spawn x=3 disagrees
-  with the screens' x=14.4375; flagged separately — CI's solver gate does not
-  test the committed screens).
+- (Resolved upstream: CI now solves the screens directory directly — commit
+  3f91d44 — so the stale `campaign.level` concern is gone.)
 - No changes to solver physics or `SolverConfig`.
 
 ## 3. Grounding (measured, not assumed)
@@ -145,33 +146,37 @@ paint_screen.py --screens 12-16          # paint tiles into the .map.json files
 - Module layout: single file, ~300 lines, stdlib + PIL only (matches existing
   tools).
 
-## 7. Screen-17 minimal fix
+## 7. Screen-17 status (no fix required)
 
-- Add **≤ 3 solid colliders, each ≤ 3×1 tiles**, in the dead zone between the
-  reached shelf (local y21, world 633) and the top exit platforms
-  (x[16,19]@y4, x[21,24]@y2), spaced per §4 (≤3 rise, 2–5.5 lateral zigzag).
-  Exact positions are chosen at implementation time with the solver in the
-  loop (the scratch-variant harness from the diagnosis session).
-- Nothing existing is moved, resized, or deleted; entities untouched.
-- Tiles: only the added ledges are painted (courtyard palette BRIDGE/EDGE
-  roles); the user's painting is otherwise byte-identical.
-- Done when: full-campaign solve certifies, and the whole route regen (§8)
-  passes tests 73 & 80.
+- Commit cd8dada already restored the pre-painting, solver-provable collision
+  for screen-17 while keeping the user's painted tiles, and PR #4 merged it.
+  The campaign solves end-to-end again.
+- Consequence: screen-17's visuals and physics currently disagree in places
+  (tiles show bridges/walls where the restored ladder has none). Default for
+  this project: **leave screen-17 completely untouched**.
+- Optional (user's call at the batch-1 gate): reconcile by repainting
+  screen-17 with the painter over the restored collision (`--include-17`),
+  trading some of the hand-painting for WYSIWYG accuracy. Not done unless
+  explicitly requested.
 
 ## 8. Workflow, branches, batches
 
-- Branch: `feat/level-redesign-17-style` off `fix/tiled-suite-green`.
+- Branch: `feat/level-redesign-17-style` off `main` (main already contains
+  PR #4 = the suite fixes + screen-17 restoration).
 - Per screen: author colliders (integer JSON) → `paint_screen.py --check` →
   full-campaign solve (`out/verify/jumpcastle_solver --level
   assets/levels/screens --campaign`) with the new screen in place → paint +
   preview → commit `feat(level): redesign screen-NN (biome, 17-style)`.
 - Batch gates (user approval on preview images before the next batch starts):
-  1. **Batch 1:** screens 12–16 + screen-17 fix (§7). Previews to
+  1. **Batch 1:** screens 12–16 (screen-17 untouched, §7). Previews to
      `docs/tiled-guides/previews/`.
   2. **Batch 2:** screens 06–11 (frosted_keep).
   3. **Batch 3:** screens 00–05 (crown_spire).
-- Finale: `jumpcastle_solver --level assets/levels/screens --campaign --trace
-  assets/levels/campaign-route.json`; run full ctest + pytest; update
+- Route regen at **every batch boundary** (not just the finale): redesigned
+  layouts invalidate the committed trace, so each batch ends with
+  `jumpcastle_solver --level assets/levels/screens --campaign --trace
+  assets/levels/campaign-route.json` + full suites, keeping the branch green
+  at every gate. Finale additionally: update
   `docs/tiled-workflow.md` (painter + workflow section); commit
   `chore: re-solve campaign over redesigned screens; regen proof trace`.
 - No pushes; the user merges/PRs when satisfied (repo protocol).
@@ -193,8 +198,9 @@ paint_screen.py --screens 12-16          # paint tiles into the .map.json files
 
 ## 10. Acceptance criteria
 
-1. All 17 redesigned/painted screens + fixed screen-17 committed; campaign
-   solves end-to-end with ≤ 98% charge and 144–234 total jumps.
+1. All 17 redesigned/painted screens committed (screen-17 untouched unless
+   reconciliation was requested); campaign solves end-to-end with ≤ 98% charge
+   and 144–234 total jumps.
 2. `ctest` 89/89 and `pytest` 24/24 (+ new painter tests) on the branch.
 3. Entities byte-identical across all 18 maps (`git diff` on `entities` blocks
    is empty); hazard counts preserved per screen.
@@ -208,8 +214,8 @@ paint_screen.py --screens 12-16          # paint tiles into the .map.json files
 - **P0 — Painter + validator + previews:** `tools/paint_screen.py` with tests;
   extract the screen-17 role mapping; prove determinism on screen-17 (paint →
   identical grid when `--include-17` on a scratch copy).
-- **P1 — Batch 1 (courtyard 12–16 + 17 fix):** redesign, solve-gate, paint,
-  previews, user approval, commits.
+- **P1 — Batch 1 (courtyard 12–16):** redesign, solve-gate, paint, previews,
+  route regen, user approval, commits.
 - **P2 — Batch 2 (frosted_keep 06–11):** same.
 - **P3 — Batch 3 (crown_spire 00–05):** same.
 - **P4 — Finale:** route regen, suites green, workflow doc update.
