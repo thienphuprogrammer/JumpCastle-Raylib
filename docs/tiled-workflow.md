@@ -42,6 +42,65 @@ Each map is 28×36 tiles at 16 px, with three layers:
   the older procedural polygon texturing — painting even one tile switches
   that screen over to WYSIWYG rendering on the next `from-tiled` export.
 
+## Hand-painting a screen (step by step)
+
+This is the recommended day-to-day recipe for hand-painting a screen's
+`terrain` layer using the hand-paint support kit: a per-biome **Terrain
+Brush** in `castle.tsx`, a labeled **palette cheat-sheet**, and a per-screen
+**collision underlay guide**. All three are authoring aids only — they don't
+change collision, `.map.json`, or game code.
+
+1. Open `assets/levels/tiled/screen-NN.tmj` in Tiled.
+2. Keep `docs/tiled-guides/palette-cheatsheet.png` and
+   `docs/tiled-guides/screen-NN-collision.png` open as reference (a second
+   monitor or image viewer works well).
+3. Select the `terrain` layer. Use the **Terrain Brush** — the biome's Wang
+   set in the Terrain Sets panel (called "Wang Sets" in Tiled versions before
+   1.9) — to drag across platforms; Tiled auto-places edges and corners for
+   you. Match the shapes in the collision underlay so painted tiles sit on
+   the real platforms rather than floating or clipping into geometry. If
+   `castle.tsx` was already open before this kit was added, reload the
+   tileset (or reopen the map) so the new Terrain Sets appear.
+4. Add variety by hand from the cheat-sheet: `detail_1` / `detail_2`,
+   `pillar`, `ledge`, `platform_left` / `platform_mid` / `platform_right`,
+   and `hazard` / `spike` aren't part of the Terrain Brush fill (they're
+   decoration/hazard tiles, not structural edges/corners) — stamp them
+   individually where the collision guide and your own judgment call for
+   them.
+5. Convert back to the engine format:
+
+   ```bash
+   .venv/bin/python tools/tiled_convert.py from-tiled \
+     --input-dir assets/levels/tiled --output-dir assets/levels/screens
+   ```
+
+6. Run the game to see it (see "Convert Tiled → game" below for the rebuild
+   command).
+7. Ask the assistant to review — it renders a preview and checks the painted
+   tiles against the collision layer.
+
+### Biome → screen map
+
+Verified against the `"biome"` field in each `assets/levels/screens/screen-NN.map.json`:
+
+| Biome          | Screens |
+|----------------|---------|
+| `crown_spire`  | 00–05   |
+| `frosted_keep` | 06–11   |
+| `courtyard`    | 12–17   |
+
+### Regenerating the kit
+
+The Terrain Brush, cheat-sheet, and collision guides are all generated —
+re-run their scripts after the source data changes (e.g. the atlas is
+regenerated, or a screen's collision is reworked):
+
+```bash
+.venv/bin/python tools/gen_wangsets.py          # castle.tsx Wang sets (idempotent)
+.venv/bin/python tools/tiled_cheatsheet.py       # docs/tiled-guides/palette-cheatsheet.png
+.venv/bin/python tools/tiled_collision_guide.py  # docs/tiled-guides/screen-NN-collision.png (all 18)
+```
+
 ## Authoring collision
 
 Two ways to fill the `collision` layer, and they compose:
