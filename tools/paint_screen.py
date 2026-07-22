@@ -282,7 +282,9 @@ def paint_grid(
     fill_cells: list[tuple[int, int]] = []
     for r in range(height):
         for c in range(width):
-            if not solid[r][c]:
+            # paint solid cells AND standalone hazard cells (a hazard collider
+            # in open air is not solid but still needs a hazard tile).
+            if not solid[r][c] and not hazard[r][c]:
                 continue
             role = classify_cell(solid, hazard, width, height, r, c)
             grid[r][c] = _gid_for_role(

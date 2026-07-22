@@ -128,10 +128,10 @@ Painter roles (all collision-backed; classification per solid cell from its
 ## 6. Tool: `tools/paint_screen.py` (new)
 
 CLI (venv python):
-```
+```text
 paint_screen.py --screens 12-16          # paint tiles into the .map.json files
                [--preview DIR]           # also write screen-NN-preview.png (PIL, atlas composite)
-               [--check]                 # validate-only: grammar §4 items 3,4,5,7 + coverage + determinism
+               [--check]                 # validate-only: integer coords (§4.5) + entity support (§4.7) + coverage
                [--include-17]            # off by default: screen-17 is never repainted unless asked
 ```
 - Input: `assets/levels/screens/screen-NN.map.json` (colliders, biome,
@@ -141,9 +141,9 @@ paint_screen.py --screens 12-16          # paint tiles into the .map.json files
 - Preview: composites tiles straight from `assets/generated/castle.png` — no
   engine needed; collision outlines and entities drawn on top faintly (reuses
   the drawing approach of `tools/tiled_collision_guide.py`).
-- `--check` is the layout validator run in CI-less workflow: integer coords,
-  route-surface widths, headroom, entity support, hazard count vs `main`,
-  coverage bounds. (Reachability itself is the solver's job, not this tool's.)
+- `--check` is the layout validator run in CI-less workflow: it checks integer
+  coords (§4.5), entity support (§4.7), and coverage bounds. (Route-surface
+  widths/headroom and reachability are left to the solver gate, not this tool.)
 - Module layout: single file, ~300 lines, stdlib + PIL only (matches existing
   tools).
 
