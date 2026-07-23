@@ -26,12 +26,15 @@ from paint_screen import (  # noqa: E402
     ROLE_EDGE,
     ROLE_FILL,
     ROLE_HAZARD,
+    ROLE_SLOPE,
     check_layout,
     classify_cell,
     coverage,
+    load_biome_gids,
     paint_grid,
     rasterize_colliders,
     should_paint,
+    slope_cells,
 )
 
 WIDTH = 28
@@ -179,3 +182,43 @@ def test_check_layout_accepts_entity_standing_on_surface():
     )
     violations = [v for v in check_layout(screen) if "support" in v.lower()]
     assert violations == []
+
+
+# --- slopes (spec 2026-07-23-sloped-terrain-design.md, Option A) ------------
+
+def _slope(x0: int, y0: int, x1: int, y1: int) -> dict:
+    """Right-triangle slope collider rising from (x0,y0) to the top-right."""
+    return {
+        "id": 0, "type": "solid", "shape": "slope",
+        "points": [[float(x0), float(y0)], [float(x1), float(y0)],
+                   [float(x1), float(y1)]],
+    }
+
+
+def test_slope_cells_marks_triangle_interior():
+    # Triangle (6,20)-(12,20)-(12,17): hypotenuse rises right→up.
+    grid = slope_cells([_slope(6, 20, 12, 17)], WIDTH, HEIGHT)
+    assert grid[19][7] is True    # under the incline
+    assert grid[5][5] is False    # far outside
+
+
+def test_top_slope_cell_classified_as_slope():
+    cols = [_slope(6, 20, 12, 17)]
+    solid, hazard = rasterize_colliders(cols, WIDTH, HEIGHT)
+    sl = slope_cells(cols, WIDTH, HEIGHT)
+    # (19,7) is a slope cell with open air above -> a walkable slope surface.
+    assert classify_cell(solid, hazard, WIDTH, HEIGHT, 19, 7, slope=sl) == ROLE_SLOPE
+
+
+def test_classify_without_slope_grid_is_unchanged():
+    # Backward compatibility: omitting the slope arg keeps the old behavior.
+    solid, hazard = rasterize_colliders([_rect(5, 5, 5, 5)], WIDTH, HEIGHT)
+    assert classify_cell(solid, hazard, WIDTH, HEIGHT, 6, 6) == ROLE_FILL
+
+
+def test_paint_grid_renders_slope_tile_when_biome_provides_one():
+    cols = [_slope(6, 20, 12, 17)]
+    gids = dict(load_biome_gids("courtyard"))
+    gids["slope"] = 999  # a distinct slope tile
+    grid = paint_grid(_screen(cols, index=12), index=12, biome_gids=gids)
+    assert grid[19][7] == 999  # the walkable slope top uses the slope tile

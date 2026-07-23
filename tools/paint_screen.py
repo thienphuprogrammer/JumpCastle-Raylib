@@ -50,6 +50,9 @@ ROLE_EDGE = "edge"
 ROLE_BRIDGE = "bridge"
 ROLE_COLUMN = "column"
 ROLE_HAZARD = "hazard"
+ROLE_SLOPE = "slope"
+
+SLOPE_SHAPE = "slope"  # collider `shape` tag for diagonal (triangular) terrain
 
 # --- courtyard 17-palette (local ids -> GIDs via +FIRSTGID) -----------------
 # Measured from the user's screen-17: fill 191, column 161, accents 92 & 114.
@@ -145,6 +148,28 @@ def rasterize_colliders(
     return solid, hazard
 
 
+def slope_cells(
+    colliders: list[dict[str, Any]], width: int, height: int
+) -> BoolGrid:
+    """Cells whose center falls inside a solid collider tagged ``shape:"slope"``.
+
+    These are the diagonal-terrain cells; the painter gives their walkable
+    top a distinct slope tile (spec 2026-07-23-sloped-terrain-design.md §5).
+    """
+    slope_polys = [
+        c["points"] for c in colliders
+        if c.get("type") in SOLID_COLLIDER_TYPES and c.get("shape") == SLOPE_SHAPE
+    ]
+    grid = [[False] * width for _ in range(height)]
+    for r in range(height):
+        cy = r + 0.5
+        for c in range(width):
+            cx = c + 0.5
+            if any(point_in_polygon(cx, cy, poly) for poly in slope_polys):
+                grid[r][c] = True
+    return grid
+
+
 def _is_solid(solid: BoolGrid, width: int, height: int, r: int, c: int) -> bool:
     """Out-of-bounds counts as open (not-solid), per the autotiling model."""
     if r < 0 or r >= height or c < 0 or c >= width:
@@ -155,9 +180,14 @@ def _is_solid(solid: BoolGrid, width: int, height: int, r: int, c: int) -> bool:
 # --- classification (spec §5) ----------------------------------------------
 
 def classify_cell(
-    solid: BoolGrid, hazard: BoolGrid, width: int, height: int, r: int, c: int
+    solid: BoolGrid, hazard: BoolGrid, width: int, height: int, r: int, c: int,
+    slope: BoolGrid | None = None,
 ) -> str:
-    """Structural role of the solid cell (r, c) from its 4 orthogonal neighbors."""
+    """Structural role of the solid cell (r, c) from its 4 orthogonal neighbors.
+
+    When a ``slope`` grid is supplied, a slope cell whose top is open air is a
+    walkable incline surface and classifies as ``ROLE_SLOPE``.
+    """
     if hazard[r][c]:
         return ROLE_HAZARD
 
@@ -165,6 +195,9 @@ def classify_cell(
     open_down = not _is_solid(solid, width, height, r + 1, c)
     open_left = not _is_solid(solid, width, height, r, c - 1)
     open_right = not _is_solid(solid, width, height, r, c + 1)
+
+    if slope is not None and slope[r][c] and open_up:
+        return ROLE_SLOPE
 
     horiz_thin = open_up and open_down     # nothing above or below -> a plank
     vert_thin = open_left and open_right   # nothing left or right -> a stack
@@ -256,6 +289,10 @@ def _gid_for_role(
         return COLUMN_GID if biome == "courtyard" else gids["pillar"]
     if role == ROLE_BRIDGE:
         return gids[_bridge_region(solid, width, height, r, c)]
+    if role == ROLE_SLOPE:
+        # MVP: use a dedicated slope tile if the biome provides one, else the
+        # flat-top tile (stair-stepped look) until slope art lands (spec §5).
+        return gids.get("slope", gids["top"])
     if role == ROLE_FILL:
         return FILL_GID if biome == "courtyard" else gids["center"]
     # ROLE_EDGE
@@ -276,7 +313,9 @@ def paint_grid(
     biome = screen.get("biome", "courtyard")
     gids = biome_gids if biome_gids is not None else load_biome_gids(biome)
 
-    solid, hazard = rasterize_colliders(screen.get("colliders", []), width, height)
+    colliders = screen.get("colliders", [])
+    solid, hazard = rasterize_colliders(colliders, width, height)
+    slope = slope_cells(colliders, width, height)
 
     grid: Grid = [[0] * width for _ in range(height)]
     fill_cells: list[tuple[int, int]] = []
@@ -286,7 +325,7 @@ def paint_grid(
             # in open air is not solid but still needs a hazard tile).
             if not solid[r][c] and not hazard[r][c]:
                 continue
-            role = classify_cell(solid, hazard, width, height, r, c)
+            role = classify_cell(solid, hazard, width, height, r, c, slope=slope)
             grid[r][c] = _gid_for_role(
                 role, biome, gids, solid, width, height, r, c, edge_mapping
             )
