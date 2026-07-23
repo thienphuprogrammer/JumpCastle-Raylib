@@ -10,7 +10,7 @@
   "tilewidth": 16,
   "tileheight": 16,
   "nextlayerid": 4,
-  "nextobjectid": 29,
+  "nextobjectid": 30,
   "tilesets": [
     {
       "firstgid": 1,
@@ -1870,6 +1870,31 @@
             {
               "x": 208.0,
               "y": 576.0
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "",
+          "type": "solid",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 16.0,
+              "y": 528.0
+            },
+            {
+              "x": 96.0,
+              "y": 528.0
+            },
+            {
+              "x": 96.0,
+              "y": 480.0
             }
           ]
         }
