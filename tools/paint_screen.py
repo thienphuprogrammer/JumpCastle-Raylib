@@ -62,7 +62,12 @@ ACCENT_GIDS = (92 + FIRSTGID, 114 + FIRSTGID)  # (93, 115)
 
 MAX_ACCENTS = 12                # spec §5: <= 12 accents per screen
 ACCENT_PERIOD = 37              # hash modulus tuning accent density
-COVERAGE_MIN = 0.35
+# The 17-style spec targeted 35-55% density, but the Jump-King fall-shaft
+# redesign deliberately trades density for open drop-lanes (feel-first), so
+# shaft-heavy screens legitimately sit as low as ~26%. COVERAGE_MIN is now a
+# "not accidentally empty" sanity floor, not the old style target; the upper
+# bound still guards against a screen filling in solid.
+COVERAGE_MIN = 0.20
 COVERAGE_MAX = 0.55
 ENTITY_SUPPORT_TOL = 0.13       # matches solver support tolerance (src/solver.cpp)
 
