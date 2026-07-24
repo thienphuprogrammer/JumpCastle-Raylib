@@ -69,6 +69,25 @@ void integrate_player(PlayerState& player, const float delta) noexcept {
 
 namespace {
 
+// Records the deterministically selected supporting contact so downstream
+// systems (surface-normal movement, solver replay) read a stable support frame.
+void apply_ground_contact(PlayerState& player, const Contact& contact) noexcept {
+    player.on_ground = true;
+    player.ground_normal = contact.normal;
+    player.ground_point = contact.point;
+    player.ground_collider_id = contact.collider_id;
+    player.ground_piece_index = contact.piece_index;
+}
+
+// Restores the flat default support frame when the player leaves the ground.
+void clear_ground_contact(PlayerState& player) noexcept {
+    player.on_ground = false;
+    player.ground_normal = {0.0F, -1.0F};
+    player.ground_point = {};
+    player.ground_collider_id = -1;
+    player.ground_piece_index = 0;
+}
+
 // Applies input, mode transitions and gravity for one tick, updating velocity
 // and clamping to the maximum speed. Returns true when the tick is fully
 // resolved and no movement integration should follow (still charging on ground).
@@ -144,26 +163,33 @@ ResolveResult step_player(
     player.position = player.position + player.velocity * fixed_delta;
     ResolveResult result = world.resolve(previous_position, player);
 
-    // SAT reports penetration, not flush contact; probe just below the feet so a
-    // resting player stays grounded instead of flickering airborne each tick.
-    if (!result.on_ground && player.velocity.y >= 0.0F) {
+    if (result.ground_contact) {
+        apply_ground_contact(player, *result.ground_contact);
+    } else if (player.velocity.y >= 0.0F) {
+        // SAT reports penetration, not flush contact; probe just below the feet
+        // so a resting player keeps a deterministic support instead of
+        // flickering airborne each tick.
         const Vec2 half = config::player_half_size;
         const Aabb feet{
             {player.position.x - half.x, player.position.y + half.y - 0.02F},
             {player.position.x + half.x, player.position.y + half.y + 0.08F}};
-        if (world.overlaps_blocking(feet)) {
+        if (const std::optional<Contact> support = world.support_contact(feet)) {
             result.on_ground = true;
+            result.ground_contact = support;
+            apply_ground_contact(player, *support);
         }
     }
 
-    player.on_ground = result.on_ground;
-    if (result.on_ground) {
+    if (player.on_ground) {
         player.mode = player.jump_hold_time > 0.0F
             ? PlayerMode::charging
             : PlayerMode::grounded;
         player.velocity.y = 0.0F;
-    } else if (player.mode != PlayerMode::charging) {
-        player.mode = PlayerMode::airborne;
+    } else {
+        clear_ground_contact(player);
+        if (player.mode != PlayerMode::charging) {
+            player.mode = PlayerMode::airborne;
+        }
     }
     return result;
 }

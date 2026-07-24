@@ -76,6 +76,21 @@ public:
     /// @endcode
     [[nodiscard]] bool overlaps_blocking(const Aabb& box) const noexcept;
 
+    /// Returns the deterministically selected supporting contact under `box`.
+    ///
+    /// Uses the same neighboring-screen broad phase and narrow-phase dispatch as
+    /// `resolve`, ignoring hazards and accepting only walkable contacts whose
+    /// `normal.y <= -0.5F`. Candidates are ranked by upward normal, then depth,
+    /// then `(collider_id, piece_index)`. Returns `std::nullopt` when nothing
+    /// supports the box. This read-only query is safe to call concurrently.
+    ///
+    /// @code
+    /// if (const auto contact = world.support_contact(feet)) {
+    ///     player.ground_normal = contact->normal;
+    /// }
+    /// @endcode
+    [[nodiscard]] std::optional<Contact> support_contact(Aabb box) const noexcept;
+
     /// Returns world-space colliders for a screen, or `nullptr` out of range.
     /// The pointer remains valid until the world is destroyed or assigned.
     ///

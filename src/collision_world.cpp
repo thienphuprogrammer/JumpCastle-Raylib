@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -78,6 +79,16 @@ bool prefer_ground_contact(const Contact& candidate, const Contact& current) noe
         return candidate.collider_id < current.collider_id;
     }
     return candidate.piece_index < current.piece_index;
+}
+
+bool better_ground_contact(const Contact& candidate, const Contact& current) noexcept {
+    constexpr float epsilon = 1.0e-5F;
+    if (candidate.normal.y < current.normal.y - epsilon) return true;
+    if (candidate.normal.y > current.normal.y + epsilon) return false;
+    if (candidate.depth > current.depth + epsilon) return true;
+    if (candidate.depth < current.depth - epsilon) return false;
+    return std::tie(candidate.collider_id, candidate.piece_index) <
+           std::tie(current.collider_id, current.piece_index);
 }
 
 struct ScreenTargets {
@@ -384,6 +395,27 @@ bool CollisionWorld::overlaps_blocking(const Aabb& box) const noexcept {
         }
     }
     return false;
+}
+
+std::optional<Contact> CollisionWorld::support_contact(const Aabb box) const noexcept {
+    const Vec2 center = aabb_center(box);
+    const int screen_index =
+        static_cast<int>(std::floor(center.y / static_cast<float>(screen_height_)));
+    std::optional<Contact> best;
+    for (int k = screen_index - 1; k <= screen_index + 1; ++k) {
+        const std::vector<WorldCollider>* colliders = colliders_for_screen(k);
+        if (colliders == nullptr) { continue; }
+        for (const WorldCollider& collider : *colliders) {
+            if (collider.type == ColliderType::hazard) { continue; }
+            if (!aabb_overlap(box, collider.aabb)) { continue; }
+            const std::optional<Contact> contact = contact_for(box, collider);
+            if (!contact || contact->normal.y > kGroundNormalY) { continue; }
+            if (!best || better_ground_contact(*contact, *best)) {
+                best = contact;
+            }
+        }
+    }
+    return best;
 }
 
 ResolveResult CollisionWorld::resolve(const Vec2 previous_position, PlayerState& player) const {

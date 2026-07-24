@@ -39,6 +39,38 @@ TEST_CASE("player steps against a polygon collision world and lands grounded") {
     REQUIRE(player.position.y + config::player_half_size.y == Approx(14.0F).margin(2e-2));
 }
 
+TEST_CASE("landing persists the selected support frame") {
+    ScreenMap screen;
+    screen.index = 0;
+    screen.width = 28;
+    screen.height = 36;
+    screen.colliders.push_back({
+        .id = 21,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{{{4,20},{12,16},{12,20}}},
+        .tag = "slope",
+    });
+    const CollisionWorld world = CollisionWorld::from_screens({screen}, 36);
+    PlayerState player{.position = {10.0F, 14.0F}, .velocity = {0.0F, 4.0F}};
+
+    for (int tick = 0; tick < 240 && !player.on_ground; ++tick) {
+        step_player(player, world, {}, config::fixed_delta);
+    }
+
+    REQUIRE(player.on_ground);
+    CHECK(player.ground_collider_id == 21);
+    CHECK(length(player.ground_normal) == Approx(1.0F));
+    CHECK(player.ground_normal.x < 0.0F);
+    CHECK(player.ground_normal.y <= -0.5F);
+}
+
+TEST_CASE("player defaults to a flat deterministic support frame") {
+    const PlayerState player{};
+    CHECK(player.ground_normal == Vec2{0.0F, -1.0F});
+    CHECK(player.ground_collider_id == -1);
+    CHECK(player.ground_piece_index == 0);
+}
+
 TEST_CASE("player state starts deterministically") {
     const PlayerState player{};
 
