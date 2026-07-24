@@ -148,6 +148,38 @@ TEST_CASE("charged jump follows horizontal input") {
     CHECK(jump_left.y == Approx(jump_right.y));
 }
 
+TEST_CASE("surface-relative jump preserves flat-ground behavior") {
+    const Vec2 legacy = charged_jump_velocity(0.5F, 1.0F);
+    const Vec2 framed = charged_jump_velocity(0.5F, 1.0F, {0.0F, -1.0F});
+    CHECK(framed.x == Approx(legacy.x));
+    CHECK(framed.y == Approx(legacy.y));
+}
+
+TEST_CASE("neutral jump follows slope normal") {
+    const Vec2 normal = normalized(Vec2{-1.0F, -1.0F});
+    const Vec2 velocity = charged_jump_velocity(0.5F, 0.0F, normal);
+    CHECK(normalized(velocity).x == Approx(normal.x).margin(1e-5));
+    CHECK(normalized(velocity).y == Approx(normal.y).margin(1e-5));
+}
+
+TEST_CASE("right input adds right-facing surface tangent") {
+    const Vec2 normal = normalized(Vec2{0.6F, -0.8F});
+    const Vec2 tangent = surface_tangent_right(normal);
+    const Vec2 neutral = charged_jump_velocity(0.5F, 0.0F, normal);
+    const Vec2 right = charged_jump_velocity(0.5F, 1.0F, normal);
+    CHECK(dot(right - neutral, tangent) > 0.0F);
+}
+
+TEST_CASE("ground movement follows the support tangent") {
+    PlayerState player{};
+    player.mode = PlayerMode::grounded;
+    player.on_ground = true;
+    player.ground_normal = normalized(Vec2{-1.0F, -1.0F});
+    simulate_ground_movement(player, {.right = true}, 0.1F);
+    CHECK(dot(player.velocity, surface_tangent_right(player.ground_normal)) > 0.0F);
+    CHECK(std::abs(dot(player.velocity, player.ground_normal)) < 1e-5F);
+}
+
 TEST_CASE("simulation caps player speed") {
     PlayerState player{};
     player.velocity = {100.0F, 100.0F};

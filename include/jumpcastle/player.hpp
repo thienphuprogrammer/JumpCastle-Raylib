@@ -34,9 +34,16 @@ struct PlayerState {
     int ground_piece_index{};
 };
 
+[[nodiscard]] Vec2 surface_tangent_right(Vec2 normal) noexcept;
+
 [[nodiscard]] Vec2 charged_jump_velocity(
     float hold_time,
     float horizontal_input) noexcept;
+
+[[nodiscard]] Vec2 charged_jump_velocity(
+    float hold_time,
+    float horizontal_input,
+    Vec2 ground_normal) noexcept;
 
 void simulate_ground_movement(
     PlayerState& player,

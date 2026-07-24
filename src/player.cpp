@@ -7,20 +7,33 @@
 
 namespace jumpcastle {
 
+Vec2 surface_tangent_right(const Vec2 normal) noexcept {
+    return {-normal.y, normal.x};
+}
+
 Vec2 charged_jump_velocity(
     const float hold_time,
-    const float horizontal_input) noexcept {
+    const float horizontal_input,
+    const Vec2 ground_normal) noexcept {
     const float raw_charge = std::clamp(
         (hold_time - config::minimum_charge_seconds) /
             (config::maximum_charge_seconds - config::minimum_charge_seconds),
         0.0F,
         1.0F);
     const float charge = raw_charge * raw_charge * (3.0F - 2.0F * raw_charge);
-    const float direction = std::clamp(horizontal_input, -1.0F, 1.0F);
-    return {
-        direction * (4.5F + charge * 3.5F),
-        -config::jump_strength * (0.55F + charge * 0.45F),
-    };
+    const float input = std::clamp(horizontal_input, -1.0F, 1.0F);
+    const float horizontal_speed = 4.5F + charge * 3.5F;
+    const float vertical_speed =
+        config::jump_strength * (0.55F + charge * 0.45F);
+    const Vec2 normal = normalized(ground_normal);
+    return normal * vertical_speed +
+        surface_tangent_right(normal) * (input * horizontal_speed);
+}
+
+Vec2 charged_jump_velocity(
+    const float hold_time,
+    const float horizontal_input) noexcept {
+    return charged_jump_velocity(hold_time, horizontal_input, {0.0F, -1.0F});
 }
 
 void simulate_ground_movement(
@@ -30,7 +43,8 @@ void simulate_ground_movement(
     if (input.jump_released) {
         const float horizontal_input =
             (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
-        player.velocity = charged_jump_velocity(player.jump_hold_time, horizontal_input);
+        player.velocity = charged_jump_velocity(
+            player.jump_hold_time, horizontal_input, player.ground_normal);
     }
 
     if (input.jump_down) {
@@ -43,13 +57,13 @@ void simulate_ground_movement(
 
     player.jump_hold_time = 0.0F;
 
-    if (input.right) {
-        player.velocity.x += config::movement_acceleration * delta;
-        player.facing_right = true;
-    }
-    if (input.left) {
-        player.velocity.x -= config::movement_acceleration * delta;
-        player.facing_right = false;
+    const float direction =
+        (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
+    if (direction != 0.0F) {
+        player.velocity = player.velocity +
+            surface_tangent_right(player.ground_normal) *
+                (direction * config::movement_acceleration * delta);
+        player.facing_right = direction > 0.0F;
     }
     if (input.left_pressed || input.right_pressed) {
         player.animation_time = 0.0F;
@@ -108,7 +122,8 @@ bool advance_before_resolution(
         } else {
             const float direction =
                 (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
-            player.velocity.x = direction * config::movement_acceleration * fixed_delta;
+            player.velocity = surface_tangent_right(player.ground_normal) *
+                (direction * config::movement_acceleration * fixed_delta);
             if (direction != 0.0F) {
                 player.facing_right = direction > 0.0F;
             }
@@ -128,7 +143,8 @@ bool advance_before_resolution(
         if (input.jump_released) {
             const float direction =
                 (input.right ? 1.0F : 0.0F) - (input.left ? 1.0F : 0.0F);
-            player.velocity = charged_jump_velocity(player.jump_hold_time, direction);
+            player.velocity = charged_jump_velocity(
+                player.jump_hold_time, direction, player.ground_normal);
             player.jump_hold_time = 0.0F;
             player.mode = PlayerMode::airborne;
             player.on_ground = false;
