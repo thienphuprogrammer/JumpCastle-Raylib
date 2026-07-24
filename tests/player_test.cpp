@@ -1,6 +1,5 @@
 #include "jumpcastle/player.hpp"
 
-#include "jumpcastle/convex.hpp"
 #include "jumpcastle/game_config.hpp"
 #include "test_world_factory.hpp"
 
@@ -18,8 +17,11 @@ TEST_CASE("player steps against a polygon collision world and lands grounded") {
     screen.width = 16;
     screen.height = 15;
     const std::vector<Vec2> floor{{0, 14}, {16, 14}, {16, 15}, {0, 15}};
-    screen.polygons.push_back(
-        {floor, outward_edge_normals(floor), polygon_aabb(floor), ColliderType::solid});
+    screen.colliders.push_back({
+        .id = 1,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{floor},
+    });
     const CollisionWorld world = CollisionWorld::from_screens({screen}, 15);
 
     PlayerState player;
@@ -99,4 +101,3 @@ TEST_CASE("position integration is stable across equivalent frame splits") {
     CHECK(one_step.position.x == Approx(two_steps.position.x));
     CHECK(one_step.position.y == Approx(two_steps.position.y));
 }
-

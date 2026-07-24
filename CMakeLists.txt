@@ -41,6 +41,7 @@ add_library(
   src/collision.cpp
   src/convex.cpp
   src/sat.cpp
+  src/shape_collision.cpp
   src/map_format.cpp
   src/collision_world.cpp
   src/campaign_world.cpp
@@ -101,6 +102,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/collision_test.cpp
     tests/convex_test.cpp
     tests/sat_test.cpp
+    tests/shape_collision_test.cpp
     tests/map_format_test.cpp
     tests/collision_world_test.cpp
     tests/editor_test.cpp
