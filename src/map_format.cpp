@@ -1,6 +1,7 @@
 #include "jumpcastle/map_format.hpp"
 
 #include "jumpcastle/convex.hpp"
+#include "jumpcastle/map_validation.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -446,6 +447,9 @@ ScreenMap parse_screen_map(const std::string_view json, const std::string_view l
         parse_entities(root, map);
         parse_tileset(root, map);
         parse_tile_layers(root, map);
+        // Atlas-independent structural checks; CampaignWorld::load re-validates
+        // with real atlas dimensions once AssetCatalog resolves the tileset.
+        validate_screen_map(map, {});
         return map;
     } catch (const std::exception& error) {
         throw std::runtime_error(std::string{label} + ": " + error.what());
