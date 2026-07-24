@@ -180,7 +180,12 @@ ResolveResult step_player(
         }
     }
 
-    if (player.on_ground) {
+    // `result.on_ground` is the authoritative post-resolution verdict: resolve
+    // couples it to a supporting contact, and the feet probe above sets it when
+    // it finds one. The speculative `player.on_ground` from
+    // advance_before_resolution must NOT drive this decision, or a grounded
+    // player that walks off a ledge would stay glued in mid-air.
+    if (result.on_ground) {
         player.mode = player.jump_hold_time > 0.0F
             ? PlayerMode::charging
             : PlayerMode::grounded;

@@ -64,6 +64,43 @@ TEST_CASE("landing persists the selected support frame") {
     CHECK(player.ground_normal.y <= -0.5F);
 }
 
+TEST_CASE("grounded player walking off a ledge loses support and falls") {
+    // Regression: advance_before_resolution speculatively sets on_ground=true
+    // for grounded players. The end-of-step transition must be driven by the
+    // post-resolution verdict, not that stale flag, or a player that walks past
+    // a platform edge hovers in mid-air forever instead of falling.
+    ScreenMap screen;
+    screen.index = 0;
+    screen.width = 32;
+    screen.height = 32;
+    screen.colliders.push_back({
+        .id = 7,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{{{0, 20}, {12, 20}, {12, 24}, {0, 24}}},
+    });
+    const CollisionWorld world = CollisionWorld::from_screens({screen}, 32);
+
+    // Land the player on the platform.
+    PlayerState player;
+    player.position = {6.0F, 8.0F};
+    player.velocity = {};
+    player.mode = PlayerMode::airborne;
+    for (int tick = 0; tick < 600 && !player.on_ground; ++tick) {
+        step_player(player, world, PlayerInput{}, config::fixed_delta);
+    }
+    REQUIRE(player.on_ground);
+    const float grounded_y = player.position.y;
+
+    // Hold right and walk past the x=12 edge into the void.
+    for (int tick = 0; tick < 600; ++tick) {
+        step_player(player, world, PlayerInput{.right = true}, config::fixed_delta);
+    }
+
+    CHECK_FALSE(player.on_ground);
+    CHECK(player.mode == PlayerMode::airborne);
+    CHECK(player.position.y > grounded_y + 1.0F);
+}
+
 TEST_CASE("player defaults to a flat deterministic support frame") {
     const PlayerState player{};
     CHECK(player.ground_normal == Vec2{0.0F, -1.0F});
