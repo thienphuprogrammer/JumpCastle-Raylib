@@ -55,6 +55,8 @@ ROLE_SLOPE = "slope"
 SLOPE_SHAPE = "slope"  # collider `shape` tag for diagonal (triangular) terrain
 # Optional diagonal atlas regions (present after the atlas gains slope tiles).
 SLOPE_REGIONS = ("slope_ne", "slope_nw", "slope_se", "slope_sw")
+ROUND_SHAPE = "round"  # collider `shape` tag for round (octagon-approx) terrain
+ROUND_REGIONS = ("round_tl", "round_tr", "round_bl", "round_br")
 
 # --- courtyard 17-palette (local ids -> GIDs via +FIRSTGID) -----------------
 # Measured from the user's screen-17: fill 191, column 161, accents 92 & 114.
@@ -113,7 +115,7 @@ def load_biome_gids(biome: str, manifest: dict[str, Any] | None = None) -> dict[
     gids = {name: region_gid(regions[name]) for name in REQUIRED_REGIONS}
     # Slope tiles are optional: present only after the atlas has been rebuilt
     # (or patched) with the diagonal regions. Absent -> ROLE_SLOPE falls back.
-    for name in SLOPE_REGIONS:
+    for name in (*SLOPE_REGIONS, *ROUND_REGIONS):
         if name in regions:
             gids[name] = region_gid(regions[name])
     return gids
@@ -180,6 +182,38 @@ def slope_cells(
             cx = c + 0.5
             if any(point_in_polygon(cx, cy, poly) for poly in slope_polys):
                 grid[r][c] = True
+    return grid
+
+
+def round_cells(
+    colliders: list[dict[str, Any]], width: int, height: int
+) -> list[list[str | None]]:
+    """Cell -> disc-quadrant tile name for cells inside a ``shape:"round"`` collider.
+
+    A round collider is a polygon (octagon) approximating a circle; each interior
+    cell is tagged with the quadrant of the circle it sits in so the painter can
+    render the matching ``round_tl/tr/bl/br`` tile (spec §C, circles).
+    """
+    grid: list[list[str | None]] = [[None] * width for _ in range(height)]
+    for col in colliders:
+        if col.get("type") not in SOLID_COLLIDER_TYPES or col.get("shape") != ROUND_SHAPE:
+            continue
+        pts = col["points"]
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        mx = (min(xs) + max(xs)) / 2.0
+        my = (min(ys) + max(ys)) / 2.0
+        for r in range(height):
+            cy = r + 0.5
+            for c in range(width):
+                cx = c + 0.5
+                if point_in_polygon(cx, cy, pts):
+                    left, top = cx < mx, cy < my
+                    grid[r][c] = (
+                        "round_tl" if (left and top) else
+                        "round_tr" if (not left and top) else
+                        "round_bl" if (left and not top) else "round_br"
+                    )
     return grid
 
 
@@ -330,6 +364,7 @@ def paint_grid(
     colliders = screen.get("colliders", [])
     solid, hazard = rasterize_colliders(colliders, width, height)
     slope = slope_cells(colliders, width, height)
+    round_orient = round_cells(colliders, width, height)
 
     grid: Grid = [[0] * width for _ in range(height)]
     fill_cells: list[tuple[int, int]] = []
@@ -338,6 +373,11 @@ def paint_grid(
             # paint solid cells AND standalone hazard cells (a hazard collider
             # in open air is not solid but still needs a hazard tile).
             if not solid[r][c] and not hazard[r][c]:
+                continue
+            # round (disc-quadrant) tile overrides the structural role when the
+            # atlas provides it, so a shape:"round" collider reads as a circle.
+            if not hazard[r][c] and round_orient[r][c] in gids:
+                grid[r][c] = gids[round_orient[r][c]]
                 continue
             role = classify_cell(solid, hazard, width, height, r, c, slope=slope)
             grid[r][c] = _gid_for_role(

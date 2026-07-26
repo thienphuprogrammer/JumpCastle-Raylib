@@ -234,6 +234,30 @@
               "x": 32,
               "y": 16
             },
+            "round_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 32,
+              "y": 64
+            },
+            "round_br": {
+              "height": 16,
+              "width": 16,
+              "x": 48,
+              "y": 64
+            },
+            "round_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 0,
+              "y": 64
+            },
+            "round_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 16,
+              "y": 64
+            },
             "slope_ne": {
               "height": 16,
               "width": 16,
@@ -424,6 +448,30 @@
               "width": 16,
               "x": 288,
               "y": 16
+            },
+            "round_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 288,
+              "y": 64
+            },
+            "round_br": {
+              "height": 16,
+              "width": 16,
+              "x": 304,
+              "y": 64
+            },
+            "round_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 256,
+              "y": 64
+            },
+            "round_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 272,
+              "y": 64
             },
             "slope_ne": {
               "height": 16,
@@ -616,6 +664,30 @@
               "x": 160,
               "y": 16
             },
+            "round_bl": {
+              "height": 16,
+              "width": 16,
+              "x": 160,
+              "y": 64
+            },
+            "round_br": {
+              "height": 16,
+              "width": 16,
+              "x": 176,
+              "y": 64
+            },
+            "round_tl": {
+              "height": 16,
+              "width": 16,
+              "x": 128,
+              "y": 64
+            },
+            "round_tr": {
+              "height": 16,
+              "width": 16,
+              "x": 144,
+              "y": 64
+            },
             "slope_ne": {
               "height": 16,
               "width": 16,
@@ -676,7 +748,7 @@
       },
       "file": "castle.png",
       "height": 128,
-      "sha256": "716ddf77aec64c926549f736d54e06c2a0b986cccd99c35142a4d2b2dccd4a34",
+      "sha256": "5bb0d3e14e41ba6a78dbb6f608e1c320d0c9f9a44d37bed36f07f222774ffa7b",
       "width": 384
     },
     "knight": {

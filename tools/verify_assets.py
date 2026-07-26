@@ -34,6 +34,7 @@ EXPECTED_TERRAIN_REGIONS = {
     "ledge", "pillar", "isolated", "detail_1", "detail_2", "hazard",
     "spike", "checkpoint", "exit", "background",
     "slope_ne", "slope_nw", "slope_se", "slope_sw",
+    "round_tl", "round_tr", "round_bl", "round_br",
 }
 
 

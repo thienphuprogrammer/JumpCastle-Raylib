@@ -222,3 +222,26 @@ def test_paint_grid_renders_slope_tile_when_biome_provides_one():
     gids["slope_ne"] = 999  # a distinct NE-rising diagonal tile
     grid = paint_grid(_screen(cols, index=12), index=12, biome_gids=gids)
     assert grid[19][7] == 999  # the walkable slope top uses the diagonal tile
+
+
+def _octagon(cx: float, cy: float) -> dict:
+    """Octagon inscribing a 2x2 disc centred at (cx,cy) tagged shape:'round'."""
+    d = 0.5
+    return {"id": 0, "type": "solid", "shape": "round", "points": [
+        [cx - 1, cy - d], [cx - d, cy - 1], [cx + d, cy - 1], [cx + 1, cy - d],
+        [cx + 1, cy + d], [cx + d, cy + 1], [cx - d, cy + 1], [cx - 1, cy + d]]}
+
+
+def test_round_cells_tags_quadrants():
+    from paint_screen import round_cells
+    grid = round_cells([_octagon(10, 10)], WIDTH, HEIGHT)
+    assert grid[9][9] == "round_tl"    # up-left of centre (10,10)
+    assert grid[10][10] == "round_br"  # down-right of centre
+    assert grid[5][5] is None          # outside
+
+
+def test_paint_grid_renders_round_tile_by_quadrant():
+    gids = dict(load_biome_gids("courtyard"))
+    gids["round_tl"] = 777
+    grid = paint_grid(_screen([_octagon(10, 10)], index=12), index=12, biome_gids=gids)
+    assert grid[9][9] == 777  # top-left quadrant uses the round_tl tile

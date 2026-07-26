@@ -187,6 +187,38 @@ SLOPE_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
     "slope_se": (3, 2), "slope_sw": (3, 3),
 }
 
+# Round terrain: a 2x2 disc composed from four quarter-tiles, each the biome's
+# center stone masked to one quadrant of a circle whose radius is one tile and
+# whose centre is the shared inner corner of the 2x2 block.
+ROUND_ORIENTATIONS = ("round_tl", "round_tr", "round_bl", "round_br")
+
+
+def _round_keep(orientation: str, px: int, py: int) -> bool:
+    """True if pixel (px,py) is inside the quarter-disc for this corner tile."""
+    m = TILE  # circle radius = one tile; centre at the 2x2 inner corner
+    # centre of the full circle relative to this tile's top-left origin:
+    cx = m if orientation in ("round_tl", "round_bl") else 0
+    cy = m if orientation in ("round_tl", "round_tr") else 0
+    return (px + 0.5 - cx) ** 2 + (py + 0.5 - cy) ** 2 <= m * m
+
+
+def round_tile(center: Image.Image, orientation: str) -> Image.Image:
+    """A TILE x TILE quarter-disc cut of the solid `center` stone tile."""
+    stone = fitted_tile(center)
+    out = Image.new("RGBA", (TILE, TILE))
+    src, dst = stone.load(), out.load()
+    for py in range(TILE):
+        for px in range(TILE):
+            if _round_keep(orientation, px, py):
+                dst[px, py] = src[px, py]
+    return out
+
+
+ROUND_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    "round_tl": (4, 0), "round_tr": (4, 1),
+    "round_bl": (4, 2), "round_br": (4, 3),
+}
+
 
 def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
     normalized = fitted_tile(image)
@@ -320,6 +352,13 @@ def build_castle(
             y = row * TILE
             atlas.alpha_composite(slope_tile(center_stone, slope_name), (x, y))
             slope_regions[slope_name] = rect(x, y)
+
+        # Round (disc quadrant) tiles, also derived from the center stone.
+        for round_name, (row, column) in ROUND_SLOT_POSITIONS.items():
+            x = origin_x + column * TILE
+            y = row * TILE
+            atlas.alpha_composite(round_tile(center_stone, round_name), (x, y))
+            slope_regions[round_name] = rect(x, y)
 
         biome_records[biome_name] = {
             "terrain_grid": {
