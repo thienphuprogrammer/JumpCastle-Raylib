@@ -53,6 +53,8 @@ ROLE_HAZARD = "hazard"
 ROLE_SLOPE = "slope"
 
 SLOPE_SHAPE = "slope"  # collider `shape` tag for diagonal (triangular) terrain
+# Optional diagonal atlas regions (present after the atlas gains slope tiles).
+SLOPE_REGIONS = ("slope_ne", "slope_nw", "slope_se", "slope_sw")
 
 # --- courtyard 17-palette (local ids -> GIDs via +FIRSTGID) -----------------
 # Measured from the user's screen-17: fill 191, column 161, accents 92 & 114.
@@ -108,7 +110,13 @@ def load_biome_gids(biome: str, manifest: dict[str, Any] | None = None) -> dict[
     missing = [name for name in REQUIRED_REGIONS if name not in regions]
     if missing:
         raise KeyError(f"biome {biome!r} manifest missing regions: {missing}")
-    return {name: region_gid(regions[name]) for name in REQUIRED_REGIONS}
+    gids = {name: region_gid(regions[name]) for name in REQUIRED_REGIONS}
+    # Slope tiles are optional: present only after the atlas has been rebuilt
+    # (or patched) with the diagonal regions. Absent -> ROLE_SLOPE falls back.
+    for name in SLOPE_REGIONS:
+        if name in regions:
+            gids[name] = region_gid(regions[name])
+    return gids
 
 
 # --- rasterization ----------------------------------------------------------
@@ -295,9 +303,10 @@ def _gid_for_role(
     if role == ROLE_BRIDGE:
         return gids[_bridge_region(solid, width, height, r, c)]
     if role == ROLE_SLOPE:
-        # MVP: use a dedicated slope tile if the biome provides one, else the
-        # flat-top tile (stair-stepped look) until slope art lands (spec §5).
-        return gids.get("slope", gids["top"])
+        # Demonstrative slopes are all NE-rising right triangles (place_slopes),
+        # so render the NE diagonal when the atlas provides it; else fall back to
+        # the flat-top tile (stair-stepped) until the atlas gains slope art.
+        return gids.get("slope_ne", gids.get("slope", gids["top"]))
     if role == ROLE_FILL:
         return FILL_GID if biome == "courtyard" else gids["center"]
     # ROLE_EDGE

@@ -219,6 +219,6 @@ def test_classify_without_slope_grid_is_unchanged():
 def test_paint_grid_renders_slope_tile_when_biome_provides_one():
     cols = [_slope(6, 20, 12, 17)]
     gids = dict(load_biome_gids("courtyard"))
-    gids["slope"] = 999  # a distinct slope tile
+    gids["slope_ne"] = 999  # a distinct NE-rising diagonal tile
     grid = paint_grid(_screen(cols, index=12), index=12, biome_gids=gids)
-    assert grid[19][7] == 999  # the walkable slope top uses the slope tile
+    assert grid[19][7] == 999  # the walkable slope top uses the diagonal tile

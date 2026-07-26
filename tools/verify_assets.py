@@ -33,6 +33,7 @@ EXPECTED_TERRAIN_REGIONS = {
     "platform_left", "platform_mid", "platform_right",
     "ledge", "pillar", "isolated", "detail_1", "detail_2", "hazard",
     "spike", "checkpoint", "exit", "background",
+    "slope_ne", "slope_nw", "slope_se", "slope_sw",
 }
 
 

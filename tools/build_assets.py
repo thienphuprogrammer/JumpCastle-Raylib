@@ -145,6 +145,49 @@ def fitted_tile(image: Image.Image) -> Image.Image:
     return image.resize((TILE, TILE), Image.Resampling.NEAREST)
 
 
+# Diagonal terrain: a slope tile is the biome's solid "center" stone masked to a
+# right triangle so the exposed edge reads as a 45-degree incline. Four
+# orientations cover walkable ramps (rise NE/NW) and overhang ceilings (SE/SW).
+# Derived deterministically from already-verified atlas pixels -- no new source.
+SLOPE_ORIENTATIONS = ("slope_ne", "slope_nw", "slope_se", "slope_sw")
+
+
+def _slope_keep(orientation: str, px: int, py: int) -> bool:
+    """True if pixel (px,py) is solid for this slope orientation (TILE-1 = 15)."""
+    m = TILE - 1
+    if orientation == "slope_ne":   # ramp rising to the right; solid lower-right
+        return px + py >= m
+    if orientation == "slope_nw":   # ramp rising to the left;  solid lower-left
+        return py >= px
+    if orientation == "slope_se":   # ceiling sloping down-right; solid upper-left
+        return px + py <= m
+    if orientation == "slope_sw":   # ceiling sloping down-left;  solid upper-right
+        return py <= px
+    raise ValueError(f"unknown slope orientation: {orientation}")
+
+
+def slope_tile(center: Image.Image, orientation: str) -> Image.Image:
+    """A TILE x TILE diagonal cut of the solid `center` stone tile."""
+    stone = fitted_tile(center)
+    out = Image.new("RGBA", (TILE, TILE))
+    src = stone.load()
+    dst = out.load()
+    for py in range(TILE):
+        for px in range(TILE):
+            if _slope_keep(orientation, px, py):
+                dst[px, py] = src[px, py]
+    return out
+
+
+# Slope tiles live in a free grid row (row 3) of every biome's 8x8 block; rows
+# 0-2 are the 9-slice + named-slot + checkpoint/exit contract, rows 3-7 are
+# filler this pipeline may repurpose.
+SLOPE_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    "slope_ne": (3, 0), "slope_nw": (3, 1),
+    "slope_se": (3, 2), "slope_sw": (3, 3),
+}
+
+
 def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
     normalized = fitted_tile(image)
     if derive is None:
@@ -269,6 +312,15 @@ def build_castle(
         special_regions["spike"] = named_regions["hazard"]
         special_regions["background"] = named_regions["isolated"]
 
+        # Diagonal slope tiles, derived from this biome's solid center stone.
+        slope_regions: dict[str, dict[str, int]] = {}
+        center_stone = fitted_tile(sources.crop(regions["center"]))
+        for slope_name, (row, column) in SLOPE_SLOT_POSITIONS.items():
+            x = origin_x + column * TILE
+            y = row * TILE
+            atlas.alpha_composite(slope_tile(center_stone, slope_name), (x, y))
+            slope_regions[slope_name] = rect(x, y)
+
         biome_records[biome_name] = {
             "terrain_grid": {
                 "x": origin_x,
@@ -277,7 +329,7 @@ def build_castle(
                 "columns": TERRAIN_COLUMNS,
                 "rows": TERRAIN_ROWS,
             },
-            "regions": {**named_regions, **special_regions},
+            "regions": {**named_regions, **special_regions, **slope_regions},
         }
 
     path = output / "castle.png"
