@@ -52,6 +52,7 @@ add_library(
   src/replay.cpp
   src/simulation.cpp
   src/solver.cpp
+  src/surface_samples.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
@@ -120,6 +121,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/replay_test.cpp
     tests/simulation_test.cpp
     tests/solver_test.cpp
+    tests/surface_samples_test.cpp
     tests/world_test.cpp
     tests/world_reachability_test.cpp
     tests/tile_view_test.cpp
