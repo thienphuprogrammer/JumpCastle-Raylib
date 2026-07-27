@@ -1,6 +1,7 @@
 #include "jumpcastle/solver.hpp"
 
 #include "jumpcastle/game_config.hpp"
+#include "jumpcastle/surface_samples.hpp"
 
 #include <algorithm>
 #include <array>
@@ -10,6 +11,7 @@
 #include <queue>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace jumpcastle {
@@ -40,40 +42,31 @@ struct Transition {
     return world.screen_count() - 1 - clamped;
 }
 
-// Every upward-facing collider edge becomes a walkable span; collinear abutting
-// spans are merged so a run of adjacent colliders reads as one surface.
-[[nodiscard]] std::vector<Surface> extract_surfaces(const CampaignWorld& world) {
-    std::vector<Surface> surfaces;
-    for (int index = 0; index < world.screen_count(); ++index) {
-        const std::vector<ConvexPolygon>* polygons =
-            world.collision.polygons_for_screen(index);
-        if (polygons == nullptr) {
-            continue;
+void append_upward_edges(
+    const CampaignWorld& world,
+    const ConvexPolygon& polygon,
+    std::vector<Surface>& surfaces) {
+    const std::size_t count = polygon.points.size();
+    for (std::size_t edge = 0; edge < count; ++edge) {
+        if (polygon.edge_normals[edge].y > -0.9F) {
+            continue;  // not an upward-facing (top) edge
         }
-        for (const ConvexPolygon& polygon : *polygons) {
-            if (polygon.type == ColliderType::hazard) {
-                continue;
-            }
-            const std::size_t count = polygon.points.size();
-            for (std::size_t edge = 0; edge < count; ++edge) {
-                if (polygon.edge_normals[edge].y > -0.9F) {
-                    continue;  // not an upward-facing (top) edge
-                }
-                const Vec2 a = polygon.points[edge];
-                const Vec2 b = polygon.points[(edge + 1) % count];
-                if (std::abs(a.x - b.x) < 0.01F) {
-                    continue;  // vertical/degenerate, not standable
-                }
-                surfaces.push_back({
-                    .y = (a.y + b.y) * 0.5F,
-                    .start_x = std::min(a.x, b.x),
-                    .end_x = std::max(a.x, b.x),
-                    .screen = screen_number(world, (a.y + b.y) * 0.5F),
-                });
-            }
+        const Vec2 a = polygon.points[edge];
+        const Vec2 b = polygon.points[(edge + 1) % count];
+        if (std::abs(a.x - b.x) < 0.01F) {
+            continue;  // vertical/degenerate, not standable
         }
+        const float y = (a.y + b.y) * 0.5F;
+        surfaces.push_back({
+            .y = y,
+            .start_x = std::min(a.x, b.x),
+            .end_x = std::max(a.x, b.x),
+            .screen = screen_number(world, y),
+        });
     }
+}
 
+[[nodiscard]] std::vector<Surface> merge_surfaces(std::vector<Surface> surfaces) {
     std::sort(surfaces.begin(), surfaces.end(), [](const Surface& l, const Surface& r) {
         if (std::abs(l.y - r.y) > 0.05F) {
             return l.y < r.y;
@@ -90,6 +83,68 @@ struct Transition {
         }
     }
     return merged;
+}
+
+// Sub-surface spacing when approximating a non-flat walkable surface (slope,
+// circle, capsule) as a run of tiny flat sub-surfaces. Small enough that a
+// ~31-degree ramp's per-step rise stays within the 0.13 support tolerance.
+constexpr float kSurfaceSampleSpacing = 0.25F;
+
+// True if the polygon has at least one near-flat (normal.y <= -0.9), non-vertical
+// upward edge -- i.e. `append_upward_edges` already yields a standable span for
+// it, so the sampler fallback must skip it to avoid double-counting.
+[[nodiscard]] bool has_flat_top(const ConvexPolygon& polygon) {
+    const std::size_t count = polygon.points.size();
+    for (std::size_t edge = 0; edge < count; ++edge) {
+        if (polygon.edge_normals[edge].y > -0.9F) {
+            continue;
+        }
+        const Vec2 a = polygon.points[edge];
+        const Vec2 b = polygon.points[(edge + 1) % count];
+        if (std::abs(a.x - b.x) >= 0.01F) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Every upward-facing solid polygon edge becomes a walkable span; collinear
+// abutting spans are merged so adjacent colliders read as one surface. Solid
+// geometry the flat path yields nothing for -- slopes (top edge steeper than
+// -0.9), circles, and capsules -- is approximated additively as a run of tiny
+// flat sub-surfaces at its walkable sample points, so the reachability search
+// can launch from / land on it. This never removes or alters a flat surface,
+// so any previously certified route stays discoverable; each candidate jump is
+// still validated by the real step_world physics and the final replay pass, so
+// a sampled surface can only be used when the physics genuinely supports it.
+[[nodiscard]] std::vector<Surface> extract_surfaces(const CampaignWorld& world) {
+    std::vector<Surface> surfaces;
+    for (int index = 0; index < world.screen_count(); ++index) {
+        const auto* colliders = world.collision.colliders_for_screen(index);
+        if (colliders == nullptr) {
+            continue;
+        }
+        for (const WorldCollider& collider : *colliders) {
+            if (collider.type != ColliderType::solid) {
+                continue;
+            }
+            const auto* polygon = std::get_if<ConvexPolygon>(&collider.geometry);
+            if (polygon != nullptr && has_flat_top(*polygon)) {
+                append_upward_edges(world, *polygon, surfaces);
+                continue;
+            }
+            for (const SurfaceSample& sample :
+                 sample_walkable_surfaces(collider, kSurfaceSampleSpacing)) {
+                surfaces.push_back({
+                    .y = sample.position.y,
+                    .start_x = sample.position.x - kSurfaceSampleSpacing * 0.5F,
+                    .end_x = sample.position.x + kSurfaceSampleSpacing * 0.5F,
+                    .screen = screen_number(world, sample.position.y),
+                });
+            }
+        }
+    }
+    return merge_surfaces(std::move(surfaces));
 }
 
 [[nodiscard]] std::optional<std::size_t> supporting_surface(

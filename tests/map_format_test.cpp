@@ -1,5 +1,7 @@
 #include "jumpcastle/map_format.hpp"
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <filesystem>
@@ -7,6 +9,7 @@
 #include <stdexcept>
 
 using namespace jumpcastle;
+using Catch::Approx;
 
 namespace {
 constexpr const char* kValid = R"({
@@ -21,6 +24,214 @@ constexpr const char* kValid = R"({
   "entities": [ { "type": "spawn", "pos": [2.5, 13.0] } ]
 })";
 }  // namespace
+
+TEST_CASE("schema v3 collider types retain authored geometry") {
+    const PolygonGeometry polygon{{{1.0F, 2.0F}, {5.0F, 2.0F}, {5.0F, 4.0F}}};
+    const CircleGeometry circle{{8.0F, 6.0F}, 2.0F};
+    const CapsuleGeometry capsule{{3.0F, 9.0F}, {11.0F, 9.0F}, 1.5F};
+
+    const MapCollider a{.id = 1, .type = ColliderType::solid,
+                        .geometry = polygon, .tag = "slope"};
+    const MapCollider b{.id = 2, .type = ColliderType::hazard,
+                        .geometry = circle, .tag = "orb"};
+    const MapCollider c{.id = 3, .type = ColliderType::solid,
+                        .geometry = capsule, .tag = "bridge"};
+
+    CHECK(std::holds_alternative<PolygonGeometry>(a.geometry));
+    CHECK(std::get<CircleGeometry>(b.geometry).radius == Approx(2.0F));
+    CHECK(std::get<CapsuleGeometry>(c.geometry).b.x == Approx(11.0F));
+}
+
+TEST_CASE("geometry_aabb returns an empty box for empty polygons") {
+    const Aabb box = geometry_aabb(PolygonGeometry{});
+
+    CHECK(box.min == Vec2{});
+    CHECK(box.max == Vec2{});
+}
+
+TEST_CASE("geometry_aabb bounds every supported geometry") {
+    const Aabb polygon = geometry_aabb(
+        PolygonGeometry{{{-1.0F, 2.0F}, {5.0F, 3.0F}, {3.0F, -4.0F}}});
+    CHECK(polygon.min == Vec2{-1.0F, -4.0F});
+    CHECK(polygon.max == Vec2{5.0F, 3.0F});
+
+    const Aabb circle = geometry_aabb(CircleGeometry{{8.0F, 6.0F}, 2.0F});
+    CHECK(circle.min == Vec2{6.0F, 4.0F});
+    CHECK(circle.max == Vec2{10.0F, 8.0F});
+
+    const Aabb capsule =
+        geometry_aabb(CapsuleGeometry{{3.0F, 9.0F}, {11.0F, 9.0F}, 1.5F});
+    CHECK(capsule.min == Vec2{1.5F, 7.5F});
+    CHECK(capsule.max == Vec2{12.5F, 10.5F});
+}
+
+TEST_CASE("schema v3 parses polygon circle and capsule geometry", "[map_format]") {
+    const auto map = parse_screen_map(R"json({
+      "schema_version": 3,
+      "screen": {"index": 2, "width": 28, "height": 36},
+      "biome": "frosted_keep",
+      "colliders": [
+        {"id": 10, "type": "solid", "geometry": "polygon",
+         "tag": "slope", "points": [[2,20],[8,16],[8,20]]},
+        {"id": 11, "type": "hazard", "geometry": "circle",
+         "tag": "orb", "center": [14,18], "radius": 2},
+        {"id": 12, "type": "solid", "geometry": "capsule",
+         "tag": "bridge", "a": [4,10], "b": [18,10], "radius": 1}
+      ],
+      "entities": []
+    })json", "shape-map");
+
+    REQUIRE(map.schema_version == 3);
+    REQUIRE(map.colliders.size() == 3);
+    CHECK(std::get<PolygonGeometry>(map.colliders[0].geometry).points.size() == 3);
+    CHECK(std::get<CircleGeometry>(map.colliders[1].geometry).radius == Approx(2.0F));
+    CHECK(std::get<CapsuleGeometry>(map.colliders[2].geometry).a.x == Approx(4.0F));
+}
+
+TEST_CASE("schema v3 rejects invalid curved geometry with collider id", "[map_format]") {
+    CHECK_THROWS_WITH(
+        parse_screen_map(R"json({
+          "schema_version": 3,
+          "screen": {"index": 0, "width": 28, "height": 36},
+          "biome": "courtyard",
+          "colliders": [
+            {"id": 7, "type": "solid", "geometry": "circle",
+             "center": [4,4], "radius": 0.25}
+          ],
+          "entities": []
+        })json", "bad-circle"),
+        Catch::Matchers::ContainsSubstring("collider id 7") &&
+        Catch::Matchers::ContainsSubstring("radius must be at least 0.5"));
+}
+
+TEST_CASE("schema v2 slope migrates to polygon geometry and slope tag", "[map_format]") {
+    const auto map = parse_screen_map(R"json({
+      "schema_version": 2,
+      "screen": {"index": 0, "width": 28, "height": 36},
+      "biome": "courtyard",
+      "colliders": [
+        {"id": 1, "type": "solid", "shape": "slope",
+         "points": [[2,20],[8,16],[8,20]]}
+      ],
+      "entities": []
+    })json", "legacy-slope");
+
+    REQUIRE(map.colliders.size() == 1);
+    CHECK(map.colliders[0].tag == "slope");
+    CHECK(std::holds_alternative<PolygonGeometry>(map.colliders[0].geometry));
+}
+
+TEST_CASE("tileless v2 slope round-trips with its authored tag", "[map_format]") {
+    const ScreenMap map = parse_screen_map(R"json({
+      "schema_version": 2,
+      "screen": {"index": 0, "width": 28, "height": 36},
+      "biome": "courtyard",
+      "colliders": [
+        {"id": 1, "type": "solid", "shape": "slope",
+         "points": [[2,20],[8,16],[8,20]]}
+      ],
+      "entities": []
+    })json", "tileless-slope");
+
+    const std::string json = serialize_screen_map(map);
+    const ScreenMap round_trip = parse_screen_map(json, "tileless-slope-round-trip");
+
+    CHECK(json.find("\"schema_version\": 3") != std::string::npos);
+    REQUIRE(round_trip.colliders.size() == 1);
+    CHECK(round_trip.colliders[0].tag == "slope");
+    CHECK(std::holds_alternative<PolygonGeometry>(round_trip.colliders[0].geometry));
+}
+
+TEST_CASE("schema v3 serializes and round-trips authored collider data", "[map_format]") {
+    const ScreenMap map = parse_screen_map(R"json({
+      "schema_version": 3,
+      "screen": {"index": 2, "width": 28, "height": 36},
+      "biome": "frosted_keep",
+      "colliders": [
+        {"id": 10, "type": "solid", "geometry": "polygon",
+         "tag": "slope", "points": [[2,20],[8,16],[8,20]]},
+        {"id": 11, "type": "hazard", "geometry": "circle",
+         "tag": "orb", "center": [14,18], "radius": 2},
+        {"id": 12, "type": "solid", "geometry": "capsule",
+         "tag": "bridge", "a": [4,10], "b": [18,10], "radius": 1}
+      ],
+      "entities": []
+    })json", "shape-map");
+
+    const ScreenMap round_trip = parse_screen_map(serialize_screen_map(map), "round-trip");
+
+    REQUIRE(round_trip.schema_version == 3);
+    REQUIRE(round_trip.colliders.size() == 3);
+    CHECK(round_trip.colliders[1].id == 11);
+    CHECK(round_trip.colliders[1].tag == "orb");
+    CHECK(std::get<CircleGeometry>(round_trip.colliders[1].geometry).radius == Approx(2.0F));
+    CHECK(std::get<CapsuleGeometry>(round_trip.colliders[2].geometry).b.x == Approx(18.0F));
+}
+
+TEST_CASE("v3 serializes authored polygon geometry", "[map_format]") {
+    ScreenMap map;
+    map.schema_version = 3;
+    map.width = 8.0F;
+    map.height = 6.0F;
+    map.biome = "courtyard";
+    const std::vector<Vec2> points{{0.0F, 5.0F}, {8.0F, 5.0F}, {8.0F, 6.0F}, {0.0F, 6.0F}};
+    map.colliders.push_back({
+        .id = 1,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{points},
+    });
+
+    const std::string json = serialize_screen_map(map);
+    const ScreenMap round_trip = parse_screen_map(json, "polygon-fallback");
+
+    CHECK(json.find("\"geometry\": \"polygon\"") != std::string::npos);
+    REQUIRE(round_trip.colliders.size() == 1);
+    CHECK(std::holds_alternative<PolygonGeometry>(round_trip.colliders[0].geometry));
+}
+
+TEST_CASE("non-legacy collider tag promotes serialization to v3", "[map_format]") {
+    ScreenMap map;
+    map.width = 8.0F;
+    map.height = 6.0F;
+    map.biome = "courtyard";
+    map.colliders.push_back({
+        .id = 7,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{{{0.0F, 5.0F}, {8.0F, 5.0F}, {8.0F, 6.0F}}},
+        .tag = "moving-platform",
+    });
+
+    const std::string json = serialize_screen_map(map);
+    const ScreenMap round_trip = parse_screen_map(json, "tagged-collider");
+
+    CHECK(json.find("\"schema_version\": 3") != std::string::npos);
+    REQUIRE(round_trip.colliders.size() == 1);
+    CHECK(round_trip.colliders[0].tag == "moving-platform");
+}
+
+TEST_CASE("all named layers round-trip and optional layers promote to v3", "[map_format]") {
+    ScreenMap map;
+    map.width = 2.0F;
+    map.height = 2.0F;
+    map.biome = "courtyard";
+    map.tileset_columns = 21;
+    map.tileset_tile_size = 16;
+    map.tiles.background = {2, 2, {1u, 2u, 3u, 4u}};
+    map.tiles.terrain = {2, 2, {5u, 6u, 7u, 8u}};
+    map.tiles.decor = {2, 2, {9u, 10u, 11u, 12u}};
+    map.tiles.foreground = {2, 2, {13u, 14u, 15u, 16u}};
+
+    const std::string json = serialize_screen_map(map);
+    const ScreenMap round_trip = parse_screen_map(json, "named-layers");
+
+    CHECK(json.find("\"schema_version\": 3") != std::string::npos);
+    CHECK(round_trip.schema_version == 3);
+    CHECK(round_trip.tiles.background.gids == map.tiles.background.gids);
+    CHECK(round_trip.tiles.terrain.gids == map.tiles.terrain.gids);
+    CHECK(round_trip.tiles.decor.gids == map.tiles.decor.gids);
+    CHECK(round_trip.tiles.foreground.gids == map.tiles.foreground.gids);
+    CHECK(round_trip.terrain.gids == map.tiles.terrain.gids);
+}
 
 TEST_CASE("parse_screen_map reads colliders, types, entities") {
     const ScreenMap map = parse_screen_map(kValid, "test");

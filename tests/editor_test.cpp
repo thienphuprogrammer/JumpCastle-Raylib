@@ -3,8 +3,29 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include <variant>
+
 using Catch::Approx;
 using namespace jumpcastle;
+
+namespace {
+
+bool has_polygon_point(const ScreenMap& map, const Vec2 expected) {
+    for (const MapCollider& collider : map.colliders) {
+        const auto* polygon = std::get_if<PolygonGeometry>(&collider.geometry);
+        if (polygon == nullptr) {
+            continue;
+        }
+        for (const Vec2 point : polygon->points) {
+            if (point.x == Approx(expected.x) && point.y == Approx(expected.y)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+}  // namespace
 
 TEST_CASE("add_vertex snaps to the quarter-tile grid when requested") {
     EditorState editor{0, 16.0F, 12.0F};
@@ -23,7 +44,7 @@ TEST_CASE("drawing three vertices commits one polygon") {
     editor.add_vertex({1, 2}, false);
     REQUIRE(editor.close_polygon());
     REQUIRE(editor.polygon_count() == 1);
-    CHECK(editor.to_screen_map().polygons.size() == 1);
+    CHECK(editor.to_screen_map().colliders.size() == 1);
 }
 
 TEST_CASE("a draft with fewer than three points does not commit") {
@@ -35,7 +56,7 @@ TEST_CASE("a draft with fewer than three points does not commit") {
     CHECK(editor.polygon_count() == 0);
 }
 
-TEST_CASE("a concave polygon exports as multiple convex pieces") {
+TEST_CASE("a concave polygon exports as authored polygon geometry") {
     EditorState editor{0, 16.0F, 12.0F};
     editor.begin_polygon(ColliderType::solid);
     editor.add_vertex({0, 0}, false);
@@ -43,7 +64,11 @@ TEST_CASE("a concave polygon exports as multiple convex pieces") {
     editor.add_vertex({0, 4}, false);
     editor.add_vertex({1, 2}, false);  // reflex notch -> concave
     REQUIRE(editor.close_polygon());
-    CHECK(editor.to_screen_map().polygons.size() >= 2);
+    const ScreenMap map = editor.to_screen_map();
+    REQUIRE(map.colliders.size() == 1);
+    const auto* polygon = std::get_if<PolygonGeometry>(&map.colliders[0].geometry);
+    REQUIRE(polygon != nullptr);
+    CHECK(polygon->points.size() == 4);
 }
 
 TEST_CASE("selecting and moving a vertex repositions it") {
@@ -57,13 +82,7 @@ TEST_CASE("selecting and moving a vertex repositions it") {
     REQUIRE(editor.select_vertex({2.05F, 0.05F}, 0.3F));
     editor.move_selected_vertex({3.0F, 1.0F}, false);
     const ScreenMap map = editor.to_screen_map();
-    bool moved = false;
-    for (const ConvexPolygon& polygon : map.polygons) {
-        for (const Vec2 point : polygon.points) {
-            if (point.x == Approx(3.0F) && point.y == Approx(1.0F)) { moved = true; }
-        }
-    }
-    CHECK(moved);
+    CHECK(has_polygon_point(map, {3.0F, 1.0F}));
 }
 
 TEST_CASE("deleting a selected polygon removes it") {
@@ -89,16 +108,8 @@ TEST_CASE("stamping a rectangle commits one four-corner polygon") {
     REQUIRE(editor.polygon_count() == 1);
 
     const ScreenMap map = editor.to_screen_map();
-    bool has_top_left = false;
-    bool has_bottom_right = false;
-    for (const ConvexPolygon& polygon : map.polygons) {
-        for (const Vec2 point : polygon.points) {
-            if (point.x == Approx(2.0F) && point.y == Approx(2.0F)) { has_top_left = true; }
-            if (point.x == Approx(6.0F) && point.y == Approx(5.0F)) { has_bottom_right = true; }
-        }
-    }
-    CHECK(has_top_left);
-    CHECK(has_bottom_right);
+    CHECK(has_polygon_point(map, {2.0F, 2.0F}));
+    CHECK(has_polygon_point(map, {6.0F, 5.0F}));
 }
 
 TEST_CASE("a rectangle drag corners commit regardless of drag direction") {
@@ -132,16 +143,8 @@ TEST_CASE("dragging a selected polygon translates every vertex") {
     editor.move_selected_polygon({3.0F, -1.0F});
 
     const ScreenMap map = editor.to_screen_map();
-    bool found_shifted_corner = false;
-    for (const ConvexPolygon& polygon : map.polygons) {
-        for (const Vec2 point : polygon.points) {
-            // The original (0,0) corner must now sit at (3,-1).
-            if (point.x == Approx(3.0F) && point.y == Approx(-1.0F)) {
-                found_shifted_corner = true;
-            }
-        }
-    }
-    CHECK(found_shifted_corner);
+    // The original (0,0) corner must now sit at (3,-1).
+    CHECK(has_polygon_point(map, {3.0F, -1.0F}));
 }
 
 TEST_CASE("moving a polygon with no selection is a no-op") {
@@ -155,15 +158,7 @@ TEST_CASE("moving a polygon with no selection is a no-op") {
     editor.move_selected_polygon({5.0F, 5.0F});  // nothing selected
 
     const ScreenMap map = editor.to_screen_map();
-    bool untouched = false;
-    for (const ConvexPolygon& polygon : map.polygons) {
-        for (const Vec2 point : polygon.points) {
-            if (point.x == Approx(0.0F) && point.y == Approx(0.0F)) {
-                untouched = true;
-            }
-        }
-    }
-    CHECK(untouched);
+    CHECK(has_polygon_point(map, {0.0F, 0.0F}));
 }
 
 TEST_CASE("load_screen makes an existing map visible and editable") {
@@ -188,9 +183,141 @@ TEST_CASE("load_screen makes an existing map visible and editable") {
     const ScreenMap round_trip = loaded.to_screen_map();
     CHECK(round_trip.index == 7);
     CHECK(round_trip.width == Approx(20.0F));
-    CHECK(round_trip.polygons.size() == source.polygons.size());
+    CHECK(round_trip.colliders.size() == source.colliders.size());
     REQUIRE(round_trip.entities.size() == 1);
     CHECK(round_trip.entities[0].type == EntityType::spawn);
+}
+
+TEST_CASE("polygon editor preserves loaded polygon identity and tag") {
+    ScreenMap map;
+    map.index = 3;
+    map.width = 28;
+    map.height = 36;
+    map.colliders.push_back({
+        .id = 73,
+        .type = ColliderType::hazard,
+        .geometry = PolygonGeometry{{
+            {2.0F, 4.0F},
+            {8.0F, 4.0F},
+            {5.0F, 8.0F},
+        }},
+        .tag = "blade_ramp",
+    });
+
+    EditorState editor;
+    editor.load_screen(map);
+    const ScreenMap output = editor.to_screen_map();
+
+    REQUIRE(output.colliders.size() == 1);
+    CHECK(output.colliders[0].id == 73);
+    CHECK(output.colliders[0].type == ColliderType::hazard);
+    CHECK(output.colliders[0].tag == "blade_ramp");
+    CHECK(std::holds_alternative<PolygonGeometry>(output.colliders[0].geometry));
+}
+
+TEST_CASE("new editor polygons receive unique ids above every loaded collider") {
+    ScreenMap map;
+    map.index = 3;
+    map.width = 28;
+    map.height = 36;
+    map.colliders = {
+        {
+            .id = 93,
+            .type = ColliderType::solid,
+            .geometry = PolygonGeometry{{
+                {1.0F, 1.0F},
+                {5.0F, 1.0F},
+                {3.0F, 4.0F},
+            }},
+            .tag = "existing",
+        },
+        {
+            .id = 20,
+            .type = ColliderType::solid,
+            .geometry = CircleGeometry{{12.0F, 10.0F}, 2.0F},
+            .tag = "orb",
+        },
+    };
+
+    EditorState editor;
+    editor.load_screen(map);
+    for (int polygon = 0; polygon < 2; ++polygon) {
+        const float offset = static_cast<float>(polygon * 4);
+        editor.begin_polygon(ColliderType::solid);
+        editor.add_vertex({10.0F + offset, 20.0F}, false);
+        editor.add_vertex({12.0F + offset, 20.0F}, false);
+        editor.add_vertex({11.0F + offset, 22.0F}, false);
+        REQUIRE(editor.close_polygon());
+    }
+
+    const ScreenMap output = editor.to_screen_map();
+    std::vector<int> polygon_ids;
+    for (const MapCollider& collider : output.colliders) {
+        if (std::holds_alternative<PolygonGeometry>(collider.geometry)) {
+            polygon_ids.push_back(collider.id);
+        }
+    }
+
+    REQUIRE(polygon_ids.size() == 3);
+    CHECK(polygon_ids[0] == 93);
+    CHECK(polygon_ids[1] == 94);
+    CHECK(polygon_ids[2] == 95);
+}
+
+TEST_CASE("polygon editor round-trips exact circle collider data") {
+    ScreenMap map;
+    map.index = 3;
+    map.width = 28;
+    map.height = 36;
+    map.colliders.push_back({
+        .id = 42,
+        .type = ColliderType::hazard,
+        .geometry = CircleGeometry{{10.0F, 12.0F}, 2.0F},
+        .tag = "orb",
+    });
+
+    EditorState editor{3, 28.0F, 36.0F};
+    editor.load_screen(map);
+    const ScreenMap output = editor.to_screen_map();
+
+    REQUIRE(output.colliders.size() == 1);
+    CHECK(output.colliders[0].id == 42);
+    CHECK(output.colliders[0].type == ColliderType::hazard);
+    CHECK(output.colliders[0].tag == "orb");
+    const auto* circle = std::get_if<CircleGeometry>(&output.colliders[0].geometry);
+    REQUIRE(circle != nullptr);
+    CHECK(circle->center.x == Approx(10.0F));
+    CHECK(circle->center.y == Approx(12.0F));
+    CHECK(circle->radius == Approx(2.0F));
+}
+
+TEST_CASE("polygon editor round-trips exact capsule collider data") {
+    ScreenMap map;
+    map.index = 4;
+    map.width = 28;
+    map.height = 36;
+    map.colliders.push_back({
+        .id = 81,
+        .type = ColliderType::oneway,
+        .geometry = CapsuleGeometry{{3.0F, 8.0F}, {17.0F, 11.0F}, 1.5F},
+        .tag = "arched_bridge",
+    });
+
+    EditorState editor;
+    editor.load_screen(map);
+    const ScreenMap output = editor.to_screen_map();
+
+    REQUIRE(output.colliders.size() == 1);
+    CHECK(output.colliders[0].id == 81);
+    CHECK(output.colliders[0].type == ColliderType::oneway);
+    CHECK(output.colliders[0].tag == "arched_bridge");
+    const auto* capsule = std::get_if<CapsuleGeometry>(&output.colliders[0].geometry);
+    REQUIRE(capsule != nullptr);
+    CHECK(capsule->a.x == Approx(3.0F));
+    CHECK(capsule->a.y == Approx(8.0F));
+    CHECK(capsule->b.x == Approx(17.0F));
+    CHECK(capsule->b.y == Approx(11.0F));
+    CHECK(capsule->radius == Approx(1.5F));
 }
 
 TEST_CASE("load_screen replaces any prior editor state") {

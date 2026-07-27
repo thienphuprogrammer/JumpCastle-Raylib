@@ -1,7 +1,6 @@
 #pragma once
 
 #include "jumpcastle/campaign_world.hpp"
-#include "jumpcastle/convex.hpp"
 #include "jumpcastle/map_format.hpp"
 
 #include <stdexcept>
@@ -28,6 +27,7 @@ namespace jumpcastle::test {
 
     std::vector<ScreenMap> screens;
     screens.reserve(static_cast<std::size_t>(screen_count));
+    int next_collider_id = 1;
     for (int s = 0; s < screen_count; ++s) {
         ScreenMap screen;
         screen.index = s;
@@ -55,9 +55,11 @@ namespace jumpcastle::test {
                 const float fw = static_cast<float>(run);
                 const std::vector<Vec2> points{
                     {fx, fy}, {fx + fw, fy}, {fx + fw, fy + 1.0F}, {fx, fy + 1.0F}};
-                screen.polygons.push_back(
-                    {points, outward_edge_normals(points), polygon_aabb(points),
-                     ColliderType::solid});
+                screen.colliders.push_back({
+                    .id = next_collider_id++,
+                    .type = ColliderType::solid,
+                    .geometry = PolygonGeometry{points},
+                });
                 x += run;
             }
         }
