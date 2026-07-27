@@ -1,6 +1,7 @@
 #include "jumpcastle/solver.hpp"
 
 #include "jumpcastle/game_config.hpp"
+#include "jumpcastle/surface_samples.hpp"
 
 #include <algorithm>
 #include <array>
@@ -84,8 +85,38 @@ void append_upward_edges(
     return merged;
 }
 
+// Sub-surface spacing when approximating a non-flat walkable surface (slope,
+// circle, capsule) as a run of tiny flat sub-surfaces. Small enough that a
+// ~31-degree ramp's per-step rise stays within the 0.13 support tolerance.
+constexpr float kSurfaceSampleSpacing = 0.25F;
+
+// True if the polygon has at least one near-flat (normal.y <= -0.9), non-vertical
+// upward edge -- i.e. `append_upward_edges` already yields a standable span for
+// it, so the sampler fallback must skip it to avoid double-counting.
+[[nodiscard]] bool has_flat_top(const ConvexPolygon& polygon) {
+    const std::size_t count = polygon.points.size();
+    for (std::size_t edge = 0; edge < count; ++edge) {
+        if (polygon.edge_normals[edge].y > -0.9F) {
+            continue;
+        }
+        const Vec2 a = polygon.points[edge];
+        const Vec2 b = polygon.points[(edge + 1) % count];
+        if (std::abs(a.x - b.x) >= 0.01F) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Every upward-facing solid polygon edge becomes a walkable span; collinear
-// abutting spans are merged so adjacent colliders read as one surface.
+// abutting spans are merged so adjacent colliders read as one surface. Solid
+// geometry the flat path yields nothing for -- slopes (top edge steeper than
+// -0.9), circles, and capsules -- is approximated additively as a run of tiny
+// flat sub-surfaces at its walkable sample points, so the reachability search
+// can launch from / land on it. This never removes or alters a flat surface,
+// so any previously certified route stays discoverable; each candidate jump is
+// still validated by the real step_world physics and the final replay pass, so
+// a sampled surface can only be used when the physics genuinely supports it.
 [[nodiscard]] std::vector<Surface> extract_surfaces(const CampaignWorld& world) {
     std::vector<Surface> surfaces;
     for (int index = 0; index < world.screen_count(); ++index) {
@@ -94,9 +125,22 @@ void append_upward_edges(
             continue;
         }
         for (const WorldCollider& collider : *colliders) {
+            if (collider.type != ColliderType::solid) {
+                continue;
+            }
             const auto* polygon = std::get_if<ConvexPolygon>(&collider.geometry);
-            if (polygon != nullptr && collider.type == ColliderType::solid) {
+            if (polygon != nullptr && has_flat_top(*polygon)) {
                 append_upward_edges(world, *polygon, surfaces);
+                continue;
+            }
+            for (const SurfaceSample& sample :
+                 sample_walkable_surfaces(collider, kSurfaceSampleSpacing)) {
+                surfaces.push_back({
+                    .y = sample.position.y,
+                    .start_x = sample.position.x - kSurfaceSampleSpacing * 0.5F,
+                    .end_x = sample.position.x + kSurfaceSampleSpacing * 0.5F,
+                    .screen = screen_number(world, sample.position.y),
+                });
             }
         }
     }
