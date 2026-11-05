@@ -28,11 +28,22 @@ struct PlayerState {
     PlayerMode mode{PlayerMode::airborne};
     bool on_ground{};
     bool facing_right{true};
+    Vec2 ground_normal{0.0F, -1.0F};
+    Vec2 ground_point{};
+    int ground_collider_id{-1};
+    int ground_piece_index{};
 };
+
+[[nodiscard]] Vec2 surface_tangent_right(Vec2 normal) noexcept;
 
 [[nodiscard]] Vec2 charged_jump_velocity(
     float hold_time,
     float horizontal_input) noexcept;
+
+[[nodiscard]] Vec2 charged_jump_velocity(
+    float hold_time,
+    float horizontal_input,
+    Vec2 ground_normal) noexcept;
 
 void simulate_ground_movement(
     PlayerState& player,

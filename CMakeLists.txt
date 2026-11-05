@@ -41,7 +41,9 @@ add_library(
   src/collision.cpp
   src/convex.cpp
   src/sat.cpp
+  src/shape_collision.cpp
   src/map_format.cpp
+  src/map_validation.cpp
   src/collision_world.cpp
   src/campaign_world.cpp
   src/editor.cpp
@@ -50,6 +52,7 @@ add_library(
   src/replay.cpp
   src/simulation.cpp
   src/solver.cpp
+  src/surface_samples.cpp
 )
 add_library(JumpCastle::Core ALIAS jumpcastle_core)
 target_include_directories(jumpcastle_core PUBLIC include)
@@ -101,7 +104,9 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/collision_test.cpp
     tests/convex_test.cpp
     tests/sat_test.cpp
+    tests/shape_collision_test.cpp
     tests/map_format_test.cpp
+    tests/map_validation_test.cpp
     tests/collision_world_test.cpp
     tests/editor_test.cpp
     tests/campaign_test.cpp
@@ -116,6 +121,7 @@ if(JUMPCASTLE_BUILD_TESTS)
     tests/replay_test.cpp
     tests/simulation_test.cpp
     tests/solver_test.cpp
+    tests/surface_samples_test.cpp
     tests/world_test.cpp
     tests/world_reachability_test.cpp
     tests/tile_view_test.cpp

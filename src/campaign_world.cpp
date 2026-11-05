@@ -1,5 +1,8 @@
 #include "jumpcastle/campaign_world.hpp"
 
+#include "jumpcastle/assets.hpp"
+#include "jumpcastle/map_validation.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -13,6 +16,50 @@ WorldBiome biome_from_string(const std::string& name) noexcept {
     if (name == "frosted_keep") { return WorldBiome::frosted_keep; }
     if (name == "crown_spire") { return WorldBiome::crown_spire; }
     return WorldBiome::courtyard;
+}
+
+// Pixel dimensions of the shared terrain atlas, resolved from the asset
+// manifest that sits alongside the screens directory (`<root>/generated/
+// manifest.json` next to `<root>/levels/screens`). `available` is false when
+// no manifest is found there -- e.g. callers that load a bare directory of
+// screen files with no asset tree (tests, ad hoc solver runs) -- so
+// atlas-dependent GID validation is skipped rather than failing to locate
+// assets that were never provided.
+struct AtlasPixelSize {
+    int width{};
+    int height{};
+    bool available{};
+};
+
+AtlasPixelSize resolve_atlas_pixel_size(const std::filesystem::path& screens_directory) {
+    const std::filesystem::path manifest_path =
+        screens_directory.parent_path().parent_path() / "generated" / "manifest.json";
+    if (!std::filesystem::exists(manifest_path)) {
+        return {};
+    }
+    const AssetCatalog catalog = AssetCatalog::load(manifest_path);
+    // All three biomes share one "castle" atlas texture, so any biome's
+    // stored atlas dimensions describe the whole atlas.
+    const BiomeAssets& reference = catalog.biome(Biome::pixel_adventure);
+    return {reference.atlas_width, reference.atlas_height, true};
+}
+
+// Validates every loaded screen's tile GIDs against the resolved atlas, using
+// each screen's own authored tile size to convert the atlas' pixel
+// dimensions into a tile count. Never hardcodes the atlas' tile count -- it
+// is always the product of the atlas' pixel size and the screen's tile size.
+void validate_against_atlas(
+    const std::vector<ScreenMap>& screens, const AtlasPixelSize& atlas) {
+    if (!atlas.available) {
+        return;
+    }
+    for (const ScreenMap& screen : screens) {
+        const int tile_size = screen.tileset_tile_size > 0 ? screen.tileset_tile_size : 1;
+        validate_screen_map(screen, MapValidationContext{
+            .atlas_columns = atlas.width / tile_size,
+            .atlas_rows = atlas.height / tile_size,
+        });
+    }
 }
 
 }  // namespace
@@ -75,6 +122,8 @@ CampaignWorld CampaignWorld::load(
             screens.push_back(parse_screen_map_file(path));
         }
     }
+    validate_against_atlas(screens, resolve_atlas_pixel_size(directory));
+
     int height = screen_height;
     if (height <= 0 && !screens.empty()) {
         // Derive the band height from the files so callers need not know it.

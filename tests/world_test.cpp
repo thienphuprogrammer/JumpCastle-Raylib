@@ -22,8 +22,11 @@ TEST_CASE("CampaignWorld::load reads a directory of screen-NN.map.json files") {
         screen.height = 12.0F;
         screen.biome = biome;
         const std::vector<Vec2> floor{{0, 11}, {16, 11}, {16, 12}, {0, 12}};
-        screen.polygons.push_back(
-            {floor, {}, {}, ColliderType::solid});
+        screen.colliders.push_back({
+            .id = 1,
+            .type = ColliderType::solid,
+            .geometry = PolygonGeometry{floor},
+        });
         if (index == 1) {
             screen.entities.push_back({EntityType::spawn, {2.0F, 10.0F}});
         }
@@ -44,8 +47,8 @@ TEST_CASE("CampaignWorld::load reads a directory of screen-NN.map.json files") {
     CHECK(world.spawn.x == Catch::Approx(2.0F));
     CHECK(world.biome_for_screen(0) == WorldBiome::crown_spire);
     CHECK(world.biome_for_screen(1) == WorldBiome::courtyard);
-    REQUIRE(world.collision.polygons_for_screen(1) != nullptr);
-    CHECK_FALSE(world.collision.polygons_for_screen(1)->empty());
+    REQUIRE(world.collision.colliders_for_screen(1) != nullptr);
+    CHECK_FALSE(world.collision.colliders_for_screen(1)->empty());
 
     std::filesystem::remove_all(dir);
 }

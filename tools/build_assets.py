@@ -145,6 +145,81 @@ def fitted_tile(image: Image.Image) -> Image.Image:
     return image.resize((TILE, TILE), Image.Resampling.NEAREST)
 
 
+# Diagonal terrain: a slope tile is the biome's solid "center" stone masked to a
+# right triangle so the exposed edge reads as a 45-degree incline. Four
+# orientations cover walkable ramps (rise NE/NW) and overhang ceilings (SE/SW).
+# Derived deterministically from already-verified atlas pixels -- no new source.
+SLOPE_ORIENTATIONS = ("slope_ne", "slope_nw", "slope_se", "slope_sw")
+
+
+def _slope_keep(orientation: str, px: int, py: int) -> bool:
+    """True if pixel (px,py) is solid for this slope orientation (TILE-1 = 15)."""
+    m = TILE - 1
+    if orientation == "slope_ne":   # ramp rising to the right; solid lower-right
+        return px + py >= m
+    if orientation == "slope_nw":   # ramp rising to the left;  solid lower-left
+        return py >= px
+    if orientation == "slope_se":   # ceiling sloping down-right; solid upper-left
+        return px + py <= m
+    if orientation == "slope_sw":   # ceiling sloping down-left;  solid upper-right
+        return py <= px
+    raise ValueError(f"unknown slope orientation: {orientation}")
+
+
+def slope_tile(center: Image.Image, orientation: str) -> Image.Image:
+    """A TILE x TILE diagonal cut of the solid `center` stone tile."""
+    stone = fitted_tile(center)
+    out = Image.new("RGBA", (TILE, TILE))
+    src = stone.load()
+    dst = out.load()
+    for py in range(TILE):
+        for px in range(TILE):
+            if _slope_keep(orientation, px, py):
+                dst[px, py] = src[px, py]
+    return out
+
+
+# Slope tiles live in a free grid row (row 3) of every biome's 8x8 block; rows
+# 0-2 are the 9-slice + named-slot + checkpoint/exit contract, rows 3-7 are
+# filler this pipeline may repurpose.
+SLOPE_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    "slope_ne": (3, 0), "slope_nw": (3, 1),
+    "slope_se": (3, 2), "slope_sw": (3, 3),
+}
+
+# Round terrain: a 2x2 disc composed from four quarter-tiles, each the biome's
+# center stone masked to one quadrant of a circle whose radius is one tile and
+# whose centre is the shared inner corner of the 2x2 block.
+ROUND_ORIENTATIONS = ("round_tl", "round_tr", "round_bl", "round_br")
+
+
+def _round_keep(orientation: str, px: int, py: int) -> bool:
+    """True if pixel (px,py) is inside the quarter-disc for this corner tile."""
+    m = TILE  # circle radius = one tile; centre at the 2x2 inner corner
+    # centre of the full circle relative to this tile's top-left origin:
+    cx = m if orientation in ("round_tl", "round_bl") else 0
+    cy = m if orientation in ("round_tl", "round_tr") else 0
+    return (px + 0.5 - cx) ** 2 + (py + 0.5 - cy) ** 2 <= m * m
+
+
+def round_tile(center: Image.Image, orientation: str) -> Image.Image:
+    """A TILE x TILE quarter-disc cut of the solid `center` stone tile."""
+    stone = fitted_tile(center)
+    out = Image.new("RGBA", (TILE, TILE))
+    src, dst = stone.load(), out.load()
+    for py in range(TILE):
+        for px in range(TILE):
+            if _round_keep(orientation, px, py):
+                dst[px, py] = src[px, py]
+    return out
+
+
+ROUND_SLOT_POSITIONS: dict[str, tuple[int, int]] = {
+    "round_tl": (4, 0), "round_tr": (4, 1),
+    "round_bl": (4, 2), "round_br": (4, 3),
+}
+
+
 def derived_frame(image: Image.Image, derive: str | None) -> Image.Image:
     normalized = fitted_tile(image)
     if derive is None:
@@ -269,6 +344,22 @@ def build_castle(
         special_regions["spike"] = named_regions["hazard"]
         special_regions["background"] = named_regions["isolated"]
 
+        # Diagonal slope tiles, derived from this biome's solid center stone.
+        slope_regions: dict[str, dict[str, int]] = {}
+        center_stone = fitted_tile(sources.crop(regions["center"]))
+        for slope_name, (row, column) in SLOPE_SLOT_POSITIONS.items():
+            x = origin_x + column * TILE
+            y = row * TILE
+            atlas.alpha_composite(slope_tile(center_stone, slope_name), (x, y))
+            slope_regions[slope_name] = rect(x, y)
+
+        # Round (disc quadrant) tiles, also derived from the center stone.
+        for round_name, (row, column) in ROUND_SLOT_POSITIONS.items():
+            x = origin_x + column * TILE
+            y = row * TILE
+            atlas.alpha_composite(round_tile(center_stone, round_name), (x, y))
+            slope_regions[round_name] = rect(x, y)
+
         biome_records[biome_name] = {
             "terrain_grid": {
                 "x": origin_x,
@@ -277,7 +368,7 @@ def build_castle(
                 "columns": TERRAIN_COLUMNS,
                 "rows": TERRAIN_ROWS,
             },
-            "regions": {**named_regions, **special_regions},
+            "regions": {**named_regions, **special_regions, **slope_regions},
         }
 
     path = output / "castle.png"

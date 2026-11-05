@@ -1,7 +1,5 @@
 #include "jumpcastle/editor.hpp"
 
-#include "jumpcastle/convex.hpp"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -50,7 +48,12 @@ bool EditorState::close_polygon() {
     if (!drafting_ || draft_points_.size() < 3) {
         return false;
     }
-    polygons_.push_back({draft_points_, draft_type_});
+    polygons_.push_back({
+        .points = draft_points_,
+        .type = draft_type_,
+        .id = std::nullopt,
+        .tag = {},
+    });
     drafting_ = false;
     draft_points_.clear();
     return true;
@@ -92,7 +95,12 @@ bool EditorState::commit_rectangle() {
         cancel_polygon();
         return false;
     }
-    polygons_.push_back({draft_points_, draft_type_});
+    polygons_.push_back({
+        .points = draft_points_,
+        .type = draft_type_,
+        .id = std::nullopt,
+        .tag = {},
+    });
     drafting_ = false;
     draft_points_.clear();
     return true;
@@ -167,8 +175,20 @@ void EditorState::load_screen(const ScreenMap& screen) {
     width_ = screen.width;
     height_ = screen.height;
     polygons_.clear();
-    for (const ConvexPolygon& polygon : screen.polygons) {
-        polygons_.push_back({polygon.points, polygon.type});
+    passthrough_colliders_.clear();
+    next_collider_id_ = 1;
+    for (const MapCollider& collider : screen.colliders) {
+        next_collider_id_ = std::max(next_collider_id_, collider.id + 1);
+        if (const auto* polygon = std::get_if<PolygonGeometry>(&collider.geometry)) {
+            polygons_.push_back({
+                .points = polygon->points,
+                .type = collider.type,
+                .id = collider.id,
+                .tag = collider.tag,
+            });
+        } else {
+            passthrough_colliders_.push_back(collider);
+        }
     }
     entities_ = screen.entities;
     drafting_ = false;
@@ -183,11 +203,18 @@ ScreenMap EditorState::to_screen_map() const {
     map.width = width_;
     map.height = height_;
     map.biome = "courtyard";
+    int next_id = next_collider_id_;
+    for (const MapCollider& collider : passthrough_colliders_) {
+        map.colliders.push_back(collider);
+    }
     for (const DraftPolygon& polygon : polygons_) {
-        for (const auto& piece : split_to_convex(polygon.points)) {
-            map.polygons.push_back(
-                {piece, outward_edge_normals(piece), polygon_aabb(piece), polygon.type});
-        }
+        const int id = polygon.id ? *polygon.id : next_id++;
+        map.colliders.push_back({
+            .id = id,
+            .type = polygon.type,
+            .geometry = PolygonGeometry{polygon.points},
+            .tag = polygon.tag,
+        });
     }
     map.entities = entities_;
     return map;

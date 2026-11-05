@@ -3,13 +3,16 @@
 #include "jumpcastle/map_format.hpp"
 #include "jumpcastle/math.hpp"
 
+#include <optional>
+#include <string>
 #include <vector>
 
 namespace jumpcastle {
 
-// Headless in-game map editor state: builds polygon colliders and entities for
-// a single screen. Pure logic (no raylib) so it can be unit-tested; the raylib
-// input/render/save layer drives it. Coordinates are screen-local tile units.
+// Headless in-game map editor state: edits polygon colliders and entities for a
+// single screen while preserving curved colliders unchanged. Pure logic (no
+// raylib) so it can be unit-tested; the raylib input/render/save layer drives
+// it. Coordinates are screen-local tile units.
 class EditorState {
 public:
     static constexpr float snap_step = 0.25F;
@@ -55,24 +58,28 @@ public:
     void place_entity(EntityType type, Vec2 world_pos, bool snap);
     [[nodiscard]] std::size_t entity_count() const noexcept { return entities_.size(); }
 
-    // Replaces all editor state with an existing screen's polygons + entities
+    // Replaces all editor state with an existing screen's colliders + entities
     // (screen-local coords) so the current map is visible and editable on entry.
     void load_screen(const ScreenMap& screen);
 
-    // Exports the authored screen (polygons split to convex + precomputed).
+    // Exports the authored screen, retaining curved colliders unchanged.
     [[nodiscard]] ScreenMap to_screen_map() const;
 
 private:
     struct DraftPolygon {
         std::vector<Vec2> points;
         ColliderType type{ColliderType::solid};
+        std::optional<int> id;
+        std::string tag;
     };
 
     int screen_index_{};
     float width_{16.0F};
     float height_{12.0F};
+    int next_collider_id_{1};
 
     std::vector<DraftPolygon> polygons_;
+    std::vector<MapCollider> passthrough_colliders_;
     std::vector<MapEntity> entities_;
 
     bool drafting_{};

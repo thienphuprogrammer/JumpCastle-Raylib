@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace jumpcastle {
@@ -287,19 +288,23 @@ void draw_world_polygons(
     const Texture2D texture) {
     const SpriteRegion fill = terrain_fill_region(assets.terrain);
     const Color terrain_tint = biome_terrain_tint(camera.biome);
-    const std::vector<ConvexPolygon>* polygons =
-        world.collision.polygons_for_screen(camera.screen);
-    if (polygons != nullptr) {
-        for (const ConvexPolygon& polygon : *polygons) {
-            if (polygon.type != ColliderType::hazard && is_axis_rect(polygon)) {
-                const Color tint = polygon.type == ColliderType::oneway
+    const std::vector<WorldCollider>* colliders =
+        world.collision.colliders_for_screen(camera.screen);
+    if (colliders != nullptr) {
+        for (const WorldCollider& collider : *colliders) {
+            const auto* polygon = std::get_if<ConvexPolygon>(&collider.geometry);
+            if (polygon == nullptr) {
+                continue;
+            }
+            if (collider.type != ColliderType::hazard && is_axis_rect(*polygon)) {
+                const Color tint = collider.type == ColliderType::oneway
                     ? scale_rgb(terrain_tint, 0.8F)
                     : terrain_tint;
-                draw_textured_rect(texture, fill, polygon, camera.world_top, tint);
+                draw_textured_rect(texture, fill, *polygon, camera.world_top, tint);
             } else {
                 draw_convex_polygon(
-                    polygon, camera.world_top,
-                    polygon_fill_color(polygon.type, camera.biome));
+                    *polygon, camera.world_top,
+                    polygon_fill_color(collider.type, camera.biome));
             }
         }
     }
@@ -348,9 +353,12 @@ void draw_terrain(
     const BiomeAssets& assets,
     const Texture2D texture) {
     const ScreenMap* screen = world.screen_map(camera.screen);
-    if (screen != nullptr && !screen->terrain.gids.empty()) {
+    if (screen != nullptr && !screen->tiles.terrain.gids.empty()) {
         draw_tile_layer(
-            screen->terrain, screen->tileset_columns, screen->tileset_tile_size, texture);
+            screen->tiles.terrain,
+            screen->tileset_columns,
+            screen->tileset_tile_size,
+            texture);
         draw_goal(world, camera, assets, texture);
     } else {
         draw_world_polygons(world, camera, assets, texture);  // already draws the goal

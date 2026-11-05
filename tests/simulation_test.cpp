@@ -1,8 +1,6 @@
 #include "jumpcastle/simulation.hpp"
 #include "jumpcastle/fixed_step.hpp"
 
-#include "jumpcastle/convex.hpp"
-
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -14,11 +12,17 @@ TEST_CASE("step_world over a polygon campaign world lands, dies, and completes")
     screen.width = 16;
     screen.height = 15;
     const std::vector<Vec2> floor{{0, 14}, {16, 14}, {16, 15}, {0, 15}};
-    screen.polygons.push_back(
-        {floor, outward_edge_normals(floor), polygon_aabb(floor), ColliderType::solid});
+    screen.colliders.push_back({
+        .id = 1,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{floor},
+    });
     const std::vector<Vec2> spike{{7, 13}, {9, 13}, {8, 12.5F}};
-    screen.polygons.push_back(
-        {spike, outward_edge_normals(spike), polygon_aabb(spike), ColliderType::hazard});
+    screen.colliders.push_back({
+        .id = 2,
+        .type = ColliderType::hazard,
+        .geometry = PolygonGeometry{spike},
+    });
     screen.entities.push_back({EntityType::spawn, {2.0F, 13.0F}});
     screen.entities.push_back({EntityType::goal, {13.0F, 13.0F}});
     const CampaignWorld world = CampaignWorld::from_screens({screen}, 15);
@@ -73,8 +77,11 @@ TEST_CASE("polygon campaign world respawns below the world and completes at goal
     screen.width = 16;
     screen.height = 15;
     const std::vector<Vec2> floor{{0, 14}, {16, 14}, {16, 15}, {0, 15}};
-    screen.polygons.push_back(
-        {floor, outward_edge_normals(floor), polygon_aabb(floor), ColliderType::solid});
+    screen.colliders.push_back({
+        .id = 1,
+        .type = ColliderType::solid,
+        .geometry = PolygonGeometry{floor},
+    });
     screen.entities.push_back({EntityType::spawn, {2.0F, 13.0F}});
     screen.entities.push_back({EntityType::goal, {8.0F, 13.0F}});
     const CampaignWorld world = CampaignWorld::from_screens({screen}, 15);
